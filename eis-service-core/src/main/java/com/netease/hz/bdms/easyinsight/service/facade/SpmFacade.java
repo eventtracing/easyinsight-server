@@ -6,7 +6,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.netease.eis.adapters.CacheAdapter;
-import com.netease.hz.bdms.easyinsight.common.OpenSource;
 import com.netease.hz.bdms.easyinsight.common.constant.ContextConstant;
 import com.netease.hz.bdms.easyinsight.common.context.EtContext;
 import com.netease.hz.bdms.easyinsight.common.dto.ListHolder;
