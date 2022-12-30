@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 second" debug="false">
+    <!-- 控制台日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%level] [%X{REQ_ID}] %class{0}.%method:%line - %m%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- mlog info -->
+    <appender name="MLOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/mlog/${com.cmdb.appname}.log</File>
+        <!-- 只有INFO -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <Pattern>%d[v3][${com.cmdb.appname}][${com.cmdb.clustername}][%t][][][][%F:%M:%L][%p][%c] - %m%X{uc}%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/mlog/${com.cmdb.appname}.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>128MB</maxFileSize>
+            <totalSizeCap>8GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- mlog error -->
+    <appender name="MLOG_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/mlog/${com.cmdb.appname}-error.log</File>
+        <!-- 只有ERROR -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <Pattern>%d[v3][${com.cmdb.appname}][${com.cmdb.clustername}][%t][][][][%F:%M:%L][%p][%c] - %m%X{uc}%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/mlog/${com.cmdb.appname}-error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>128MB</maxFileSize>
+            <totalSizeCap>8GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- mlog info -->
+    <appender name="mlog_stats" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/mlog/stats/stats.log</File>
+        <!-- 只有INFO -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <Pattern>%d[s1][${com.cmdb.appname}][${com.cmdb.clustername}]%m%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/mlog/stats/stats.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>128MB</maxFileSize>
+            <totalSizeCap>8GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- info级别日志 -->
+    <appender name="EIS-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/eis-info.log</File>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%level] [%X{REQ_ID}] %class{0}.%method:%line - %m%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/eis-info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>128MB</maxFileSize>
+            <totalSizeCap>8GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ASYNC-EIS-INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>1024</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="EIS-INFO"/>
+    </appender>
+
+    <!-- TRACE日志 -->
+    <appender name="EIS-TRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/eis-trace.log</File>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%level] [%X{REQ_ID}] %class{0}.%method:%line - %m%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/eis-trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>128MB</maxFileSize>
+            <totalSizeCap>4GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ASYNC-EIS-TRACE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>1024</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="EIS-TRACE"/>
+    </appender>
+
+    <!-- error级别日志 -->
+    <appender name="EIS-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/eis-error.log</File>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%level] [%X{REQ_ID}] %class{0}.%method:%line - %m%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/eis-error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>128MB</maxFileSize>
+            <totalSizeCap>4GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 本地环境要打印的日志 -->
+    <springProfile name="local">
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="INFO"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- 其他环境要打印的日志 -->
+    <springProfile name="!local">
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="INFO"/>
+        <root level="INFO">
+            <appender-ref ref="ASYNC-EIS-INFO"/>
+            <appender-ref ref="EIS-ERROR"/>
+            <appender-ref ref="MLOG"/>
+            <appender-ref ref="MLOG_ERROR"/>
+        </root>
+        <logger name="statsLogger"  additivity="false">
+            <appender-ref ref="mlog_stats"/>
+        </logger>
+        <logger name="EIS-TRACE"  additivity="false">
+            <appender-ref ref="ASYNC-EIS-TRACE"/>
+        </logger>
+    </springProfile>
+</configuration>

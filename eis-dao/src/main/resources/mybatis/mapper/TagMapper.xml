@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.TagMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.Tag">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="type" jdbcType="INTEGER" property="type"/>
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+    <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+    <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_tag`
+  </sql>
+  <sql id="Base_Column_List">
+    id, name, app_id, type, create_email, create_name, update_email, update_name, create_time, update_time
+  </sql>
+
+  <insert id="insertTag" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Tag"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="createEmail != null">
+        create_email,
+      </if>
+      <if test="createName != null">
+        create_name,
+      </if>
+      <if test="updateEmail != null">
+        update_email,
+      </if>
+      <if test="updateName != null">
+        update_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id, jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name, jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null">
+        #{appId, jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type, jdbcType=INTEGER},
+      </if>
+      <if test="createEmail != null">
+        #{createEmail, jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        #{createName, jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        #{updateEmail, jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        #{updateName, jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime, jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime, jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectTags" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where id in
+    <foreach collection="tagIds" item="tagId" open="(" close=")" separator=",">
+      #{tagId}
+    </foreach>
+  </select>
+
+  <select id="searchTags" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId, jdbcType=BIGINT}
+    and type = #{type, jdbcType=INTEGER}
+    <if test="keyword != null and keyword != ''">
+      and name like concat("%",#{keyword}, "%")
+    </if>
+    <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+      order by ${orderBy} ${orderRule}
+    </if>
+    <if test="offset != null and offset >= 0 and count != null and count >= 1">
+      limit #{offset},#{count}
+    </if>
+  </select>
+
+  <select id="searchTagSize" resultType="java.lang.Integer">
+    select count(*)
+    from <include refid="tableName" />
+    where
+    app_id = #{appId,jdbcType=BIGINT}
+    and type = #{type, jdbcType=INTEGER}
+    <if test="keyword != null and keyword != ''">
+      and name like concat("%",#{keyword}, "%")
+    </if>
+  </select>
+
+  <select id="selectTagByName" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from
+    <include refid="tableName" />
+    where
+    app_id = #{appId, jdbcType=BIGINT}
+    and type = #{type, jdbcType=INTEGER}
+    and name = #{name, jdbcType=BIGINT}
+  </select>
+
+  <select id="search" resultMap="BaseResultMap"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.Tag">
+    select
+    <include refid="Base_Column_List" />
+    from
+    <include refid="tableName" />
+    <where>
+      <if test="id != null">
+        and id = #{id, jdbcType=BIGINT}
+      </if>
+      <if test="name != null and name != ''">
+        and name = #{name, jdbcType=VARCHAR}
+      </if>
+      <if test="appId != null">
+        and app_id = #{appId, jdbcType=VARCHAR}
+      </if>
+      <if test="type != null">
+        and type =#{type, jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectAllTagByAppId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from
+    <include refid="tableName" />
+    where
+    app_id = #{appId, jdbcType=BIGINT}
+  </select>
+</mapper>

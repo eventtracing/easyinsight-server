@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.rbac.RoleMapper">
+
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+    <result column="role_level" jdbcType="INTEGER" property="roleLevel"/>
+    <result column="role_type" jdbcType="INTEGER" property="roleType"/>
+    <result column="type_id" jdbcType="BIGINT" property="typeId"/>
+    <result column="builtIn" jdbcType="BIT" property="builtin"/>
+    <result column="description" jdbcType="VARCHAR" property="description"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, role_name, role_level, role_type, type_id, builtIn, description, create_time,
+    update_time
+  </sql>
+
+  <sql id="table_name">eis_role</sql>
+
+  <select id="select" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role" resultType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="table_name"/>
+    where role_name = #{roleName} and role_level = #{roleLevel} and role_type = #{roleType}
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="table_name"/>
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from
+    <include refid="table_name"/>
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    insert into
+    <include refid="table_name"/>
+    (role_name, role_level, role_type,
+    type_id, builtIn, description,
+    create_time, update_time)
+    values (#{roleName,jdbcType=VARCHAR}, #{roleLevel,jdbcType=INTEGER}, #{roleType,jdbcType=INTEGER},
+    #{typeId,jdbcType=BIGINT}, #{builtin,jdbcType=BIT}, #{description,jdbcType=VARCHAR},
+    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    insert into
+    <include refid="table_name"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleName != null">
+        role_name,
+      </if>
+      <if test="roleLevel != null">
+        role_level,
+      </if>
+      <if test="roleType != null">
+        role_type,
+      </if>
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="builtin != null">
+        builtIn,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roleName != null">
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleLevel != null">
+        #{roleLevel,jdbcType=INTEGER},
+      </if>
+      <if test="roleType != null">
+        #{roleType,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="builtin != null">
+        #{builtin,jdbcType=BIT},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    update
+    <include refid="table_name"/>
+    <set>
+      <if test="roleName != null">
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleLevel != null">
+        role_level = #{roleLevel,jdbcType=INTEGER},
+      </if>
+      <if test="roleType != null">
+        role_type = #{roleType,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        type_id = #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="builtin != null">
+        builtIn = #{builtin,jdbcType=BIT},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    update
+    <include refid="table_name"/>
+    set role_name = #{roleName,jdbcType=VARCHAR},
+    role_level = #{roleLevel,jdbcType=INTEGER},
+    role_type = #{roleType,jdbcType=INTEGER},
+    type_id = #{typeId,jdbcType=BIGINT},
+    builtIn = #{builtin,jdbcType=BIT},
+    description = #{description,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <insert id="insertBatch" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.Role">
+    insert into
+    <include refid="table_name"/>
+    (role_name, role_level, role_type, type_id, builtIn)
+    values
+
+    <foreach collection="defaultRoleList" item="role" separator=",">
+      (
+      #{role.roleName,jdbcType=VARCHAR},
+      #{role.roleLevel,jdbcType=INTEGER},
+      #{role.roleType,jdbcType=INTEGER},
+      #{role.typeId,jdbcType=BIGINT},
+      #{role.builtin,jdbcType=BIT}
+      )
+    </foreach>
+
+  </insert>
+
+  <select id="selectByExample" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM
+    <include refid="table_name"/>
+    <where>
+      <if test="roleType !=null">
+        role_type = #{roleType}
+      </if>
+
+      <if test="typeIdList !=null and typeIdList.size() > 0">
+        AND (
+
+        type_id in
+        <foreach collection="typeIdList" item="typeId" open="(" separator="," close=")">
+          #{typeId}
+        </foreach>
+
+        <if test="containedBuilt">
+          OR builtIn = 1
+        </if>
+
+        )
+      </if>
+      <if test="(typeIdList == null || typeIdList.size() == 0) and containedBuilt">
+        AND builtIn = 1
+      </if>
+
+      <if test="roleLevelList !=null and roleLevelList.size() > 0">
+        AND role_level in
+        <foreach collection="roleLevelList" item="roleLevel" open="(" separator="," close=")">
+          #{roleLevel}
+        </foreach>
+      </if>
+
+      <if test="roleName !=null and roleName !='' ">
+        AND role_name = #{roleName}
+      </if>
+
+    </where>
+
+  </select>
+
+</mapper>

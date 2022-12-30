@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.SpmMapInfoMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.SpmMapInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="spm" jdbcType="VARCHAR" property="spm"/>
+        <result column="spm_name" jdbcType="VARCHAR" property="spmName"/>
+        <result column="spm_old" jdbcType="VARCHAR" property="spmOld"/>
+        <result column="spm_check_status" jdbcType="INTEGER" property="spmCheckStatus"/>
+        <result column="spm_app_ver" jdbcType="VARCHAR" property="spmAppVer"/>
+        <result column="tag" jdbcType="VARCHAR" property="tag"/>
+        <result column="platform" jdbcType="BIGINT" property="spmName"/>
+        <result column="app_id" jdbcType="BIGINT" property="appId"/>
+        <result column="spm_status" jdbcType="INTEGER" property="spmStatus"/>
+        <result column="is_deployed" jdbcType="BOOLEAN" property="isDeployed"/>
+        <result column="event_code" jdbcType="VARCHAR" property="eventCode"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="priority" jdbcType="VARCHAR" property="priority"/>
+        <result column="json" jdbcType="LONGVARCHAR" property="json"/>
+        <result column="elist" jdbcType="LONGVARCHAR" property="elist"/>
+        <result column="plist" jdbcType="LONGVARCHAR" property="plist"/>
+        <result column="story_link" jdbcType="VARCHAR" property="storyLink"/>
+        <result column="task_link" jdbcType="VARCHAR" property="taskLink"/>
+        <result column="data_owner" jdbcType="VARCHAR" property="dataOwner"/>
+        <result column="assigner" jdbcType="VARCHAR" property="assigner"/>
+        <result column="verifier" jdbcType="VARCHAR" property="verifier"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="updater" jdbcType="VARCHAR" property="updater"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Table_Name">
+        `eis_spm_map_info`
+    </sql>
+    <sql id="Base_Column_List">
+        id, spm, spm_name, spm_old, spm_check_status, spm_app_ver, tag, platform, app_id, spm_status,
+        event_code, description, priority, json, elist, plist, story_link, task_link, data_owner,
+        assigner, verifier, creator, updater, create_time, update_time, is_deployed
+    </sql>
+
+    <!--
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmMapInfo"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="spm != null">
+                spm,
+            </if>
+            <if test="spmName != null">
+                spm_name,
+            </if>
+            <if test="spmOld != null">
+                spm_old,
+            </if>
+            <if test="platform != null">
+                platform,
+            </if>
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="spmStatus != null">
+                spm_status,
+            </if>
+            <if test="eventCode != null">
+                event_code,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="priority != null">
+                priority,
+            </if>
+            <if test="json != null">
+                json,
+            </if>
+            <if test="elist != null">
+                elist,
+            </if>
+            <if test="plist != null">
+                plist,
+            </if>
+            <if test="storyLink != null">
+                story_link,
+            </if>
+            <if test="taskLink != null">
+                task_link,
+            </if>
+            <if test="dataOwner != null">
+                data_owner,
+            </if>
+            <if test="assigner != null">
+                assigner,
+            </if>
+            <if test="verifier != null">
+                verifier,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="updater != null">
+                updater,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="spm != null">
+                #{spm,jdbcType=VARCHAR},
+            </if>
+            <if test="spmName != null">
+                #{spmName,jdbcType=VARCHAR},
+            </if>
+            <if test="spmOld != null">
+                #{spmOld,jdbcType=VARCHAR},
+            </if>
+            <if test="platform != null">
+                #{platform,jdbcType=BIGINT},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="spmStatus != null">
+                #{spmStatus,jdbcType=INTEGER},
+            </if>
+            <if test="eventCode != null">
+                #{eventCode,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="priority != null">
+                #{priority,jdbcType=VARCHAR},
+            </if>
+            <if test="json != null">
+                #{json,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="elist != null">
+                #{elist,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="plist != null">
+                #{plist,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="storyLink != null">
+                #{storyLink,jdbcType=VARCHAR},
+            </if>
+            <if test="taskLink != null">
+                #{taskLink,jdbcType=VARCHAR},
+            </if>
+            <if test="dataOwner != null">
+                #{dataOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="assigner != null">
+                #{assigner,jdbcType=VARCHAR},
+            </if>
+            <if test="verifier != null">
+                #{verifier,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="updater != null">
+                #{updater,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    -->
+
+    <!-- 批量插入时，传入的集合为null或者为空集(size=0) 会报错 -->
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into<include refid="Table_Name"/>
+        (<include refid="Base_Column_List"/>)
+        values
+        <foreach collection="spmMapInfoCollection" item="info" separator=",">
+            (#{info.id}, #{info.spm}, #{info.spmName}, #{info.spmOld}, #{info.spmCheckStatus},
+            #{info.spmAppVer}, #{info.tag}, #{info.platform}, #{info.appId},
+            #{info.spmStatus}, #{info.eventCode}, #{info.description}, #{info.priority},
+            #{info.json}, #{info.elist}, #{info.plist}, #{info.storyLink}, #{info.taskLink},
+            #{info.dataOwner}, #{info.assigner}, #{info.verifier}, #{info.creator}, #{info.updater},
+            #{info.createTime,jdbcType=TIMESTAMP}, #{info.updateTime,jdbcType=TIMESTAMP}, #{info.isDeployed})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where id = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmMapInfo">
+        delete from
+        <include refid="Table_Name"/>
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="spm != null">
+                and spm = #{spm,jdbcType=VARCHAR}
+            </if>
+            <if test="spmName != null">
+                and spm_name = #{spmName,jdbcType=VARCHAR}
+            </if>
+            <if test="spmOld != null">
+                and spm_old = #{spmOld,jdbcType=VARCHAR}
+            </if>
+            <if test="spmCheckStatus != null">
+                and spm_check_status = #{spmCheckStatus, jdbcType=INTEGER}
+            </if>
+            <if test="spmAppVer != null">
+                and spm_app_ver = #{spmAppVer, jdbcType=VARCHAR}
+            </if>
+            <if test="tag != null">
+                and tag = #{tag, jdbcType=VARCHAR}
+            </if>
+            <if test="platform != null">
+                and platform = #{platform,jdbcType=BIGINT}
+            </if>
+            <if test="appId != null">
+                and app_id = #{appId,jdbcType=BIGINT}
+            </if>
+            <if test="spmStatus != null">
+                and spm_status = #{spmStatus,jdbcType=INTEGER}
+            </if>
+            <if test="isDeployed != null">
+                and is_deployed = #{isDeployed, jdbcType=BOOLEAN}
+            </if>
+            <if test="eventCode != null">
+                and event_code = #{eventCode,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="priority != null">
+                and priority = #{priority,jdbcType=VARCHAR}
+            </if>
+            <if test="json != null">
+                and json = #{json,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="elist != null">
+                and elist = #{elist,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="plist != null">
+                and plist = #{plist,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="storyLink != null">
+                and story_link = #{storyLink,jdbcType=VARCHAR}
+            </if>
+            <if test="taskLink != null">
+                and task_link = #{taskLink,jdbcType=VARCHAR}
+            </if>
+            <if test="dataOwner != null">
+                and data_owner = #{dataOwner,jdbcType=VARCHAR}
+            </if>
+            <if test="assigner != null">
+                and assigner = #{assigner,jdbcType=VARCHAR}
+            </if>
+            <if test="verifier != null">
+                and verifier = #{verifier,jdbcType=VARCHAR}
+            </if>
+            <if test="creator != null">
+                and creator = #{creator,jdbcType=VARCHAR}
+            </if>
+            <if test="updater != null">
+                and updater = #{updater,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+
+</mapper>

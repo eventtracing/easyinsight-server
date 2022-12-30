@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.rbac.RoleAuthMapper">
+
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+    <result column="auth_id" jdbcType="BIGINT" property="authId"/>
+    <result column="flag" jdbcType="INTEGER" property="flag"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, role_id, auth_id, flag, create_time, update_time
+  </sql>
+
+  <sql id="table_name">eis_role_auth</sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="table_name"/>
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from
+    <include refid="table_name"/>
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth">
+    insert into
+    <include refid="table_name"/>
+    (role_id, auth_id, flag,
+    create_time, update_time)
+    values (#{roleId,jdbcType=BIGINT}, #{authId,jdbcType=BIGINT}, #{flag,jdbcType=INTEGER},
+    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth">
+    insert into
+    <include refid="table_name"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="authId != null">
+        auth_id,
+      </if>
+      <if test="flag != null">
+        flag,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="authId != null">
+        #{authId,jdbcType=BIGINT},
+      </if>
+      <if test="flag != null">
+        #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth">
+    update
+    <include refid="table_name"/>
+    <set>
+      <if test="roleId != null">
+        role_id = #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="authId != null">
+        auth_id = #{authId,jdbcType=BIGINT},
+      </if>
+      <if test="flag != null">
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth">
+    update
+    <include refid="table_name"/>
+    set role_id = #{roleId,jdbcType=BIGINT},
+    auth_id = #{authId,jdbcType=BIGINT},
+    flag = #{flag,jdbcType=INTEGER},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByRoleId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="table_name"/>
+    where role_id = #{roleId}
+  </select>
+
+  <delete id="deleteByRoleIdAndAuthId">
+    DELETE FROM
+    <include refid="table_name"/>
+    where
+    role_id = #{roleId}
+
+    <if test="authIdList != null and authIdList.size() > 0">
+      AND auth_id IN
+      <foreach collection="authIdList" item="authId" open="(" separator="," close=")">
+        #{authId}
+      </foreach>
+    </if>
+
+  </delete>
+
+  <insert id="insertBatch" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth"
+          useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into
+    <include refid="table_name"/>
+    (role_id, auth_id)
+    values
+    <foreach collection="roleAuthList" item="roleAuth" separator=",">
+      (#{roleAuth.roleId}, #{roleAuth.authId})
+    </foreach>
+  </insert>
+
+</mapper>

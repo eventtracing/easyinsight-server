@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.TestHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="userId" jdbcType="BIGINT" property="userId" />
+    <result column="taskId" jdbcType="BIGINT" property="taskId" />
+    <result column="appId" jdbcType="BIGINT" property="appId" />
+    <result column="userName" jdbcType="VARCHAR" property="userName" />
+    <result column="reqName" jdbcType="VARCHAR" property="reqName" />
+    <result column="baseVersion" jdbcType="VARCHAR" property="baseVersion" />
+    <result column="terminal" jdbcType="VARCHAR" property="terminal" />
+    <result column="appVersion" jdbcType="VARCHAR" property="appVersion" />
+    <result column="failedNum" jdbcType="BIGINT" property="failedNum" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="testResult" jdbcType="INTEGER" property="testResult" />
+    <result column="extInfo" jdbcType="VARCHAR" property="extInfo" />
+    <result column="saveTime" jdbcType="BIGINT" property="saveTime" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_realtime_test_record`
+  </sql>
+  <sql id="Base_Column_List">
+    id, userId, taskId, appId, userName, reqName, baseVersion, terminal, appVersion, failedNum, `status`,
+    testResult, extInfo, saveTime, createTime, updateTime
+  </sql>
+
+  <sql id="searchCondition">
+    <if test="userId != null">
+      userId = #{userId, jdbcType=BIGINT} and
+    </if>
+    <if test="taskId != null">
+      taskId = #{taskId, jdbcType=BIGINT} and
+    </if>
+    <if test="testResult != null">
+      testResult = #{testResult, jdbcType=INTEGER} and
+    </if>
+    <if test="userId != null">
+      userId = #{userId, jdbcType=BIGINT} and
+    </if>
+    <if test="reqName != null and reqName != ''">
+      reqName = #{reqName} and
+    </if>
+    <if test="baseVer != null and baseVer != ''">
+      baseVersion = #{baseVer} and
+    </if>
+    <if test="terminal != null and terminal != ''">
+      terminal = #{terminal} and
+    </if>
+    <if test="appId != null">
+      appId = #{appId} and
+    </if>
+    <if test="startTime != null and endTime != null">
+      saveTime between ${startTime} and ${endTime}
+    </if>
+  </sql>
+
+  <select id="selectSizeFromRecords" resultType="java.lang.Integer">
+    select count(*)
+    from
+    <include refid="tableName"/>
+    <where>
+      <include refid="searchCondition"/>
+    </where>
+  </select>
+
+  <select id="selectHistoryRecords" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      <include refid="searchCondition"/>
+    </where>
+    <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+      order by ${orderBy} ${orderRule}
+    </if>
+    <if test="offset != null and offset >= 0 and count != null and count >= 1">
+      limit #{offset},#{count}
+    </if>
+  </select>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from eis_realtime_test_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByTaskId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from eis_realtime_test_record
+    where taskId = #{taskId,jdbcType=BIGINT}
+    order by saveTime desc
+  </select>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord" useGeneratedKeys="true">
+    insert into eis_realtime_test_record (userId, taskId, appId, userName, reqName,
+    baseVersion, terminal, appVersion,
+    failedNum, `status`, testResult, extInfo,
+    saveTime, createTime, updateTime
+    )
+    values (#{userId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{appId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{reqName,jdbcType=VARCHAR},
+    #{baseVersion,jdbcType=VARCHAR}, #{terminal,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR},
+    #{failedNum,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, #{testResult,jdbcType=INTEGER}, #{extInfo,jdbcType=VARCHAR},
+    #{saveTime,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <update id="updateSelective" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord">
+    update eis_realtime_test_record
+    <set>
+      <if test="userId != null">
+        userId = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="taskId != null">
+        taskId = #{taskId,jdbcType=BIGINT},
+      </if>
+      <if test="appId != null">
+        appId = #{appId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        userName = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="reqName != null">
+        reqName = #{reqName,jdbcType=VARCHAR},
+      </if>
+      <if test="baseVersion != null">
+        baseVersion = #{baseVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="terminal != null">
+        terminal = #{terminal,jdbcType=VARCHAR},
+      </if>
+      <if test="appVersion != null">
+        appVersion = #{appVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="failedNum != null">
+        failedNum = #{failedNum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="testResult != null">
+        `testResult` = #{testResult,jdbcType=INTEGER},
+      </if>
+      <if test="extInfo != null">
+        extInfo = #{extInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="saveTime != null">
+        saveTime = #{saveTime,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord">
+    update eis_realtime_test_record
+    set userId = #{userId,jdbcType=BIGINT},
+    appId = #{appId,jdbcType=BIGINT},
+    userName = #{userName,jdbcType=VARCHAR},
+    reqName = #{reqName,jdbcType=VARCHAR},
+    baseVersion = #{baseVersion,jdbcType=VARCHAR},
+    terminal = #{terminal,jdbcType=VARCHAR},
+    appVersion = #{appVersion,jdbcType=VARCHAR},
+    failedNum = #{failedNum,jdbcType=BIGINT},
+    `status` = #{status,jdbcType=INTEGER},
+    extInfo = #{extInfo,jdbcType=VARCHAR},
+    saveTime = #{saveTime,jdbcType=BIGINT},
+    createTime = #{createTime,jdbcType=TIMESTAMP},
+    updateTime = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

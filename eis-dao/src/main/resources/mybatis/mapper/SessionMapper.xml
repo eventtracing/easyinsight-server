@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.SessionMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.Session">
+  
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="domain_id" jdbcType="BIGINT" property="domainId" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id = "tableName">
+    `eis_session`
+  </sql>
+  <sql id="Base_Column_List">
+    id, token, domain_id, user_id, expire_time, create_time, update_time
+  </sql>
+
+  <insert id="add" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Session" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into <include refid="tableName" />
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test = "id != null">
+        id,
+      </if>
+      <if test="domainId != null">
+        domain_id,
+      </if>
+      <if test = "token != null">
+        token,
+      </if>
+      <if test = "userId != null">
+        user_id,
+      </if>
+      <if test = "expireTime != null">
+        expire_time,
+      </if>
+      <if test = "createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test = "id != null">
+        #{id,jdbcType=INTEGE},
+      </if>
+      <if test="domainId != null">
+        #{domainId,jdbcType=BIGINT},
+      </if>
+      <if test = "token != null">
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test = "userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test = "expireTime != null">
+        #{expireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test = "createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="getByToken" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where domain_id = #{domainId,jdbcType=BIGINT}
+    and token = #{token, jdbcType=VARCHAR}
+  </select>
+
+  <select id="getLatestByUserId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where domain_id = #{domainId,jdbcType=BIGINT}
+    and user_id = #{userId, jdbcType=BIGINT}
+    ORDER BY expire_time DESC LIMIT 1
+  </select>
+
+  <delete id="removeByToken" >
+    delete from <include refid="tableName" />
+    where domain_id = #{domainId,jdbcType=BIGINT}
+    and token = #{token, jdbcType=VARCHAR}
+  </delete>
+
+  <delete id="removeByUserId">
+    delete from <include refid="tableName" />
+    where domain_id = #{domainId,jdbcType=BIGINT}
+    and user_id = #{userId, jdbcType=BIGINT}
+  </delete>
+</mapper>

@@ -1,0 +1,41 @@
+env: processor
+server:
+  port: 8095
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/easy_insight_demo?autoReconnect=true&failOverReadOnly=false&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      maximumPoolSize: 20
+      minimumIdle: 2
+      idleTimeout: 600000
+      connectionTimeout: 30000
+      maxLifetime: 1800000
+      connection-test-query: "select 1"
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 25MB
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*Mapper.xml,mapper/*Mapper.xml
+
+eis:
+  web-socket:
+    allowed-origins:
+      - "*"
+    max-session-idle-timeout-in-second: 28800
+    # 40960=8192*5
+    max-text-message-buffer-size: 5000000
+    max-binary-message-buffer-size: 5000000
+    # com.netease.hz.bdms.processor.websocket.enums.WebSocketSessionDiscardingStrategy
+    web-socket-session-discarding-strategy: OLDEST
+
+#es客户端基本配置
+elasticsearch-client.hosts: http://10.189.156.103:9201
+elasticsearch-client.username: elastic
+elasticsearch-client.password: 123321

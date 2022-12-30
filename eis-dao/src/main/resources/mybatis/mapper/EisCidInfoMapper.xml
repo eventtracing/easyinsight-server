@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisCidInfoMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.CidInfo">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="appId" jdbcType="BIGINT" property="appId"/>
+    <result column="target" jdbcType="VARCHAR" property="target"/>
+    <result column="bindType" jdbcType="VARCHAR" property="bindType"/>
+    <result column="cid" jdbcType="VARCHAR" property="cid"/>
+    <result column="cidName" jdbcType="VARCHAR" property="cidName"/>
+    <result column="ext" jdbcType="VARCHAR" property="ext"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_cid_info`
+  </sql>
+  <sql id="Base_Column_List">
+    id, appId, target, bindType, cid, cidName, ext
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.CidInfo"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      appId, target, bindType, cid, cidName, ext
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+        #{appId,jdbcType=BIGINT}, #{target,jdbcType=VARCHAR},#{bindType,jdbcType=VARCHAR},#{cid,jdbcType=VARCHAR},#{cidName,jdbcType=VARCHAR},#{ext,jdbcType=VARCHAR}
+    </trim>
+  </insert>
+
+  <select id="listAll" resultType="com.netease.hz.bdms.easyinsight.dao.model.CidInfo">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where bindType = #{bindType} and target = #{target} and appId = #{appId}
+  </select>
+
+  <select id="get" resultType="com.netease.hz.bdms.easyinsight.dao.model.CidInfo">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where bindType = #{bindType} and target = #{target} and appId = #{appId} and cid = #{cid}
+  </select>
+
+  <delete id="deleteByIds">
+    delete from
+    <include refid="tableName"/>
+    where id in
+    <foreach collection="ids" item="itemId" open="(" close=")" separator=",">
+      #{itemId}
+    </foreach>
+  </delete>
+
+  <insert id="batchInsert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.CidInfo"
+          useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    (appId, target, bindType, cid, cidName, ext)
+    values
+    <foreach collection="cidInfos" item="item" separator=",">
+      (#{item.appId,jdbcType=BIGINT}, #{item.target,jdbcType=VARCHAR},#{item.bindType,jdbcType=VARCHAR},#{item.cid,jdbcType=VARCHAR},#{item.cidName,jdbcType=VARCHAR},#{item.ext,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+</mapper>

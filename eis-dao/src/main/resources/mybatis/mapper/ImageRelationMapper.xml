@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ImageRelationMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ImageRelation">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="entity_type" jdbcType="BIGINT" property="entityType" />
+    <result column="entity_id" jdbcType="BIGINT" property="entityId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+    <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+    <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_image_relation`
+  </sql>
+  <sql id="Base_Column_List">
+    id, url, entity_type, entity_id, create_email, create_name, update_email,
+    update_name, create_time, update_time
+  </sql>
+
+  <insert id="batchInsert">
+    insert into <include refid="tableName" />
+    (url,entity_type,entity_id,create_email, create_name, update_email,
+    update_name)
+    values
+    <foreach collection="imageRelations" item="imageRelation" separator=",">
+      (#{imageRelation.url}, #{imageRelation.entityType}, #{imageRelation.entityId},
+      #{imageRelation.createEmail},#{imageRelation.createName},
+      #{imageRelation.updateEmail},#{imageRelation.updateName})
+    </foreach>
+  </insert>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ImageRelation"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="entityType != null">
+        entity_type,
+      </if>
+      <if test="entityId != null">
+        entity_id,
+      </if>
+      <if test="createEmail != null">
+        create_email,
+      </if>
+      <if test="createName != null">
+        create_name,
+      </if>
+      <if test="updateEmail != null">
+        update_email,
+      </if>
+      <if test="updateName != null">
+        update_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="entityType != null">
+        #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="entityId != null">
+        #{entityId,jdbcType=BIGINT},
+      </if>
+      <if test="createEmail != null">
+        #{createEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ImageRelation">
+    update <include refid="tableName"/>
+    <set>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="entityType != null">
+        entity_type = #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="entityId != null">
+        entity_id = #{entityId,jdbcType=BIGINT},
+      </if>
+      <if test="updateEmail != null">
+        update_email = #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        update_name = #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+<!--  <select id="selectByName" resultMap="BaseResultMap">-->
+<!--    select <include refid="Base_Column_List" />-->
+<!--    from <include refid="tableName" />-->
+<!--    where name = #{name,jdbcType=VARCHAR}-->
+<!--  </select>-->
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+  <select id="selectByEntityId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where entity_id in
+    <foreach collection="entityIds" item="entityId" open="(" close=")" separator=",">
+      #{entityId}
+    </foreach>
+  </select>
+
+  <delete id="deleteByEntityId">
+    delete from <include refid="tableName" />
+    where entity_id in
+    <foreach collection="entityIds" item="entityId" open="(" close=")" separator=",">
+      #{entityId}
+    </foreach>
+    and entity_type = #{entityType}
+  </delete>
+</mapper>

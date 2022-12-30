@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.CommonKVMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.CommonKV">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="code" jdbcType="VARCHAR" property="code"/>
+    <result column="k" jdbcType="VARCHAR" property="k"/>
+    <result column="v" jdbcType="BIGINT" property="v" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_common_kv`
+  </sql>
+  <sql id="Base_Column_List">
+    id, code, k, v
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.CommonKV"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        code,k,v,
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+        #{code,jdbcType=VARCHAR},#{k,jdbcType=VARCHAR},#{v,jdbcType=BIGINT}
+    </trim>
+  </insert>
+
+  <update id="updateValue" parameterType="com.netease.hz.bdms.easyinsight.dao.model.CommonKV">
+    update <include refid="tableName"/>
+    <set>
+        v = #{v,jdbcType=VARCHAR},
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="get" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where code = #{code,jdbcType=BIGINT} and k = #{k,jdbcType=VARCHAR}
+  </select>
+
+  <select id="gets" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where code = #{code,jdbcType=BIGINT} and k in
+    <foreach collection="ks" item="k" open="(" close=")" separator=",">
+      #{k, jdbcType=VARCHAR}
+    </foreach>
+  </select>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+</mapper>

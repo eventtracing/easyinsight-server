@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.SpmMapVersionMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.SpmMapVersion">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="spm_id" jdbcType="BIGINT" property="spmId" />
+        <result column="version" jdbcType="VARCHAR" property="version"/>
+        <result column="terminal_id" jdbcType="BIGINT" property="terminalId"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `eis_spm_map_item`
+    </sql>
+    <sql id="Base_Column_List">
+        id, spm_id, version, terminal_id,
+        create_email, create_name, update_email, update_name, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmMapVersion"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into <include refid="TableName"/>
+        (<include refid="Base_Column_List"/>)
+        values
+        <foreach collection="collection" item="spmMapVersion" separator=",">
+            (#{spmMapVersion.id,jdbcType=BIGINT},
+            #{spmMapVersion.spmId,jdbcType=BIGINT},
+            #{spmMapVersion.version,jdbcType=VARCHAR},
+            #{spmMapVersion.terminalId,jdbcType=BIGINT},
+            #{spmMapVersion.createEmail, jdbcType=VARCHAR},
+            #{spmMapVersion.createName, jdbcType=VARCHAR},
+            #{spmMapVersion.updateEmail, jdbcType=VARCHAR},
+            #{spmMapVersion.updateName, jdbcType=VARCHAR},
+            #{spmMapVersion.createTime, jdbcType=TIMESTAMP},
+            #{spmMapVersion.updateTime, jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <select id="select" resultMap="BaseResultMap"
+            parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        <where>
+            <if test="id != null">
+                and id = #{id, jdbcType=BIGINT},
+            </if>
+            <if test="spmId != null">
+                and spm_id = #{spm_id, jdbcType=BIGINT},
+            </if>
+            <if test="version != null">
+                and version = #{version, jdbcType=VARCHAR},
+            </if>
+            <if test="terminalId != null">
+                and terminal_id = #{terminalId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBySpmIds" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from <include refid="TableName"/>
+        where terminal_id = #{terminalId, jdbcType=BIGINT}
+        and spm_id in
+        <foreach collection="spmIds" open="(" close=")" item="spmId" separator=",">
+            #{spmId, jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <delete id="deleteByIds">
+        delete from
+        <include refid="TableName"/>
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id, jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+
+</mapper>

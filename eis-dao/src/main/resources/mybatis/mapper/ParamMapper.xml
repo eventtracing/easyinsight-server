@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ParamMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.Param">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="code" jdbcType="VARCHAR" property="code"/>
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="param_type" jdbcType="BIGINT" property="paramType" />
+    <result column="value_type" jdbcType="BIGINT" property="valueType" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="description" jdbcType="VARCHAR" property="description"/>
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+    <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+    <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <resultMap id="createUserSimpleDtoMap" type="com.netease.hz.bdms.easyinsight.common.dto.common.UserSimpleDTO">
+    <result column="create_email" jdbcType="VARCHAR" property="email" />
+    <result column="create_name" jdbcType="VARCHAR" property="userName" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_param`
+  </sql>
+  <sql id="Base_Column_List">
+    id, code, name, param_type, value_type, app_id, description, create_email, create_name, update_email,
+    update_name, create_time, update_time
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Param"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test = "paramType != null">
+        param_type,
+      </if>
+      <if test = "valueType != null">
+        value_type,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createEmail != null">
+        create_email,
+      </if>
+      <if test="createName != null">
+        create_name,
+      </if>
+      <if test="updateEmail != null">
+        update_email,
+      </if>
+      <if test="updateName != null">
+        update_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test = "paramType != null">
+        #{paramType, jdbcType=INTEGER},
+      </if>
+      <if test = "valueType != null">
+        #{valueType, jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=BIGINT},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createEmail != null">
+        #{createEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Param">
+    update <include refid="tableName"/>
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test = "paramType != null">
+        param_type = #{paramType, jdbcType=INTEGER},
+      </if>
+      <if test = "valueType != null">
+        value_type = #{valueType, jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=BIGINT},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        update_email = #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        update_name = #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectByCode" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+    and code = #{code,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByAppId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+  </select>
+
+
+  <select id="selectSizeByCode" resultType = "java.lang.Integer">
+    select count(*)
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+    and code = #{code,jdbcType=VARCHAR}
+  </select>
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </select>
+
+  <select id="listByAppIdAndCodes" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId} and code in
+    <foreach collection="codes" item="code" open="(" close=")" separator=",">
+      #{code}
+    </foreach>
+    <if test="paramType != null">
+      and param_type = #{paramType}
+    </if>
+  </select>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByAppId">
+    delete from
+    <include refid="tableName"/>
+    where app_id = #{appId, jdbcType=BIGINT}
+  </delete>
+
+  <sql id="searchParamCondition">
+    app_id = #{appId, jdbcType=BIGINT}
+    <if test="ids != null and ids.size > 0">
+      and id in
+      <foreach collection="ids" item="id" open="(" close=")" separator=",">
+        #{id}
+      </foreach>
+    </if>
+    <if test="paramTypes != null and paramTypes.size > 0">
+      and param_type in
+      <foreach collection="paramTypes" item="paramType" open="(" close=")" separator=",">
+        #{paramType,jdbcType=INTEGER}
+      </foreach>
+    </if>
+    <if test =  "createEmails != null and createEmails.size > 0">
+      and create_email in
+      <foreach collection="createEmails" item="createEmail" open="(" close=")" separator=",">
+        #{createEmail,jdbcType=VARCHAR}
+      </foreach>
+    </if>
+    <if test="valueTypes != null and valueTypes.size > 0">
+      and value_type in
+      <foreach collection="valueTypes" item="valueType" open="(" close=")" separator=",">
+        #{valueType,jdbcType=INTEGER}
+      </foreach>
+    </if>
+    <if test="code != null and code != ''">
+      and code = #{code,jdbcType=VARCHAR}
+    </if>
+  </sql>
+
+  <select id="searchParamSize" resultType="java.lang.Integer">
+    select count(*)
+    from <include refid="tableName" />
+    <where>
+      <include refid="searchParamCondition" />
+      <if test = "search != null and search != ''">
+        and (code like concat("%", #{search}, "%")
+        or name like concat("%", #{search}, "%"))
+      </if>
+    </where>
+  </select>
+
+  <select id="searchParamIdsByName" resultType="java.lang.Long">
+    select id
+    from <include refid="tableName" />
+    <where>
+      <include refid="searchParamCondition" />
+      <if test = "search != null and search != ''">
+        and name like concat("%", #{search}, "%")
+      </if>
+    </where>
+  </select>
+
+
+  <select id="searchParams" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    <where>
+      <include refid="searchParamCondition" />
+      <if test = "search != null and search != ''">
+        and (code like concat("%", #{search}, "%")
+        or name like concat("%", #{search}, "%"))
+      </if>
+    </where>
+    <if test = "orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+      order by ${orderBy} ${orderRule}
+    </if>
+    <if test="offset != null and offset >= 0 and count != null and count > 0">
+      limit #{offset}, #{count}
+    </if>
+  </select>
+
+  <select id="getCreators" resultMap="createUserSimpleDtoMap">
+    select distinct create_email, create_name
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT} and param_type = #{paramType, jdbcType=INTEGER}
+  </select>
+
+  <update id="updateCode" >
+    update <include refid="tableName" />
+    <set>
+      <if test="newCode != null">
+        code = #{newCode,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where app_id = #{appId,jdbcType=BIGINT} and param_type = #{paramType, jdbcType=INTEGER}
+    and code = #{oldCode,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisObjTerminalTrackerMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisObjTerminalTracker">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="obj_history_id" jdbcType="BIGINT" property="objHistoryId" />
+    <result column="req_pool_id" jdbcType="BIGINT" property="reqPoolId" />
+    <result column="terminal_id" jdbcType="BIGINT" property="terminalId" />
+    <result column="terminal_release_id" jdbcType="BIGINT" property="terminalReleaseId" />
+    <result column="pub_param_package_id" jdbcType="BIGINT" property="pubParamPackageId" />
+    <result column="pre_tracker_id" jdbcType="BIGINT" property="preTrackerId" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="BASE_COLUMN_LIST" >
+    id, obj_id,obj_history_id,req_pool_id,terminal_id,terminal_release_id,
+    pub_param_package_id,pre_tracker_id,app_id,
+    create_email,create_name,update_email,update_name,create_time,update_time
+  </sql>
+
+  <select id="selectByObjIdAndTerminal" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST"/>
+    from eis_obj_terminal_tracker
+    where
+    obj_id = #{objId, jdbcType=BIGINT}
+    and terminal_id = #{terminalId,jdbcType=BIGINT}
+    <if test="appId != null">
+      and app_id = #{appId,jdbcType=BIGINT}
+    </if>
+    order by create_time desc
+  </select>
+
+  <select id="selectBatchByIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_obj_terminal_tracker
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectBatchByChangeHistoryIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_obj_terminal_tracker
+    <where>
+      <if test="changeHistoryIds != null and changeHistoryIds.size() > 0">
+        obj_history_id in
+        <foreach collection="changeHistoryIds" index="index" item="changeHistoryId" open="(" separator="," close=")">
+          #{changeHistoryId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_obj_terminal_tracker
+    (<include refid="BASE_COLUMN_LIST"/>)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.id}, #{entity.objId},#{entity.objHistoryId},#{entity.reqPoolId},#{entity.terminalId},
+      #{entity.terminalReleaseId},#{entity.pubParamPackageId},#{entity.preTrackerId},#{entity.appId},
+      #{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},
+      #{entity.createTime},#{entity.updateTime})
+    </foreach>
+  </insert>
+
+  <update id="updateBatch">
+    update eis_obj_terminal_tracker
+    <set>
+      <trim prefix=",terminal_release_id =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.terminalReleaseId != null and item.terminalReleaseId != ''">
+            when id=#{item.id} then #{item.terminalReleaseId}
+          </if>
+        </foreach>
+      </trim>
+    </set>
+    where id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id}
+    </foreach>
+  </update>
+
+  <delete id="deleteByIds" >
+    delete from eis_obj_terminal_tracker
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisAllTrackerReleaseMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisAllTrackerRelease">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="terminal_id" jdbcType="BIGINT" property="terminalId" />
+    <result column="terminal_release_id" jdbcType="BIGINT" property="terminalReleaseId" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="tracker_id" jdbcType="BIGINT" property="trackerId" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="TableName">
+    `eis_all_tracker_release`
+  </sql>
+
+  <sql id="Base_Column_List" >
+    id, terminal_id,terminal_release_id,obj_id,tracker_id,app_id,create_email,create_name,
+    update_email,update_name,create_time,update_time
+  </sql>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_all_tracker_release
+    (<include refid="Base_Column_List"/>)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.id},#{entity.terminalId},#{entity.terminalReleaseId},#{entity.objId},#{entity.trackerId},#{entity.appId},
+      #{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},
+      #{entity.createTime},#{entity.updateTime})
+    </foreach>
+  </insert>
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="TableName"/>
+    where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </select>
+
+  <select id="selectByReleaseIdAndObjIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="TableName"/>
+    where terminal_release_id = #{terminalReleaseId} and obj_id in
+    <foreach collection="objIds" item="objId" open="(" close=")" separator=",">
+      #{objId, jdbcType=BIGINT}
+    </foreach>
+  </select>
+
+  <select id="selectByReleaseIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="TableName"/>
+    where terminal_release_id in
+    <foreach collection="releaseIds" item="releaseId" open="(" close=")" separator=",">
+      #{releaseId, jdbcType=BIGINT}
+    </foreach>
+  </select>
+</mapper>

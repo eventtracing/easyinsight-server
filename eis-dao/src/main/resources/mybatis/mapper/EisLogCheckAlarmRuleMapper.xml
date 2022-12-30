@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisLogCheckAlarmRuleMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.logcheck.EisLogCheckAlarmRule">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="appId" jdbcType="BIGINT" property="appId"/>
+        <result column="monitorItemId" jdbcType="BIGINT" property="monitorItemId"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_logcheck_alarm_rule`
+    </sql>
+    <sql id="BASE_COLUMN_LIST">
+        id,appId,monitorItemId,content,creator,createTime,updateTime
+    </sql>
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.logcheck.EisLogCheckAlarmRule"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="appId != null">
+                appId,
+            </if>
+            <if test="monitorItemId != null">
+                monitorItemId,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createTime != null">
+                createTime,
+            </if>
+            <if test="updateTime != null">
+                updateTime,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="monitorItemId != null">
+                #{monitorItemId,jdbcType=BIGINT},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="listByOffset" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST"/>
+        from eis_logcheck_alarm_rule
+        <where>
+            id > #{offsetId}
+        </where>
+        order by id asc limit #{limit}
+    </select>
+
+    <update id="updateContentById">
+        update eis_logcheck_alarm_rule
+        <set>
+            content=#{content}
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <select id="getByMonitorId" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST"/>
+        from eis_logcheck_alarm_rule
+        <where>
+            monitorItemId = #{monitorItemId}
+        </where>
+        order by createTime desc limit 1
+    </select>
+
+    <delete id="deleteById">
+        delete from eis_logcheck_alarm_rule
+        where id =
+            #{id, jdbcType=BIGINT}
+    </delete>
+
+</mapper>

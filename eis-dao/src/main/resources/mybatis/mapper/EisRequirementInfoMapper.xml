@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisRequirementInfoMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisRequirementInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="req_issue_key" jdbcType="VARCHAR" property="reqIssueKey" />
+    <result column="req_name" jdbcType="VARCHAR" property="reqName" />
+    <result column="source" jdbcType="INTEGER" property="source" />
+    <result column="priority" jdbcType="VARCHAR" property="priority" />
+    <result column="req_pool_id" jdbcType="BIGINT" property="reqPoolId" />
+    <result column="business_area" jdbcType="VARCHAR" property="businessArea" />
+    <result column="views" jdbcType="VARCHAR" property="views" />
+    <result column="team" jdbcType="VARCHAR" property="team" />
+    <result column="om_state" jdbcType="INTEGER" property="omState" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="owner_email" jdbcType="VARCHAR" property="ownerEmail" />
+    <result column="owner_name" jdbcType="VARCHAR" property="ownerName" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="BASE_COLUMN_LIST" >
+    id, req_issue_key,req_name,source,priority,req_pool_id,business_area,views,team,om_state,description,app_id,owner_email,owner_name,
+    create_email,create_name,update_email,update_name,create_time,update_time
+  </sql>
+
+  <select id="selectBatchByIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_requirement_info
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+<!--  <select id="queryForPage" resultMap="BaseResultMap">-->
+<!--    select <include refid="BASE_COLUMN_LIST" /> from eis_requirement_info-->
+<!--    <where>-->
+<!--        app_id = #{appId}-->
+<!--      <if test="search != null and search != ''">-->
+<!--        and (req_issue_key like "%"#{search}"%" or req_issue_key like "%"#{search}"%")-->
+<!--      </if>-->
+<!--      <if test="omState != null and omState != ''">-->
+<!--        and om_state = #{omState}-->
+<!--      </if>-->
+<!--      <if test="creatEmail !">-->
+<!--        -->
+<!--      </if>-->
+<!--    </where>-->
+
+<!--  </select>-->
+
+<!--  <sql id="tableName">-->
+<!--    `eis_requirement_info`-->
+<!--  </sql>-->
+<!--  <sql id="Base_Column_List">-->
+<!--    id, req_issue_key, req_name, from, priority, req_pool_id,-->
+<!--    business_area, views, team, omState, desc, appId,-->
+<!--    owner_email, owner_name, create_email, create_name,-->
+<!--    update_email, update_name, create_time, update_time-->
+<!--  </sql>-->
+
+<!--  <select id="selectByIds" resultMap="BaseResultMap">-->
+<!--    select-->
+<!--    <include refid="Base_Column_List"/>-->
+<!--    from-->
+<!--    <include refid="tableName"/>-->
+<!--    where id in-->
+<!--    <foreach collection="ids" item="id" open="(" separator="," close=")">-->
+<!--      #{id, jdbcType=BIGINT}-->
+<!--    </foreach>-->
+<!--  </select>-->
+
+  <delete id="deleteByIds" >
+    delete from eis_requirement_info
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </delete>
+</mapper>

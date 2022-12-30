@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisAuditResourceMetaMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisAuditResource">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="resource" jdbcType="VARCHAR" property="resource" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_audit_resource_meta`
+  </sql>
+  <sql id="Base_Column_List">
+    id, resource, createTime, updateTime
+  </sql>
+
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from eis_audit_resource_meta
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectBatchByIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from eis_audit_resource_meta
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+    order by updateTime desc
+  </select>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisAuditResource" useGeneratedKeys="true">
+    insert into eis_audit_resource_meta (resource, createTime, updateTime)
+    values (#{resource,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <insert id="insertWithId" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisAuditResource">
+    insert into eis_audit_resource_meta (id, resource, createTime, updateTime)
+    values (#{id,jdbcType=BIGINT}, #{resource,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+</mapper>

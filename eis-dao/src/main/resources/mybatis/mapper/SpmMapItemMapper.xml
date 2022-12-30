@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.SpmMapItemMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.SpmMapItem">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="spm_id" jdbcType="BIGINT" property="spmId" />
+        <result column="spm_old" jdbcType="BIGINT" property="spmOld"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_spm_map_item`
+    </sql>
+    <sql id="Base_Column_List">
+        id, spm_id, spm_old,
+        create_email, create_name, update_email, update_name, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmMapItem"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into <include refid="tableName"/>
+        (<include refid="Base_Column_List"/>)
+        values
+        <foreach collection="spmMapItemCollection" item="spmMapItem" separator=",">
+            (#{spmMapItem.id,jdbcType=BIGINT},
+            #{spmMapItem.spmId,jdbcType=BIGINT},
+            #{spmMapItem.spmOld,jdbcType=VARCHAR},
+            #{spmMapItem.createEmail, jdbcType=VARCHAR},
+            #{spmMapItem.createName, jdbcType=VARCHAR},
+            #{spmMapItem.updateEmail, jdbcType=VARCHAR},
+            #{spmMapItem.updateName, jdbcType=VARCHAR},
+            #{spmMapItem.createTime, jdbcType=TIMESTAMP},
+            #{spmMapItem.updateTime, jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectBySpmIds" parameterType="list" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from <include refid="tableName"/>
+        where spm_id in
+        <foreach collection="spmIds" open="(" close=")" item="spmId" separator=",">
+            #{spmId, jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <delete id="deleteBySpmId" >
+        delete from <include refid="tableName"/>
+        where spm_id in
+        <foreach collection="spmIds"  open="(" close=")" item="spmId" separator=",">
+            #{spmId, jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+
+</mapper>

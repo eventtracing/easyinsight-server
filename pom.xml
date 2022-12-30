@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.7.RELEASE</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.netease.hz.bdms</groupId>
+    <artifactId>easy-insight</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+
+    <modules>
+        <module>eis-adapter</module>
+        <module>eis-common</module>
+        <module>eis-dao</module>
+        <module>eis-service-core</module>
+        <module>eis-web-demo</module>
+        <module>eis-web-core</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <easyinsight.version>1.4.1</easyinsight.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <tomcat.version>9.0.31</tomcat.version>
+        <mysql.version>5.1.48</mysql.version>
+        <mybatis.starter.version>2.1.2</mybatis.starter.version>
+        <mybatis.generator.version>1.3.7</mybatis.generator.version>
+        <nos.version>1.2.6</nos.version>
+        <commons-io.version>2.6</commons-io.version>
+        <alibaba.fastJson.version>1.2.83</alibaba.fastJson.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <jackson.version>2.10.2</jackson.version>
+        <!-- 注意：guava使用16.0版本不能调整 -->
+        <!-- guava后续的版本不兼容，无法适应hbase版本 -->
+        <guava.version>16.0</guava.version>
+        <easyexcel.version>2.2.6</easyexcel.version>
+        <common.csv.version>1.8</common.csv.version>
+        <hbase.client.version>1.3.1</hbase.client.version>
+        <!--    <hbase.common.version>1.2.6</hbase.common.version>-->
+        <spring.hadoop.hbase.version>2.2.0.RELEASE</spring.hadoop.hbase.version>
+        <sentry-javaagent.version>1.2.40</sentry-javaagent.version>
+        <validation-api.version>2.0.1.Final</validation-api.version>
+        <tk-mybatis.version>4.1.5</tk-mybatis.version>
+        <pagehelper.version>1.2.5</pagehelper.version>
+        <flowable.springboot.version>6.4.0</flowable.springboot.version>
+        <mlog.version>0.11.0</mlog.version>
+        <log4j.version>2.15.0</log4j.version>
+        <elasticsearch.version>6.8.13</elasticsearch.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.netease.hz.bdms</groupId>
+                <artifactId>eis-common</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netease.hz.bdms</groupId>
+                <artifactId>eis-dao</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netease.hz.bdms</groupId>
+                <artifactId>eis-service</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netease.hz.bdms</groupId>
+                <artifactId>eis-web</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${alibaba.fastJson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netease.cloud</groupId>
+                <artifactId>nos-sdk-java</artifactId>
+                <version>${nos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <!-- easy-excel -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+
+            <!--csv -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${common.csv.version}</version>
+            </dependency>
+
+            <!-- 哨兵监控 -->
+            <dependency>
+                <groupId>com.netease.sentry</groupId>
+                <artifactId>sentry-javaagent-collector</artifactId>
+                <version>${sentry-javaagent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-core</artifactId>
+                <version>${mybatis.generator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>1.0.1-m-3.5.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tk.mybatis</groupId>
+                <artifactId>mapper</artifactId>
+                <version>${tk-mybatis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>2.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.21</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

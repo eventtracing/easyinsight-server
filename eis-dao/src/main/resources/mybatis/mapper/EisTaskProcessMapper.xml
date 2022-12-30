@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisTaskProcessMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisTaskProcess">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="req_pool_id" jdbcType="BIGINT" property="reqPoolId" />
+    <result column="req_pool_entity_id" jdbcType="BIGINT" property="reqPoolEntityId" />
+    <result column="req_pool_type" jdbcType="INTEGER" property="reqPoolType" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="spm_by_obj_id" jdbcType="VARCHAR" property="spmByObjId" />
+    <result column="event_id" jdbcType="BIGINT" property="eventId" />
+    <result column="owner_name" jdbcType="VARCHAR" property="ownerName" />
+    <result column="owner_email" jdbcType="VARCHAR" property="ownerEmail" />
+    <result column="verifier_name" jdbcType="VARCHAR" property="verifierName" />
+    <result column="verifier_email" jdbcType="VARCHAR" property="verifierEmail" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="BASE_COLUMN_LIST">
+        id,req_pool_id,req_pool_entity_id,req_pool_type,task_id,status,obj_id,spm_by_obj_id,event_id,
+        owner_name,owner_email,verifier_name,verifier_email,
+        create_email,create_name,update_email,update_name,create_time,update_time
+  </sql>
+
+  <select id="selectBatchByIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_task_process
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectBatchByTaskIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_task_process
+    <where>
+      <if test="taskIds != null and taskIds.size() > 0">
+        task_id in
+        <foreach collection="taskIds" index="index" item="taskId" open="(" separator="," close=")">
+          #{taskId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectBatchBySpmBjObjIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_task_process
+    <where>
+    status = #{status}
+      <if test="spmByObjIds != null and spmByObjIds.size() > 0">
+        and spm_by_obj_id in
+        <foreach collection="spmByObjIds" index="index" item="spmByObjId" open="(" separator="," close=")">
+          #{spmByObjId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="getByReqPoolEntityIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_task_process
+    <where>
+      req_pool_type = #{reqPoolType}
+      <if test="reqPoolEntityIds != null and reqPoolEntityIds.size() > 0">
+        and req_pool_entity_id in
+        <foreach collection="reqPoolEntityIds" index="index" item="reqPoolEntityId" open="(" separator="," close=")">
+          #{reqPoolEntityId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_task_process
+    (<include refid="BASE_COLUMN_LIST"/>)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.id}, #{entity.reqPoolId},#{entity.reqPoolEntityId}, #{entity.reqPoolType}, #{entity.taskId}, #{entity.status},
+      #{entity.objId},#{entity.spmByObjId},#{entity.eventId},
+      #{entity.ownerName},#{entity.ownerEmail},#{entity.verifierName},#{entity.verifierEmail},
+      #{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},#{entity.createTime},
+      #{entity.updateTime})
+    </foreach>
+  </insert>
+
+  <update id="updateBatch">
+    update eis_task_process
+    <set>
+      <trim prefix=",status =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.status != null and item.status != ''">
+            when id=#{item.id} then #{item.status}
+          </if>
+        </foreach>
+      </trim>
+    </set>
+    where id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id}
+    </foreach>
+  </update>
+
+  <update id="updateVerifier">
+    update eis_task_process
+    <set>
+      verifier_name = #{verifierName}, verifier_email = #{verifierEmail}
+      <if test="updateName != null and updateEmail != null">
+        ,update_name = #{updateName}, update_email = #{updateEmail}
+      </if>
+    </set>
+    where id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </update>
+
+  <update id="updateOwner">
+    update eis_task_process
+    <set>
+      owner_name = #{ownerName}, owner_email = #{ownerEmail}
+      <if test="updateName != null and updateEmail != null">
+        ,update_name = #{updateName}, update_email = #{updateEmail}
+      </if>
+    </set>
+    where id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </update>
+
+  <delete id="deleteByIds">
+    delete from eis_task_process
+    where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </delete>
+
+  <delete id="deleteByInfos">
+    delete from eis_task_process
+    where req_pool_id = #{reqPoolId} and task_id = #{taskId} and spm_by_obj_id = #{spmByObjId}
+  </delete>
+</mapper>

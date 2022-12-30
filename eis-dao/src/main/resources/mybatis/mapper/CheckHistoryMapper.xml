@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.CheckHistoryMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.CheckHistory">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="tracker_id" jdbcType="BIGINT" property="trackerId"/>
+        <result column="log" jdbcType="VARCHAR" property="log"/>
+        <result column="rule" jdbcType="VARCHAR" property="rule"/>
+        <result column="check_result" jdbcType="INTEGER" property="checkResult"/>
+        <result column="indicators" jdbcType="VARCHAR" property="indicators"/>
+        <result column="spm" jdbcType="VARCHAR" property="spm"/>
+        <result column="event_code" jdbcType="VARCHAR" property="eventCode"/>
+        <result column="event_name" jdbcType="VARCHAR" property="eventName"/>
+        <result column="log_server_time" jdbcType="TIMESTAMP" property="logServerTime"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="saver_email" jdbcType="VARCHAR" property="saverEmail"/>
+        <result column="saver_name" jdbcType="VARCHAR" property="saverName"/>
+        <result column="save_time" jdbcType="TIMESTAMP" property="saveTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="eventMap" type="com.netease.hz.bdms.easyinsight.dao.model.Event">
+        <result column="event_code" jdbcType="VARCHAR" property="code"/>
+        <result column="event_name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_check_history`
+    </sql>
+    <sql id="Base_Column_List">
+        `id`,`tracker_id`,`log`,`rule`,`check_result`,`indicators`,`spm`,`event_code`,
+        `event_name`,`log_server_time`,`type`,`saver_email`,`saver_name`,`save_time`,
+        `update_time`
+    </sql>
+
+    <sql id="Simplified_Column_List">
+        `id`,`tracker_id`, null as log, null as rule,`check_result`, null as indicators,`spm`,`event_code`,
+        `event_name`,`log_server_time`,`type`,`saver_email`,`saver_name`,`save_time`,
+        `update_time`
+    </sql>
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.CheckHistory"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="trackerId != null">
+                tracker_id,
+            </if>
+            <if test="log != null">
+                log,
+            </if>
+            <if test="rule != null">
+                rule,
+            </if>
+            <if test="checkResult != null">
+                check_result,
+            </if>
+            <if test="indicators != null">
+                indicators,
+            </if>
+            <if test="spm != null">
+                spm,
+            </if>
+            <if test="eventCode != null">
+                event_code,
+            </if>
+            <if test="eventName != null">
+                event_name,
+            </if>
+            <if test="logServerTime != null">
+                log_server_time,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="saverEmail != null">
+                saver_email,
+            </if>
+            <if test="saverName != null">
+                saver_name,
+            </if>
+            <if test="saveTime != null">
+                save_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="trackerId != null">
+                #{trackerId, jdbcType=BIGINT},
+            </if>
+            <if test="log != null">
+                #{log,jdbcType=VARCHAR},
+            </if>
+            <if test="rule != null">
+                #{rule, jdbcType=VARCHAR},
+            </if>
+            <if test="checkResult != null">
+                #{checkResult,jdbcType=INTEGER},
+            </if>
+            <if test="indicators != null">
+                #{indicators,jdbcType=VARCHAR},
+            </if>
+            <if test="spm != null">
+                #{spm,jdbcType=VARCHAR},
+            </if>
+            <if test="eventCode != null">
+                #{eventCode,jdbcType=VARCHAR},
+            </if>
+            <if test="eventName != null">
+                #{eventName,jdbcType=VARCHAR},
+            </if>
+            <if test="logServerTime != null">
+                #{logServerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="saverEmail != null">
+                #{saverEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="saverName != null">
+                #{saverName,jdbcType=VARCHAR},
+            </if>
+            <if test="saveTime != null">
+                #{saveTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        (<include refid="Base_Column_List"/>)
+        values
+        <foreach collection="checkHistoryList" item="checkHistory" separator=",">
+            (
+            #{checkHistory.id, jdbcType=BIGINT}, #{checkHistory.trackerId, jdbcType=BIGINT},
+            #{checkHistory.log, jdbcType=VARCHAR}, #{checkHistory.rule, jdbcType=VARCHAR},
+            #{checkHistory.checkResult,jdbcType=BIGINT}, #{checkHistory.indicators,jdbcType=VARCHAR},
+            #{checkHistory.spm, jdbcType=VARCHAR}, #{checkHistory.eventCode, jdbcType=VARCHAR},
+            #{checkHistory.eventName, jdbcType=VARCHAR}, #{checkHistory.logServerTime, jdbcType=TIMESTAMP},
+            #{checkHistory.type, jdbcType=INTEGER}, #{checkHistory.saverEmail, jdbcType=VARCHAR},
+            #{checkHistory.saverName, jdbcType=VARCHAR},
+            #{checkHistory.saveTime,jdbcType=TIMESTAMP}, #{checkHistory.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <sql id="searchCondition">
+        tracker_id = #{trackerId, jdbcType=BIGINT}
+        <if test="spm != null and spm != ''">
+            and spm = #{spm}
+        </if>
+        <if test="eventCode != null and eventCode != ''">
+            and event_code = #{eventCode}
+        </if>
+        <if test="result != null">
+            and check_result = #{result, jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <select id="selectSizeFromSpmLogs" resultType="java.lang.Integer">
+        select count(*)
+        from
+        <include refid="tableName"/>
+        <where>
+            <include refid="searchCondition"/>
+        </where>
+        and spm != ''
+    </select>
+
+    <select id="selectCheckHistoryFromSpmLogs" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        <where>
+            <include refid="searchCondition"/>
+        </where>
+        and spm != ''
+        <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+            order by ${orderBy} ${orderRule}
+        </if>
+        <if test="offset != null and offset >= 0 and count != null and count >= 1">
+            limit #{offset},#{count}
+        </if>
+    </select>
+
+    <select id="selectCheckHistoryFromEventLogs" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        <where>
+            <include refid="searchCondition"/>
+        </where>
+        and spm = ''
+        <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+            order by ${orderBy} ${orderRule}
+        </if>
+        <if test="offset != null and offset >= 0 and count != null and count >= 1">
+            limit #{offset},#{count}
+        </if>
+    </select>
+
+    <select id="selectSpmsFromSpmLogs" resultType="java.lang.String">
+        select distinct spm
+        from
+        <include refid="tableName"/>
+        where tracker_id = #{trackerId,jdbcType=BIGINT}
+        and spm != ''
+    </select>
+
+    <select id="selectEventsFromSpmLogs" resultMap="eventMap">
+        select distinct event_code, event_name
+        from
+        <include refid="tableName"/>
+        where tracker_id = #{trackerId,jdbcType=BIGINT}
+        and spm != ''
+    </select>
+
+    <select id="selectByTrackerIdsFromSpmLogs" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where tracker_id in
+        <foreach collection="trackerIds" item="trackerId" open="(" close=")" separator=",">
+            #{trackerId}
+        </foreach>
+        and spm != ''
+    </select>
+
+    <select id="selectByTrackerIdsFromSpmLogsWithoutDetail" resultMap="BaseResultMap">
+        select
+        <include refid="Simplified_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where tracker_id in
+        <foreach collection="trackerIds" item="trackerId" open="(" close=")" separator=",">
+            #{trackerId}
+        </foreach>
+        and spm != ''
+    </select>
+
+    <select id="selectByBuryPointIdsFromEventLogsNoDetail" resultMap="BaseResultMap">
+        select
+        <include refid="Simplified_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where tracker_id in
+        <foreach collection="buryPointIds" item="buryPointId" open="(" close=")" separator=",">
+            #{buryPointId}
+        </foreach>
+        and spm = ''
+    </select>
+
+    <delete id="delete">
+        delete from
+        <include refid="tableName"/>
+        where id = #{id, jdbcType=BIGINT}
+    </delete>
+</mapper>

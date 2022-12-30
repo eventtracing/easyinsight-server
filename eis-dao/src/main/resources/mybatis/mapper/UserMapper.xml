@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.rbac.UserMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.rbac.User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id = "tableName">
+    `eis_user`
+  </sql>
+  <sql id="Base_Column_List">
+    id, email, user_name,create_time, update_time
+  </sql>
+
+  <insert id="insertSelective" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.User"
+    useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into <include refid="tableName" />
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="insertById" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.User">
+    insert into eis_user
+    (id, email, user_name)
+    values (#{id}, #{email}, #{userName})
+  </insert>
+
+
+  <insert id="insertBatch" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.User" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into eis_user
+    (email, user_name)
+    values
+    <foreach collection="users" item="user" separator=",">
+      (#{user.email}, #{user.userName})
+    </foreach>
+  </insert>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getByIds" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    <where>
+         id in
+        <foreach collection="ids" item="idItem" open="(" close=")" separator=",">
+          #{idItem}
+        </foreach>
+    </where>
+  </select>
+
+  <select id="selectByEmail" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where email = #{email}
+  </select>
+
+  <select id="selectByEmails" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      <if test="emails !=null and emails.size() > 0 ">
+        email in
+        <foreach collection="emails" item="email" open="(" close=")" separator=",">
+          #{email}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.rbac.User">
+    update
+    <include refid="tableName"/>
+    <set>
+      <if test="userName != null">
+        user_name= #{userName,jdbcType=VARCHAR}
+      </if>
+    </set>
+    <where>email = #{email}</where>
+  </update>
+
+  <select id="selectByRange" resultMap="BaseResultMap">
+    SELECT
+    u.id,
+    u.user_name,
+    u.email,
+    u.create_time,
+    u.update_time
+    FROM
+    <include refid="tableName"/> u
+    WHERE u.id IN
+    (
+    SELECT
+    ur.user_id
+    FROM eis_user_role ur
+    <where>
+      <if test="roleType != null">
+        and ur.role_type = #{roleType}
+      </if>
+      <if test="typeId != null">
+        and ur.type_id = #{typeId}
+      </if>
+      <if test="roleId != null">
+        and ur.role_id = #{roleId}
+      </if>
+    </where>
+    )
+
+    <if test="search != null and search != ''">
+      and (
+      u.email like concat("%",#{search},"%")
+      or u.user_name like concat("%",#{search},"%")
+      )
+    </if>
+
+    <if test="orderBy !=null and orderRule !=null">
+      order by ${orderBy} ${orderRule}
+    </if>
+
+  </select>
+
+  <delete id="deleteById">
+    delete from eis_user
+    where id =
+    #{id, jdbcType=BIGINT}
+  </delete>
+
+
+</mapper>
