@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class DemoInitController {
      * 初始化DEMO的数据配置
      */
     @GetMapping("/init")
-    public void init() {
+    public String init() {
         // 0. 插入超级管理员
         if (CollectionUtils.isEmpty(userMapper.getByIds(Collections.singletonList(DemoConst.SYSTEM_USER_ID)))) {
             User user = new User();
@@ -238,10 +239,13 @@ public class DemoInitController {
                 typeId = appId;
             }
             userRole.setTypeId(typeId);
+            userRole.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            userRole.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             if (userRoleMapper.selectByUserIdAndRoleId(userRole.getUserId(), userRole.getRoleId()) == null) {
                 userRoleMapper.insert(userRole);
             }
         });
+        return "OK";
     }
 
     private Role createRoleIfNotExist(int roleLevel, String name, RoleTypeEnum roleTypeEnum, Long typeId, String desc) {
@@ -252,6 +256,8 @@ public class DemoInitController {
         role.setTypeId(typeId);
         role.setBuiltin(true);
         role.setDescription(desc);
+        role.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        role.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         List<Role> roles = roleMapper.select(role);
         if (CollectionUtils.isNotEmpty(roles)) {
             Long id = roles.get(0).getId();
@@ -270,6 +276,8 @@ public class DemoInitController {
         auth.setAuthType(authType);
         auth.setAuthSort(authSort);
         auth.setDescription("");
+        auth.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        auth.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         List<Auth> auths = authMapper.selectByCodes(Collections.singletonList(authCode));
         if (CollectionUtils.isNotEmpty(auths)) {
             authCodeToAuthIdMap.put(authCode, auths.get(0).getId());
@@ -283,6 +291,8 @@ public class DemoInitController {
         RoleAuth roleAuth = new RoleAuth();
         roleAuth.setRoleId(roleId);
         roleAuth.setAuthId(authCodeToAuthIdMap.get(authCode));
+        roleAuth.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        roleAuth.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return roleAuth;
     }
 

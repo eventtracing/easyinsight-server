@@ -35,25 +35,23 @@ public class ElasticsearchClientConfig {
 //                                .setDefaultIOReactorConfig(IOReactorConfig.custom().setIoThreadCount(8).build())
 //                        )
                         .setRequestConfigCallback(requestConfigBuilder ->
-                                requestConfigBuilder.setConnectTimeout(300000)
+                                requestConfigBuilder.setConnectTimeout(3000)
                                         .setSocketTimeout(300000)
-                                        .setConnectionRequestTimeout(300000)
+                                        .setConnectionRequestTimeout(3000)
                         )
         );
-        log.info("Connecting Elasticsearch...");
         int tryLimit = 0;
         while (tryLimit < 3) {
             try {
+                log.info("Connecting Elasticsearch...");
                 if (client.ping(RequestOptions.DEFAULT)) {
                     log.info("Elasticsearch Connected!");
                     break;
                 }
             } catch (Exception e) {
-                System.out.println("Connecting Elasticsearch Failed, Retry in 1 seconds...");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e1) {
-                    e.printStackTrace();
                 }
                 tryLimit++;
             }
