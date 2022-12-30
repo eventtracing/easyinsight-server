@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-@OpenSource(value = false)
 public interface UserOuterResourceBindingMapper {
 
     UserOuterResourceBinding getByEmailAndType(String email, String type);

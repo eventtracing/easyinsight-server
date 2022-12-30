@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-@OpenSource(value = false)
 public class SpmFacade {
 
     @Autowired
