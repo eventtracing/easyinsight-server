@@ -134,9 +134,12 @@ upstream easyinsight-online-server {
 
 ## 5. 数据初始化
 
-* 初始化数据库，执行DEMO中的init_tables.sql
-* 初始化域、产品、权限等配置，并增加SYSTEM账号，用于快速体验功能：访问${后台域名}/api/init
-* 给产品增加DEMO内置参数：访问${后台域名}/api/init-meta?appId=${appId}，其中appId是/api/init生成的，一般第一次生成是1
+* 方式1：
+  * 直接向数据库导入建表语句+数据：init-with-demo-data.sql
+* 方式2：
+  * 初始化数据库，执行DEMO中的建表语句，init_tables.sql
+  * 初始化域、产品、权限等配置，并增加SYSTEM账号，用于快速体验功能：访问${后台域名}/api/init
+  * 给产品增加DEMO内置参数：访问${后台域名}/api/init-meta?appId=${appId}，其中appId是/api/init生成的，一般第一次生成是1
 
 ## 6.访问用户域名，使用平台
 
