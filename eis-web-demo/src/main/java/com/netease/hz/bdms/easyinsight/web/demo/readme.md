@@ -55,61 +55,57 @@
     * 参考配置如下:
 
 ```
-server {
-    server_name easyinsight.xxx.com;
+     server {
+        listen       80;   #监听端口
+        
+        server_name  easyinsight-demo.com;  #域名信息
 
-    location / {
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-From-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_pass http://easyinsight-frontend;
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-From-IP $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_pass http://localhost:8088;
+        }
+
+        location ^~ /api {
+            rewrite ^/api/(.*) /$1 break;
+            proxy_pass http://localhost:8081;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-From-IP $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        if ($request_uri ~* "^\/process\/realtime\/[\w]+\/([0-9]+).*") {
+            set $defaultkey $1;
+        }
+        location ~* ^\/process\/realtime\/[\w]+\/([0-9]+).* {
+            proxy_pass http://localhost:8081;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_read_timeout 1200s; 
+        }
+        location ^~ /api/processor {
+            rewrite ^/api/(.*) /$1 break;
+            proxy_pass http://localhost:8081;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-From-IP $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        location ^~ /api/processor/realtime/exam {
+            rewrite ^/api/(.*) /$1 break;
+            proxy_pass http://localhost:8081;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-From-IP $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
     }
-    location ^~ /api {
-        rewrite ^/api/(.*) /$1 break;
-        proxy_pass http://easyinsight-backend;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-From-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-    if ($request_uri ~* "^\/process\/realtime\/[\w]+\/([0-9]+).*") {
-        set $defaultkey $1;
-    }
-    location ~* ^\/process\/realtime\/[\w]+\/([0-9]+).* {
-        proxy_pass http://easyinsight-websocket;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 1200s; 
-    }
-    location ^~ /api/processor {
-        rewrite ^/api/(.*) /$1 break;
-        proxy_pass http://easyinsight-processor-backend;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-From-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-    location ^~ /api/processor/realtime/exam {
-        rewrite ^/api/(.*) /$1 break;
-        proxy_pass http://easyinsight-processor-backend-exam;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-From-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-其中：
-```
-easyinsight-frontend：前端应用
-easyinsight-backend：后端API集群
-easyinsight-processor-backend：后端实时测试集群
-easyinsight-processor-backend-exam：后端实时测试集群
-easyinsight-websocket：：后端实时测试单机
 ```
 
 * 后台域名
@@ -121,15 +117,9 @@ easyinsight-websocket：：后端实时测试单机
     server_name easyinsight-backend;
 
     location / {
-        proxy_pass http://easyinsight-online-server;
+        proxy_pass http://localhost:8081
     }
 }
-upstream easyinsight-online-server {
-    server xxx.xxx.xxx.xxx:8089;
-    server xxx.xxx.xxx.xxx:8089;
-    check interval=3000 rise=2 fall=3 timeout=5000 type=http;
-    check_http_send "GET /eis/v1/health/status HTTP/1.0\r\n\r\n";
-    check_http_expect_alive http_2xx http_3xx;
 ```
 
 ## 5. 数据初始化
