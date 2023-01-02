@@ -133,3 +133,7 @@
 
 ## 6.访问用户域名，使用平台
 
+
+* 提示创建时间字段为空
+1、需要修改MySQL配置, 在MySQL的配置文件，在mysqld下添加 explicit_defaults_for_timestamp=OFF
+2、或者执行SQL，临时修改该配置`SET @@global.explicit_defaults_for_timestamp = off`

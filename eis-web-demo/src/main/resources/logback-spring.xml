@@ -10,17 +10,17 @@
 
     <!-- mlog info -->
     <appender name="MLOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>./logs/mlog/${com.cmdb.appname}.log</File>
+        <File>./logs/mlog/easyinsight-server.log</File>
         <!-- 只有INFO -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
         </filter>
         <encoder>
-            <Pattern>%d[v3][${com.cmdb.appname}][${com.cmdb.clustername}][%t][][][][%F:%M:%L][%p][%c] - %m%X{uc}%n</Pattern>
+            <Pattern>%d[v3][easyinsight-server][easyinsight-server-demo][%t][][][][%F:%M:%L][%p][%c] - %m%X{uc}%n</Pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>./logs/mlog/${com.cmdb.appname}.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <fileNamePattern>./logs/mlog/easyinsight-server.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
             <maxHistory>100</maxHistory>
             <maxFileSize>128MB</maxFileSize>
             <totalSizeCap>8GB</totalSizeCap>
@@ -29,17 +29,17 @@
 
     <!-- mlog error -->
     <appender name="MLOG_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>./logs/mlog/${com.cmdb.appname}-error.log</File>
+        <File>./logs/mlog/easyinsight-server-error.log</File>
         <!-- 只有ERROR -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
         <encoder>
-            <Pattern>%d[v3][${com.cmdb.appname}][${com.cmdb.clustername}][%t][][][][%F:%M:%L][%p][%c] - %m%X{uc}%n</Pattern>
+            <Pattern>%d[v3][easyinsight-server][easyinsight-server-demo][%t][][][][%F:%M:%L][%p][%c] - %m%X{uc}%n</Pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>./logs/mlog/${com.cmdb.appname}-error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <fileNamePattern>./logs/mlog/easyinsight-server-error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
             <maxHistory>100</maxHistory>
             <maxFileSize>128MB</maxFileSize>
             <totalSizeCap>8GB</totalSizeCap>
@@ -54,7 +54,7 @@
             <level>INFO</level>
         </filter>
         <encoder>
-            <Pattern>%d[s1][${com.cmdb.appname}][${com.cmdb.clustername}]%m%n</Pattern>
+            <Pattern>%d[s1][easyinsight-server][easyinsight-server-demo]%m%n</Pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
