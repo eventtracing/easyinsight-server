@@ -3,7 +3,7 @@
 ## 0. 中间件依赖准备，并编写对应的Adapter代码适配该中间件
 
 什么是Adapter?
-每个公司的基建选型不一样，因此同一个类型的中间件也有多个实现方式。EasyInsight服务端剥离了具体实现，在埋点平台业务代码中使用Adapter模式。您使用时，需要编写Adapter实现现有接口，就可以使用了。
+每个公司的基建选型不一样，因此同一个类型的中间件也有多个实现方式。EasyInsight服务端剥离了具体实现，在埋点平台业务代码中使用Adapter模式。您使用时，只需要适配现有能力，实现Adapter的接口，就可以使用了。
 
 #### 数据库准备
 
@@ -13,22 +13,22 @@
 #### Redis或类似缓存组件，实现CacheAdapter
 
 * 用于提高系统性能、实现分布式锁
-* DemoJedisCacheAdapter：使用Jedis客户端实现了缓存
+* 示例中自带的DemoJedisCacheAdapter使用Jedis客户端实现了缓存
 
 #### 通知中心，实现NotifyUserAdapter
 
 * 用于给用户推送邮件、IM消息通知。若没有，则无消息通知功能
-* DemoUserNotifyAdapter：无消息通知功能
+* 示例中自带的DemoUserNotifyAdapter为一个空实现，无任何消息通知功能。
 
 #### 配置中心，实现RealtimeConfigAdapter
 
 * 项目部分配置可支持实时修改
-* DemoRealtimeConfigAdapter：没有配置中心，返回固定配置
+* 示例中自带的DemoRealtimeConfigAdapter为一个基于代码中硬编码返回固定配置的实现，没有使用配置中心。
 
 #### 文件存储，实现FileUploadAdapter
 
 * 项目中图片存储
-* DemoFileUploadAdapter：直接返回了固定图片
+* 示例中自带的DemoFileUploadAdapter未实现图床，而是直接返回了固定图片。
 
 ## 1. 域名准备
 
@@ -37,9 +37,9 @@
 
 ## 2. 后端DEMO部署
 
-* 修改application-{env}.yml，替换MySQL数据库IP、PORT、用户名、密码，替换ElasticSearch IP、PORT、用户名、密码
+* 修改application.yml，替换MySQL数据库IP、PORT、用户名、密码，替换ElasticSearch IP、PORT、用户名、密码
 * 修改eis-web-demo中的Adapter，形成自己的Java项目
-* 注意，需要在RealtimeConfigAdapter实现的对应配置中心中，把域名相关设置为上述域名：eis.http.host=用户域名 eis.backend-http.host 后台域名
+* 在RealtimeConfigAdapter实现的对应配置中心中，把域名相关设置为上述域名：eis.http.host=用户域名 eis.backend-http.host 后台域名
 * 基于该项目部署启动服务
 
 ## 3. 前端DEMO部署
@@ -124,16 +124,18 @@
 
 ## 5. 数据初始化
 
-* 方式1：
-  * 直接向数据库导入建表语句+数据：init-with-demo-data.sql
-* 方式2：
-  * 初始化数据库，执行DEMO中的建表语句，init_tables.sql
-  * 初始化域、产品、权限等配置，并增加SYSTEM账号，用于快速体验功能：访问${后台域名}/api/init
-  * 给产品增加DEMO内置参数：访问${后台域名}/api/init-meta?appId=${appId}，其中appId是/api/init生成的，一般第一次生成是1
+* A. MySQL
+  * 方式1：
+    * 直接向数据库导入建表语句+数据：执行demo中的init-with-demo-data.sql
+  * 方式2：
+    * 初始化数据库，执行DEMO中的建表语句：执行demo中的init-tables-only.sql
+    * 初始化域、产品、权限等配置，并增加SYSTEM账号，用于快速体验功能：访问${后台域名}/api/init
+    * 给产品增加DEMO内置参数：访问${后台域名}/api/init-meta?appId=${appId}，其中appId是/api/init生成的，一般第一次生成是1
+* B. ElasticSearch（用于实时测试）
+  *  请参考 elastic-search-mappings.txt 进行索引创建
 
 ## 6.访问用户域名，使用平台
 
-
-* 提示创建时间字段为空
-1、需要修改MySQL配置, 在MySQL的配置文件，在mysqld下添加 explicit_defaults_for_timestamp=OFF
-2、或者执行SQL，临时修改该配置`SET @@global.explicit_defaults_for_timestamp = off`
+* 提示插入数据库行报错，因为创建时间字段为null
+  * 1、需要修改MySQL配置, 在MySQL的配置文件，在mysqld下添加 explicit_defaults_for_timestamp=OFF
+  * 2、或者执行SQL，临时修改该配置`SET @@global.explicit_defaults_for_timestamp = off`
