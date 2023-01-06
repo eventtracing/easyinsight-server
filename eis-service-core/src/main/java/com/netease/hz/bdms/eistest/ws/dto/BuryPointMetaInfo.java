@@ -161,7 +161,6 @@ public class BuryPointMetaInfo implements Serializable {
      * @return 埋点规则
      */
     public BuryPointRule getBuryPointRule( String spmWithNoPos) {
-        log.info("获取规则开始");
         if (StringUtils.isBlank(spmWithNoPos)) {
             return null;
         }
@@ -194,7 +193,6 @@ public class BuryPointMetaInfo implements Serializable {
         }
 
         String oidKey = oidKeyBuilder.toString();
-        log.info("获取规则结束");
 
         BuryPointRule result = conversationRuleMap.get(oidKey);
         if (result != null) {

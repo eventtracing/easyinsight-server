@@ -120,7 +120,6 @@ public class BuryPointValidationServiceImpl {
      * @return 验证及统计结果
      */
     public BuryPointValidationAndStatistics validateAndStat(AppStorage appStorage, PcStorage pcStorage, BuryPointLog buryPointLog, Boolean logOnly) {
-        log.info("开始校验并统计");
         String eventCode = buryPointLog.getAction();
 
         Long logServerTime = TimeUtil.parseTimeStr(buryPointLog.getLogTime() != null ? buryPointLog.getLogTime().toString() : null);
@@ -144,7 +143,6 @@ public class BuryPointValidationServiceImpl {
 
             // 新版本
         } else {
-            log.info("新版本");
             String eventName = StringUtils.isNotBlank(eventCode) && eventCode2NameMap != null ? eventCode2NameMap.get(eventCode) : "";
             // 如果是未定义的事件类型
             if (StringUtils.isBlank(eventName)) {
@@ -157,7 +155,6 @@ public class BuryPointValidationServiceImpl {
                 if (Boolean.TRUE.equals(logOnly)) {
                     ruleCheck = newLogForNoRule(logMap, spmWithoutPos, eventCode, eventName, logServerTime, index, logOnly);
                 } else {
-                    log.info("校验模式");
                     //纯事件埋点校验(elist and plist empty)
                     if(MapUtils.isEmpty(LogUtil.getPlist(logMap)) && MapUtils.isEmpty(LogUtil.getElist(logMap))){
                         BuryPointRule rule = pcStorage.getMetaInfo().getEventRule();
@@ -185,7 +182,6 @@ public class BuryPointValidationServiceImpl {
                         }
                     }
                 }
-                log.info("获取指标汇总");
                 statisticSumUp(appStorage, eventCode, spmWithoutPos);
 
                 if (ruleCheck != null) {
@@ -195,7 +191,6 @@ public class BuryPointValidationServiceImpl {
                 }
             }
         }
-        log.info("其他统计指标");
         oldVersionLogStatistics = oldVersionStat(appStorage, eventCode2NameMap);
         logStatistics = stat(appStorage, eventCode2NameMap);
 
@@ -205,7 +200,6 @@ public class BuryPointValidationServiceImpl {
         List<TreeModeStatisticResultDTO> treeModeStatisticResult = getTreeModeStatisticResult(appStorage);
         EventStatisticResultDTO eventStatisticResult = getEventStatisticResult(appStorage);
         List<UnMatchSpmStatisticResultDTO> unMatchSpmStatisticResult = getUnknownStatisticResult(appStorage, pcStorage.getMetaInfo().getOid2NameMap() );
-        log.info("校验并统计结束");
         return BuryPointValidationAndStatistics.builder()
                 .ruleCheck(ruleCheck)
                 .statistics(logStatistics)
