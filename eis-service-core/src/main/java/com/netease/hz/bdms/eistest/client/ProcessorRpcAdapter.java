@@ -120,8 +120,6 @@ public class ProcessorRpcAdapter implements InitializingBean {
             log.error("测试日志保存失败:{}", JsonUtils.toJson(responseEntity));
             return new ArrayList<>();
         }
-        log.info("测试记录：request:{}, ret:{}",JsonUtils.toJson(resourceRequest), JsonUtils.toJson(responseEntity.getBody()));
-        ObjectMapper mapper = new ObjectMapper();
         List<Long> saveResult = (List<Long>) responseEntity.getBody().getResult();
         return saveResult;
     }

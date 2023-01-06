@@ -146,7 +146,6 @@ public class BuryPointAnaysisServiceImpl implements BuryPointAnaysisService, Ini
             }
             case EXCEPTION: {
                 BuryPointErrorContent exceptionLog = JSON.parseObject(content, BuryPointErrorContent.class);
-                log.info("exception埋点日志：{}",content);
                 List<ErrorMessageSimpleDTO> errorMessageSimpleDTOList = statisticalError(appStorage, exceptionLog);
                 BuryPointErrorContentExpand buryPointErrorContentExpand = new BuryPointErrorContentExpand();
                 buryPointErrorContentExpand.setCode(exceptionLog.getCode());
@@ -169,7 +168,6 @@ public class BuryPointAnaysisServiceImpl implements BuryPointAnaysisService, Ini
         }
         //
         esTaskConsumerService.submitWriteCkTask(logQueue, paramQueue);
-        log.info("log consumer success {}", as.getCode());
     }
 
     @Scheduled(cron = "0/1 * * * * ?")

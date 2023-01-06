@@ -244,7 +244,6 @@ public class BuryPointStats {
         EventCheckResultDTO eventCheckResultDTO = eventToCheckResultMap.computeIfAbsent(eventCode, k -> EventCheckResultDTO.init());
 
         CheckResultEnum checkResultEnum = CheckResultEnum.fromResult(checkResult);
-        log.info("事件统计switch");
         switch (checkResultEnum) {
             case PASS: {
                 Integer passSum = eventCheckResultDTO.getPassSum();

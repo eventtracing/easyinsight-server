@@ -101,7 +101,6 @@ public class AppWsHandler extends AbstractWsHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String s = helper.extractConversation(session);
-        log.info("app session {} handle message {}", s, message);
         WsSession sessionByCode = appSessionManager.getSessionByCode(s);
         if (sessionByCode != null) {
             //parse and cache
