@@ -247,7 +247,6 @@ public class BuryPointMetaInfo implements Serializable {
      * @return
      */
     public String removePopParentsOfLog(String originSpm){
-        log.info("去除浮层开始，originspm={}",originSpm);
         List<String> oidSeq = Arrays.asList(originSpm.split("\\|"));
         String popoverOid = "";
         for (String oid : oidSeq) {
@@ -257,12 +256,10 @@ public class BuryPointMetaInfo implements Serializable {
             }
         }
         if(StringUtils.isEmpty(popoverOid)){
-            log.info("去除浮层结束");
             return originSpm;
         }
         String spmWithoutPopParents = StringUtils.substringBefore(originSpm, popoverOid);
         spmWithoutPopParents = spmWithoutPopParents + popoverOid;
-        log.info("去除浮层结束");
         return spmWithoutPopParents;
     }
 }
