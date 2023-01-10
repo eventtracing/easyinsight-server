@@ -13,8 +13,8 @@ public class DemoRealtimeConfigAdapter implements RealtimeConfigAdapter {
     private static final Map<String, String> configMap = new HashMap<>();
 
     static {
-        configMap.put("eis.http.host", "http://intern.easyinsight-dev.bdms.netease.com");
-        configMap.put("eis.backend-http.host", "http://easyinsight-dev-backend.service.163.org");
+        configMap.put("eis.http.host", "http://TODO.com");
+        configMap.put("eis.backend-http.host", "http://TODO.com");
         configMap.put("default.alert.receivers", "xxx@corp.netease.com");
         configMap.put("checkObjImageNotEmpty", "{}");
         configMap.put("paramCheckScopeMap", "{}");

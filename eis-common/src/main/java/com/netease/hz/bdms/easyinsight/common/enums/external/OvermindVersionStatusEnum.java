@@ -2,7 +2,6 @@ package com.netease.hz.bdms.easyinsight.common.enums.external;
 
 /**
  * Overmind版本的状态
- * https://music-ox.hz.netease.com/ox/music/model/detail/350622
  */
 public enum OvermindVersionStatusEnum {
 
