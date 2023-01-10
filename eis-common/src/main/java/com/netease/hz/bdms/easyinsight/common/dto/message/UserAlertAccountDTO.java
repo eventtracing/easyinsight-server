@@ -8,7 +8,6 @@ import lombok.experimental.Accessors;
  *
  * @author: xumengqiang
  * @date: 2021/10/20 12:35
- * @url https://nei.hz.netease.com/interface/detail/?pid=35246&id=364108
  */
 @Data
 @Accessors(chain = true)
