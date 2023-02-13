@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ParamBindMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ParamBind">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="param_id" jdbcType="BIGINT" property="paramId"/>
+        <result column="entity_id" jdbcType="BIGINT" property="entityId"/>
+        <result column="entity_type" jdbcType="BIGINT" property="entityType"/>
+        <result column="version_id" jdbcType="BIGINT" property="versionId"/>
+        <result column="app_id" jdbcType="BIGINT" property="appId"/>
+        <result column="not_empty" jdbcType="BOOLEAN" property="notEmpty"/>
+        <result column="must" jdbcType="BOOLEAN" property="must"/>
+        <result column="need_test" jdbcType="BOOLEAN" property="needTest"/>
+        <result column="is_encode" jdbcType="BOOLEAN" property="isEncode"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_param_bind`
+    </sql>
+    <sql id="Base_Column_List">
+        id, param_id, entity_id, entity_type, version_id, must, not_empty, need_test, app_id, is_encode, description,
+        create_email, create_name, update_email, update_name, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ParamBind"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="paramId != null">
+                param_id,
+            </if>
+            <if test="entityId != null">
+                entity_id,
+            </if>
+            <if test="entityType != null">
+                entity_type,
+            </if>
+            <if test="versionId != null">
+                version_id,
+            </if>
+            <if test="must != null">
+                must,
+            </if>
+            <if test="notEmpty != null">
+                not_empty,
+            </if>
+            <if test="needTest != null">
+                need_test,
+            </if>
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="isEncode != null">
+                is_encode,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="createEmail != null">
+                create_email,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="updateEmail != null">
+                update_email,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="paramId != null">
+                #{paramId,jdbcType=INTEGER},
+            </if>
+            <if test="entityId != null">
+                #{entityId,jdbcType=BIGINT},
+            </if>
+            <if test="entityType != null">
+                #{entityType,jdbcType=INTEGER},
+            </if>
+            <if test="versionId != null">
+                #{versionId,jdbcType=BIGINT},
+            </if>
+            <if test="must != null">
+                #{must,jdbcType=BOOLEAN},
+            </if>
+            <if test="notEmpty != null">
+                #{notEmpty,jdbcType=BOOLEAN},
+            </if>
+            <if test="needTest != null">
+                #{needTest,jdbcType=BOOLEAN},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="isEncode != null">
+                #{isEncode, jdbcType=BOOLEAN},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createEmail != null">
+                #{createEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateEmail != null">
+                #{updateEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ParamBind">
+        update
+        <include refid="tableName"/>
+        <set>
+            <if test="paramId != null">
+                param_id = #{paramId,jdbcType=INTEGER},
+            </if>
+            <if test="entityId != null">
+                entity_id = #{entityId,jdbcType=BIGINT},
+            </if>
+            <if test="entityType != null">
+                entity_type = #{entityType,jdbcType=INTEGER},
+            </if>
+            <if test="versionId != null">
+                version_id = #{versionId,jdbcType=BIGINT},
+            </if>
+            <if test="must != null">
+                must = #{must,jdbcType=BOOLEAN},
+            </if>
+            <if test="notEmpty != null">
+                not_empty = #{notEmpty,jdbcType=BOOLEAN},
+            </if>
+            <if test="needTest != null">
+                need_test = #{needTest,jdbcType=BOOLEAN},
+            </if>
+            <if test="appId != null">
+                app_id = #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="isEncode != null">
+                is_encode = #{isEncode, jdbcType=BOOLEAN},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="updateEmail != null">
+                update_email = #{updateEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectSizeByParamId" resultType="java.lang.Integer">
+        select count(*)
+        from
+        <include refid="tableName"/>
+        where param_id in
+        <foreach collection="paramIds" item="paramId" open="(" close=")" separator=",">
+            #{paramId, jdbcType=BIGINT}
+        </foreach>
+        <if test="entityType != null">
+            and entity_type = #{entityType,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectParamBindByParamId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where param_id in
+        <foreach collection="paramIds" item="paramId" open="(" close=")" separator=",">
+            #{paramId, jdbcType=BIGINT}
+        </foreach>
+        <if test="entityType != null">
+            and entity_type = #{entityType,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <sql id="searchByEntityIdAndVersion">
+        app_id = #{appId,jdbcType=BIGINT}
+        and entity_id in
+        <foreach collection="entityIds" item="entityId" open="(" close=")" separator=",">
+            #{entityId,jdbcType=BIGINT}
+        </foreach>
+        and entity_type in
+        <foreach collection="entityTypes" item="entityType" open="(" close=")" separator=",">
+            #{entityType,jdbcType=INTEGER}
+        </foreach>
+        <if test="versionId != null">
+            and version_id = #{versionId,jdbcType=BIGINT}
+        </if>
+    </sql>
+
+    <select id="selectByEntityId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        <where>
+            <include refid="searchByEntityIdAndVersion"/>
+        </where>
+    </select>
+
+
+    <!-- 指定条件进行查询, 暂时只需支持关键字段 -->
+    <select id="select" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ParamBind"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="paramId != null">
+                and param_id = #{paramId,jdbcType=BIGINT}
+            </if>
+            <if test="entityId != null">
+                and entity_id = #{entityId,jdbcType=BIGINT}
+            </if>
+            <if test="entityType != null">
+                and entity_type = #{entityType,jdbcType=BIGINT}
+            </if>
+            <if test="appId != null">
+                and app_id = #{appId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectSizeByEntityId" resultType="java.lang.Integer">
+        select count(*)
+        from
+        <include refid="tableName"/>
+        <where>
+            <include refid="searchByEntityIdAndVersion"/>
+        </where>
+    </select>
+
+    <select id="selectIdByEntityId" resultType="java.lang.Long">
+        select id
+        from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and entity_id in
+        <foreach collection="entityIds" item="entityId" open="(" close=")" separator=",">
+            #{entityId}
+        </foreach>
+        and entity_type = #{entityType,jdbcType=INTEGER}
+        <if test="versionId != null">
+            and version_id = #{versionId}
+        </if>
+    </select>
+
+    <select id="selectParamIdByEntityId" resultType="java.lang.Long">
+        select distinct param_id
+        from
+        <include refid="tableName"/>
+        <where>
+            <include refid="searchByEntityIdAndVersion"/>
+        </where>
+    </select>
+
+    <select id="selectIdsByEntityId" resultType="java.lang.Long">
+        select id
+        from
+        <include refid="tableName"/>
+        where app_id = #{appId,jdbcType=BIGINT}
+        and entity_id = #{entityId,jdbcType=BIGINT}
+        and entity_type = #{entityType,jdbcType=INTEGER}
+        <if test="versionId != null">
+            and version_id = #{versionId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+
+    <select id="searchParamBindSize" resultType="java.lang.Integer">
+        select count(*)
+        from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and entity_id = #{entityId,jdbcType=BIGINT}
+        and entity_type = #{entityType,jdbcType=INTEGER}
+        <if test="appId != null">
+            and app_id = #{appId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <select id="searchParamBind" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and entity_id = #{entityId,jdbcType=BIGINT}
+        and entity_type = #{entityType,jdbcType=INTEGER}
+        <if test="versionId != null">
+            and version_id = #{versionId,jdbcType=BIGINT}
+        </if>
+        <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+            order by ${orderBy} ${orderRule}
+        </if>
+        <if test="offset != null and offset >= 0 and count != null and count > 0">
+            limit #{offset}, #{count}
+        </if>
+    </select>
+
+    <delete id="deleteByEntityId">
+        delete from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and entity_id = #{entityId,jdbcType=BIGINT}
+        and entity_type = #{entityType,jdbcType=INTEGER}
+        <if test="versionId != null">
+            and version_id = #{versionId,jdbcType=BIGINT}
+        </if>
+    </delete>
+
+    <delete id="deleteByIds">
+        delete from
+        <include refid="tableName"/>
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="delete">
+        delete from
+        <include refid="tableName"/>
+        where id = #{id, jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByAppId">
+        delete from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+    </delete>
+</mapper>

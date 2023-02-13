@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisRealtimeBranchIgnoreMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisRealtimeBranchIgnore">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="conversationId" jdbcType="BIGINT" property="conversationId"/>
+        <result column="branchKey" jdbcType="VARCHAR" property="branchKey"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_realtime_branch_ignore`
+    </sql>
+    <sql id="Base_Column_List">
+        id, conversationId, branchKey, content
+    </sql>
+
+    <select id="listAll" resultType="com.netease.hz.bdms.easyinsight.dao.model.EisRealtimeBranchIgnore">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where conversationId = #{conversationId}
+    </select>
+
+    <insert id="batchInsert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisRealtimeBranchIgnore"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        (conversationId, branchKey, content)
+        values
+        <foreach collection="ignoreList" item="item" separator=",">
+            (#{item.conversationId}, #{item.branchKey},#{item.content})
+        </foreach>
+    </insert>
+
+    <delete id="removeAll">
+        delete from
+        <include refid="tableName"/>
+        where conversationId = #{conversationId}
+    </delete>
+</mapper>

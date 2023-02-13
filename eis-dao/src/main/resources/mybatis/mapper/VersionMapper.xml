@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.VersionMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.Version">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="version_source" jdbcType="BIGINT" property="versionSource"/>
+    <result column="entity_id" jdbcType="BIGINT" property="entityId"/>
+    <result column="entity_type" jdbcType="BIGINT" property="entityType"/>
+    <result column="current_using" jdbcType="BOOLEAN" property="currentUsing"/>
+    <result column="preset" jdbcType="BOOLEAN" property="preset" />
+    <result column="app_id" jdbcType="BIGINT" property="appId"/>
+    <result column="description" jdbcType="VARCHAR" property="description"/>
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+    <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+    <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_version`
+  </sql>
+  <sql id="Base_Column_List">
+    id, name, version_source, entity_id, entity_type, current_using, preset, app_id, description, create_email,
+    create_name, update_email, update_name, create_time, update_time
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Version"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="versionSource != null">
+        version_source,
+      </if>
+      <if test="entityId != null">
+        entity_id,
+      </if>
+      <if test="entityType != null">
+        entity_type,
+      </if>
+      <if test="preset != null">
+        preset,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createEmail != null">
+        create_email,
+      </if>
+      <if test="createName != null">
+        create_name,
+      </if>
+      <if test="updateEmail != null">
+        update_email,
+      </if>
+      <if test="updateName != null">
+        update_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="versionSource != null">
+        #{versionSource,jdbcType=BIGINT},
+      </if>
+      <if test="entityId != null">
+        #{entityId,jdbcType=BIGINT},
+      </if>
+      <if test="entityType != null">
+        #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="preset != null">
+        #{preset,jdbcType=BOOLEAN},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=BIGINT},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createEmail != null">
+        #{createEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Version">
+    update
+    <include refid="tableName"/>
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="versionSource != null">
+        version_source = #{versionSource,jdbcType=BIGINT},
+      </if>
+      <if test="entityId != null">
+        entity_id = #{entityId,jdbcType=BIGINT},
+      </if>
+      <if test="entityType != null">
+        entity_type = #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="preset != null">
+        preset = #{preset,jdbcType=BOOLEAN},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=BIGINT},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        update_email = #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        update_name = #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTMAP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+<!--  <select id="selectByCode" resultMap="BaseResultMap">-->
+<!--    select-->
+<!--    <include refid="Base_Column_List"/>-->
+<!--    from-->
+<!--    <include refid="tableName"/>-->
+<!--    where app_id = #{appId,jdbcType=INTERGER}-->
+<!--    and code = #{code,jdbcType=VARCHAR}-->
+<!--  </select>-->
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByAppId">
+    delete from
+    <include refid="tableName"/>
+    where app_id = #{appId, jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteVersion">
+    delete from
+    <include refid="tableName" />
+    where entity_id = #{entityId,jdbcType=BIGINT}
+    and entity_type = #{entityType, jdbcType=INTEGER }
+    and app_id = #{appId, jdbcType=BIGINT}
+  </delete>
+
+
+  <select id="selectByEntityId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    where app_id = #{appId, jdbcType=BIGINT}
+    <if test="entityId != null">
+      and entity_id = #{entityId,jdbcType=BIGINT}
+    </if>
+    <if test = "entityType != null">
+      and entity_type = #{entityType,jdbcType=INTEGER}
+    </if>
+    <if test="name != null">
+      and name = #{name, jdbcType=VARCHAR}
+    </if>
+  </select>
+
+
+  <select id="selectSizeByEntityId" resultType="java.lang.Integer">
+    select count(*)
+    from
+    <include refid="tableName"/>
+    where app_id = #{appId, jdbcType=BIGINT}
+    <if test="entityId != null">
+      and entity_id = #{entityId,jdbcType=BIGINT}
+    </if>
+    <if test = "entityType != null">
+      and entity_type = #{entityType,jdbcType=INTEGER}
+    </if>
+    <if test="name != null">
+      and name = #{name, jdbcType=VARCHAR}
+    </if>
+  </select>
+
+
+  <select id="searchSizeByEntityId" resultType="java.lang.Integer">
+    select count(*)
+    from
+    <include refid="tableName"/>
+    where app_id = #{appId, jdbcType=BIGINT}
+    <if test="entityId != null">
+      and entity_id = #{entityId,jdbcType=BIGINT}
+    </if>
+    <if test = "entityType != null">
+      and entity_type = #{entityType,jdbcType=INTEGER}
+    </if>
+    <if test="search != null and search != ''">
+      and name like concat("%", #{search}, "%")
+    </if>
+  </select>
+
+
+  <select id="searchByEntityId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    where app_id = #{appId, jdbcType=BIGINT}
+    <if test="entityId != null">
+      and entity_id = #{entityId,jdbcType=BIGINT}
+    </if>
+    <if test = "entityType != null">
+      and entity_type = #{entityType,jdbcType=INTEGER}
+    </if>
+    <if test="search != null and search != ''">
+      and name like concat("%", #{search}, "%")
+    </if>
+    <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+      order by ${orderBy} ${orderRule}
+    </if>
+    <if test="offset != null and offset >= 0 and count != null and count > 0">
+      limit #{offset}, #{count}
+    </if>
+  </select>
+
+  <update id="setVersion" >
+    update <include refid="tableName" />
+    <set>
+      <if test="currentUsing != null">
+        current_using = #{currentUsing, jdbcType=BOOLEAN}
+      </if>
+    </set>
+    where app_id = #{appId,jdbcType=BIGINT} and entity_id = #{entityId,jdbcType=BIGINT}
+    and entity_type = #{entityType,jdbcType=BIGINT}
+    <if test="versionId != null">
+      and id = #{versionId,jdbcType=BIGINT}
+    </if>
+  </update>
+
+  <select id="selectVersionByEntityId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+    and entity_id in
+    <foreach collection="entityIds" item="entityId" open="(" close=")" separator=",">
+      #{entityId,jdbcType=BIGINT}
+    </foreach>
+    and entity_type in
+    <foreach collection="entityTypes" item="entityType" open="(" close=")" separator=",">
+      #{entityType,jdbcType=INTEGER}
+    </foreach>
+    <if test="currentUsing != null">
+      and current_using = #{currentUsing,jdbcType=BOOLEAN}
+    </if>
+  </select>
+
+  <select id="selectVersion" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+    <if test="ids != null and ids.size > 0">
+      and id in
+      <foreach collection="ids" item="id" open="(" close=")" separator=",">
+        #{id}
+      </foreach>
+    </if>
+    <if test="entityTypes != null and entityTypes.size > 0">
+      and entity_type in
+      <foreach collection="entityTypes" item="entityType" open="(" close=")" separator=",">
+        #{entityType}
+      </foreach>
+    </if>
+  </select>
+</mapper>

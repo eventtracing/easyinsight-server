@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ObjectBasicMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="oid" jdbcType="VARCHAR" property="oid"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="special_type" jdbcType="VARCHAR" property="specialType"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="priority" jdbcType="VARCHAR" property="priority"/>
+        <result column="app_id" jdbcType="BIGINT" property="appId"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="ext" jdbcType="VARCHAR" property="ext"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `eis_obj_basic`
+    </sql>
+    <sql id="Base_Column_List">
+        id, oid, name, type, special_type, description, priority, app_id,
+        create_email, create_name, update_email, update_name, ext, create_time, update_time
+    </sql>
+
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into eis_obj_basic
+        (<include refid="Base_Column_List"/>)
+        values
+        <foreach collection="list" item="entity" separator=",">
+            (#{entity.id}, #{entity.oid},#{entity.name}, #{entity.type}, #{entity.specialType}, #{entity.description}, #{entity.priority},
+            #{entity.appId},
+            #{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},#{entity.ext},#{entity.createTime},
+            #{entity.updateTime})
+        </foreach>
+    </insert>
+
+    <!-- 插入对象基本信息 -->
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="TableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="oid != null">
+                oid,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="specialType != null">
+                special_type,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="priority != null">
+                priority,
+            </if>
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="createEmail != null">
+                create_email,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="updateEmail != null">
+                update_email,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="ext != null">
+                ext,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            <if test="oid != null">
+                #{oid, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type, jdbcType=INTEGER},
+            </if>
+            <if test="specialType != null">
+                #{specialType, jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="priority != null">
+                #{priority, jdbcType=VARCHAR},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="createEmail != null">
+                #{createEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateEmail != null">
+                #{updateEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="ext != null">
+                #{ext,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 依据产品ID和对象oid集合 查询对应的对象基本信息 -->
+    <select id="selectByOids" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and oid in
+        <foreach collection="oids" item="oid" open="(" close=")" separator=",">
+            #{oid, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <select id="selectByType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where type = #{type}
+    </select>
+
+    <select id="selectBySpecialType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where special_type = #{specialType}
+    </select>
+
+    <select id="selectAllByAppId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPriorities" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and priority in
+        <foreach collection="priorities" item="priority" open="(" close=")" separator=",">
+            #{priority, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- 依据产品ID和对象name集合 查询对应的对象基本信息 -->
+    <select id="selectByNames" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and name in
+        <foreach collection="names" item="name" open="(" close=")" separator=",">
+            #{name, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- 给定对象ID集合，批量查询对象基本信息 -->
+    <select id="selectByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id, jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <select id="selectDistinctAppIds" resultType="java.lang.Long">
+        select distinct app_id from
+        <include refid="TableName"/>
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id, jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByLikeOid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        where app_id = #{appId, jdbcType=BIGINT} and oid like #{oid, jdbcType=BIGINT}
+    </select>
+
+    <select id="searchLike" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        <where>
+            <if test="search != null and search != ''">
+                oid like concat("%", #{search}, "%")
+                or name like concat("%", #{search}, "%")
+            </if>
+            <if test="appId != null">
+                and app_id = #{appId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="search" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="TableName"/>
+        <where>
+            <if test="oid != null and oid != ''">
+                and oid = #{oid, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and type = #{type, jdbcType=INTEGER}
+            </if>
+            <if test="priority != null and priority != ''">
+                and priority = #{priority, jdbcType=VARCHAR}
+            </if>
+            <if test="appId != null">
+                and app_id = #{appId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新对象基本信息 -->
+    <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic">
+        update
+        <include refid="TableName"/>
+        <set>
+            <if test="oid != null and oid != ''">
+                oid = #{oid, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type, jdbcType=INTEGER},
+            </if>
+            <if test="specialType != null">
+                special_type = #{specialType, jdbcType=VARCHAR},
+            </if>
+            <if test="ext != null">
+                ext = #{ext, jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description, jdbcType=VARCHAR},
+            </if>
+            <if test="priority != null and priority != ''">
+                priority = #{priority, jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null and updateName != ''">
+                update_name = #{updateName, jdbcType=VARCHAR},
+            </if>
+            <if test="updateEmail != null and updateEmail != ''">
+                update_email = #{updateEmail, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id, jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteByIds">
+        delete from
+        <include refid="TableName"/>
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id, jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+</mapper>

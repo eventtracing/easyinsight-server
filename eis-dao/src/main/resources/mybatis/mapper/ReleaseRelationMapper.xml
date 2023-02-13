@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ReleaseRelationMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ReleaseRelation">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="parent_release_id" jdbcType="BIGINT" property="parentReleaseId"/>
+    <result column="release_id" jdbcType="BIGINT" property="releaseId"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_release_relation`
+  </sql>
+  <sql id="Base_Column_List">
+    id, parent_release_id, release_id
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ReleaseRelation"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      parent_release_id, release_id
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+        #{parentReleaseId,jdbcType=BIGINT},#{releaseId,jdbcType=BIGINT},
+    </trim>
+  </insert>
+
+  <select id="listByReleaseId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where release_id = #{releaseId,jdbcType=BIGINT}
+  </select>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where parent_release_id = #{parentReleaseId,jdbcType=BIGINT} and release_id = #{releaseId,jdbcType=BIGINT}
+  </delete>
+</mapper>

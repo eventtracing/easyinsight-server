@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.DomainMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.Domain">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="code" jdbcType="VARCHAR" property="code"/>
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="owner_email" jdbcType="VARCHAR" property="ownerEmail"/>
+    <result column="owner_name" jdbcType="VARCHAR" property="ownerName"/>
+    <result column="admins" jdbcType="VARCHAR" property="admins"/>
+    <result column="description" jdbcType="VARCHAR" property="description"/>
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+    <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+    <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_domain`
+  </sql>
+  <sql id="Base_Column_List">
+    id, code, name, owner_email, owner_name, admins, description, create_email, create_name, update_email,
+    update_name, create_time, update_time
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Domain"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="ownerEmail != null">
+        owner_email,
+      </if>
+      <if test="ownerName != null">
+        owner_name,
+      </if>
+      <if test="admins != null">
+        admins,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createEmail != null">
+        create_email,
+      </if>
+      <if test="createName != null">
+        create_name,
+      </if>
+      <if test="updateEmail != null">
+        update_email,
+      </if>
+      <if test="updateName != null">
+        update_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerEmail != null">
+        #{ownerEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerName != null">
+        #{ownerName,jdbcType=VARCHAR},
+      </if>
+      <if test="admins != null">
+        #{admins,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createEmail != null">
+        #{createEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Domain">
+    update <include refid="tableName"/>
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerEmail != null">
+        owner_email = #{ownerEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerName != null">
+        owner_name = #{ownerName,jdbcType=VARCHAR},
+      </if>
+      <if test="admins != null">
+        admins = #{admins,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="updateEmail != null">
+        update_email = #{updateEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="updateName != null">
+        update_name = #{updateName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectByCode" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where code = #{code,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+  <select id="searchDomain" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM <include refid="tableName" />
+    <where>
+      <if test = "search != null and search != ''">
+        `code` like concat("%", #{search}, "%")
+        or `name` like concat("%", #{search}, "%")
+      </if>
+    </where>
+    <if test = "orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+      order by ${orderBy} ${orderRule}
+    </if>
+  </select>
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisObjAllRelationReleaseMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisObjAllRelationRelease">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="parent_obj_id" jdbcType="BIGINT" property="parentObjId" />
+    <result column="terminal_id" jdbcType="INTEGER" property="terminalId" />
+    <result column="terminal_release_id" jdbcType="INTEGER" property="terminalReleaseId" />
+    <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="BASE_COLUMN_LIST" >
+    id, obj_id,parent_obj_id,terminal_id,terminal_release_id,app_id,create_email,create_name,
+    update_email,update_name,create_time,update_time
+  </sql>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_obj_all_relation_release
+    (<include refid="BASE_COLUMN_LIST"/>)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.id},#{entity.objId},#{entity.parentObjId},#{entity.terminalId},#{entity.terminalReleaseId},#{entity.appId},
+      #{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},
+      #{entity.createTime},#{entity.updateTime})
+    </foreach>
+  </insert>
+</mapper>

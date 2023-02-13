@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ObjTagMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ObjTag">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="history_id" jdbcType="BIGINT" property="historyId" />
+    <result column="tag_id" jdbcType="BIGINT" property="tagId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+    <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+    <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_obj_tag`
+  </sql>
+  <sql id="Base_Column_List">
+    id, app_id,obj_id,history_id,tag_id,create_email, create_name, update_email, update_name, create_time, update_time
+  </sql>
+
+  <insert id="batchInsert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjTag"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    (app_id,obj_id,history_id,tag_id,create_email, create_name, update_email, update_name)
+    values
+    <foreach collection="objTags" item="objTag" separator=",">
+      (#{objTag.appId}, #{objTag.objId}, #{objTag.historyId}, #{objTag.tagId},
+      #{objTag.createEmail}, #{objTag.createName}, #{objTag.updateEmail}, #{objTag.updateName})
+    </foreach>
+  </insert>
+
+  <select id="selectObjTagsByObjIdAndTagId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where tag_id = #{tagId} and obj_id = #{objId}
+  </select>
+
+
+  <select id="selectObjTagsByHistoryIds" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where history_id in
+    <foreach collection="historyIds" item="historyId" open="(" close=")" separator=",">
+      #{historyId}
+    </foreach>
+  </select>
+
+  <select id="selectObjTagsByObjIds" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where obj_id in
+    <foreach collection="objIds" item="objId" open="(" close=")" separator=",">
+      #{objId}
+    </foreach>
+  </select>
+
+  <select id="selectObjTagsByTagIds" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where tag_id in
+    <foreach collection="tagIds" item="tagId" open="(" close=")" separator=",">
+      #{tagId}
+    </foreach>
+  </select>
+
+  <delete id="deleteObjTag" >
+    delete from <include refid="tableName" />
+    where obj_id in
+    <foreach collection="objIds" item="objId" open="(" close=")" separator=",">
+      #{objId}
+    </foreach>
+  </delete>
+
+  <select id="select" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+    <if test="tagIds != null and tagIds.size >  0">
+      and tag_id in
+      <foreach collection="tagIds" item="tagId" open="(" close=")" separator=",">
+        #{tagId}
+      </foreach>
+    </if>
+    <if test="historyIds != null and historyIds.size > 0">
+      and history_id in
+      <foreach collection="historyIds" item="historyId" open="(" close=")" separator=",">
+        #{historyId}
+      </foreach>
+    </if>
+    <if test="objIds != null and objIds.size > 0">
+      and obj_id in
+      <foreach collection="objIds" item="objId" open="(" close=")" separator=",">
+        #{objId}
+      </foreach>
+    </if>
+  </select>
+
+  <select id="listByOffset" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    <where>
+      id > #{idOffset}
+    </where>
+    limit #{limit}
+  </select>
+
+</mapper>

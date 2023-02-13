@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisReqPoolEventMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisReqPoolEvent">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="req_pool_id" jdbcType="BIGINT" property="reqPoolId" />
+    <result column="event_bury_point_id" jdbcType="BIGINT" property="eventBuryPointId" />
+    <result column="event_id" jdbcType="BIGINT" property="eventId" />
+    <result column="terminal_id" jdbcType="BIGINT" property="terminalId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="BASE_COLUMN_LIST" >
+    id, req_pool_id, event_bury_point_id, event_id, terminal_id,
+    create_email, create_name, update_email,update_name,create_time,update_time
+  </sql>
+
+  <select id="selectBatchByIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_pool_event
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectBatchByEventIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_pool_event
+    <where>
+      <if test="eventIds != null and eventIds.size() > 0">
+        event_id in
+        <foreach collection="eventIds" index="index" item="eventId" open="(" separator="," close=")">
+          #{eventId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+</mapper>

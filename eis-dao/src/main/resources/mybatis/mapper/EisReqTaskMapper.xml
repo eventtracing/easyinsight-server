@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisReqTaskMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisReqTask">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="requirement_id" jdbcType="BIGINT" property="requirementId" />
+    <result column="task_issue_key" jdbcType="VARCHAR" property="taskIssueKey" />
+    <result column="req_issue_key" jdbcType="VARCHAR" property="reqIssueKey" />
+    <result column="task_name" jdbcType="VARCHAR" property="taskName" />
+    <result column="terminal_id" jdbcType="BIGINT" property="terminalId" />
+    <result column="terminal_version" jdbcType="VARCHAR" property="terminalVersion" />
+    <result column="terminal_release_id" jdbcType="BIGINT" property="terminalReleaseId" />
+    <result column="iteration" jdbcType="VARCHAR" property="iteration" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="owner_name" jdbcType="VARCHAR" property="ownerName" />
+    <result column="owner_email" jdbcType="VARCHAR" property="ownerEmail" />
+    <result column="verifier_name" jdbcType="VARCHAR" property="verifierName" />
+    <result column="verifier_email" jdbcType="VARCHAR" property="verifierEmail" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="BASE_COLUMN_LIST" >
+    id, requirement_id,task_issue_key,req_issue_key,task_name,terminal_id,terminal_version,terminal_release_id,
+    iteration,status,app_id,owner_name,owner_email,verifier_name,verifier_email,
+    create_email,create_name,update_email,update_name,create_time,update_time
+  </sql>
+
+  <select id="selectBatchByIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectBatchByReqIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      <if test="reqIds != null and reqIds.size() > 0">
+        requirement_id in
+        <foreach collection="reqIds" index="index" item="reqId" open="(" separator="," close=")">
+          #{reqId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_req_task
+    (<include refid="BASE_COLUMN_LIST"/>)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.id},#{entity.requirementId},#{entity.taskIssueKey},#{entity.reqIssueKey},#{entity.taskName}
+       ,#{entity.terminalId},#{entity.terminalVersion},#{entity.terminalReleaseId},#{entity.iteration},#{entity.status}
+      ,#{entity.appId},#{entity.ownerName},#{entity.ownerEmail},#{entity.verifierName},#{entity.verifierEmail}
+      ,#{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},#{entity.createTime},#{entity.updateTime})
+    </foreach>
+  </insert>
+
+  <update id="updateBatch">
+    update eis_req_task
+    <set>
+      <trim prefix=",status =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.status != null and item.status != ''">
+            when id=#{item.id} then #{item.status}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix=",terminal_release_id =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.terminalReleaseId != null and item.terminalReleaseId != ''">
+            when id=#{item.id} then #{item.terminalReleaseId}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix=",owner_name =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.ownerName != null and item.ownerName != ''">
+            when id=#{item.id} then #{item.ownerName}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix=",owner_email =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.ownerEmail != null and item.ownerEmail != ''">
+            when id=#{item.id} then #{item.ownerEmail}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix=",verifier_name =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.verifierName != null and item.verifierName != ''">
+            when id=#{item.id} then #{item.verifierName}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix=",verifier_email =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.verifierEmail != null and item.verifierEmail != ''">
+            when id=#{item.id} then #{item.verifierEmail}
+          </if>
+        </foreach>
+      </trim>
+    </set>
+    where id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id}
+    </foreach>
+  </update>
+
+  <delete id="deleteByIds" >
+    delete from eis_req_task
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
+  <select id="queryPagingList" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      <include refid="searchParamCondition" />
+    </where>
+    order by create_time desc
+<!--    <if test = "orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">-->
+<!--      -->
+<!--    </if>-->
+  </select>
+
+  <select id="listAllByTerminalId" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      terminal_id = #{terminalId}
+      and update_time <![CDATA[ >= ]]> #{startTime}
+      and update_time <![CDATA[ < ]]> #{endTime}
+    </where>
+    order by update_time desc
+  </select>
+
+  <sql id="searchParamCondition">
+    app_id = #{appId}
+    <if test="terminalId" >
+      and terminal_id = #{terminalId}
+    </if>
+    <if test="status != null" >
+      and status = #{status}
+    </if>
+    <if test="ownerEmail != null and ownerEmail != ''" >
+      and owner_email = #{ownerEmail}
+    </if>
+    <if test="verifierEmail != null and verifierEmail != ''" >
+      and verifier_email = #{verifierEmail}
+    </if>
+    <if test="terminalVersion != null and terminalVersion != ''" >
+      and terminal_version = #{terminalVersion}
+    </if>
+    <if test="taskName != null and taskName != ''" >
+      and task_name like concat("%", #{taskName}, "%")
+    </if>
+    <if test="iteration != null and iteration != ''" >
+      and iteration = #{iteration}
+    </if>
+    <if test="reqIds != null and reqIds.size > 0">
+      and requirement_id in
+      <foreach collection="reqIds" index="index" item="reqId" open="(" separator="," close=")">
+        #{reqId}
+      </foreach>
+    </if>
+    <if test="ids != null and ids.size() > 0">
+      and id in
+      <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+        #{id}
+      </foreach>
+    </if>
+    <if test="excludeIds != null and excludeIds.size() > 0">
+      and id not in
+      <foreach collection="excludeIds" index="index" item="id" open="(" separator="," close=")">
+        #{id}
+      </foreach>
+    </if>
+  </sql>
+</mapper>

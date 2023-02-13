@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ObjTrackerEventMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ObjTrackerEvent">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="tracker_id" jdbcType="BIGINT" property="trackerId" />
+    <result column="event_id" jdbcType="BIGINT" property="eventId" />
+    <result column="event_param_version_id" jdbcType="BIGINT" property="eventParamVersionId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_obj_tracker_event`
+  </sql>
+  <sql id="Base_Column_List">
+    id, tracker_id, event_id, event_param_version_id, create_time, update_time
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjTrackerEvent"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="trackerId != null">
+        tracker_id,
+      </if>
+      <if test="eventId != null">
+        event_id,
+      </if>
+      <if test="eventParamVersionId != null">
+        event_param_version_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="trackerId != null">
+        #{trackerId,jdbcType=BIGINT},
+      </if>
+      <if test="eventId != null">
+        #{eventId,jdbcType=BIGINT},
+      </if>
+      <if test="eventParamVersionId != null">
+        #{eventParamVersionId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjTrackerEvent">
+    update
+    <include refid="tableName"/>
+    <set>
+      <if test="trackerId != null">
+        tracker_id = #{trackerId,jdbcType=BIGINT},
+      </if>
+      <if test="eventId != null">
+        event_id = #{eventId,jdbcType=BIGINT},
+      </if>
+      <if test="eventParamVersionId != null">
+        event_param_version_id = #{eventParamVersionId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+  <insert id="batchInsert">
+    insert into <include refid="tableName" />
+    (tracker_id, event_id, event_param_version_id)
+    values
+    <foreach collection="trackerEvents" item="trackerEvent" separator=",">
+      (#{trackerEvent.trackerId},#{trackerEvent.eventId},#{trackerEvent.eventParamVersionId})
+    </foreach>
+  </insert>
+
+  <select id="selectByTrackerId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where tracker_id in
+    <foreach collection="trackerIds" item="trackerId" open="(" close=")" separator=",">
+      #{trackerId}
+    </foreach>
+  </select>
+
+  <delete id="deleteEventByTrackerId">
+    delete from <include refid="tableName" />
+    where tracker_id in
+    <foreach collection="trackerIds" item="trackerId" open="(" close=")" separator=",">
+      #{trackerId}
+    </foreach>
+  </delete>
+
+  <select id="selectSizeByEventId" resultType="java.lang.Integer">
+    select count(*)
+    from <include refid="tableName" />
+    where event_id in
+    <foreach collection="eventIds" item="eventId" open="(" close=")" separator=",">
+      #{eventId, jdbcType=BIGINT}
+    </foreach>
+  </select>
+</mapper>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.TerminalVersionInfoMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisTerminalVersionInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="num" jdbcType="VARCHAR" property="num"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="app_id" jdbcType="BIGINT" property="appId"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_terminal_version_info`
+    </sql>
+    <sql id="Base_Column_List">
+        id, num, name, app_id,
+        create_email, create_name, update_email, update_name, create_time, update_time
+    </sql>
+
+    <!-- 插入端版本基本信息 -->
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisTerminalVersionInfo"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="num != null and num !=''">
+                num,
+            </if>
+            <if test="name != null and name != ''">
+                name,
+            </if>
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="createEmail != null">
+                create_email,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="updateEmail != null">
+                update_email,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            <if test="num != null and num != ''">
+                #{num, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="createEmail != null">
+                #{createEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateEmail != null">
+                #{updateEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 依据产品ID和端版本名称 查询对应的端版本基本信息 -->
+    <select id="selectByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and name = #{name, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByNames" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and name in
+        <foreach collection="names" item="name" open="(" separator="," close=")" >
+            #{name, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- 给定ID集合，批量查询端版本基本信息 -->
+    <select id="selectByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id, jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        where id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="search" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisTerminalVersionInfo"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+        <where>
+            <if test="num != null and num != ''">
+                and num = #{num, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="appId != null">
+                and app_id = #{appId, jdbcType=BIGINT}
+            </if>
+            <if test="createName != null and createName != ''">
+                and create_name = #{createName, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新对象基本信息 -->
+    <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisTerminalVersionInfo">
+        update
+        <include refid="tableName"/>
+        <set>
+            <if test="num != null and num != ''">
+                num = #{num, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null and createName != ''">
+                create_name = #{createName, jdbcType=VARCHAR}
+            </if>
+            <if test="createEmail != null and createEmail != ''">
+                create_email = #{createEmail, jdbcType=VARCHAR}
+            </if>
+            <if test="updateName != null and updateName != ''">
+                update_name = #{updateName, jdbcType=VARCHAR}
+            </if>
+            <if test="updateEmail != null and updateEmail != ''">
+                update_email = #{updateEmail, jdbcType=VARCHAR}
+            </if>
+        </set>
+        where id = #{id, jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteByIds">
+        delete from
+        <include refid="tableName"/>
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            id = #{id, jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+</mapper>

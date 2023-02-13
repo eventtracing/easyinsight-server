@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisAuditPackageInfoMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisAuditPackageInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="appId" jdbcType="BIGINT" property="appId" />
+    <result column="terminalId" jdbcType="INTEGER" property="terminalId" />
+    <result column="packageType" jdbcType="INTEGER" property="packageType" />
+    <result column="buildUUID" jdbcType="VARCHAR" property="buildUUID" />
+    <result column="versionId" jdbcType="VARCHAR" property="versionId" />
+    <result column="relatedReq" jdbcType="VARCHAR" property="relatedReq" />
+    <result column="auditId" jdbcType="BIGINT" property="auditId" />
+    <result column="userInfo" jdbcType="VARCHAR" property="userInfo" />
+    <result column="ext" jdbcType="VARCHAR" property="ext" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_audit_package_info`
+  </sql>
+  <sql id="Base_Column_List">
+    id, appId, terminalId, packageType, buildUUID, versionId, relatedReq, auditId, userInfo, ext, createTime, updateTime
+  </sql>
+
+  <sql id="searchCondition">
+      appId = #{appId}
+    <if test="terminalId != null">
+      and terminalId = #{terminalId, jdbcType=BIGINT}
+    </if>
+    <if test="versionId != null and versionId != ''">
+      and versionId = #{versionId}
+    </if>
+    <if test="packageType != null ">
+      and packageType = #{packageType}
+    </if>
+    <if test="userInfo != null and userInfo != ''">
+      and userInfo = #{userInfo}
+    </if>
+  </sql>
+
+  <select id="selectPackageInfos" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      <include refid="searchCondition"/>
+      and buildUUID in
+      <foreach collection="buildUUIDList" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </where>
+    <if test="orderBy != null and orderBy != '' and orderRule != null and orderRule != ''">
+      order by ${orderBy} ${orderRule}
+    </if>
+    <if test="offset != null and offset >= 0 and count != null and count >= 1">
+      limit #{offset},#{count}
+    </if>
+  </select>
+
+  <select id="listLatestPackage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      appId = #{appId}
+      <if test="terminalId != null">
+        and terminalId = #{terminalId}
+      </if>
+      <if test="packageType != null">
+        and packageType = #{packageType}
+      </if>
+      <if test="versionId != null">
+        and versionId = #{versionId}
+      </if>
+      <if test="userInfo != null">
+        and userInfo = #{userInfo}
+      </if>
+    </where>
+      order by createTime desc limit 5000
+  </select>
+
+  <update id="updateAuditId" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisAuditPackageInfo">
+    update
+    <include refid="tableName"/>
+    <set>
+        auditId = #{auditId},
+    </set>
+    where id = #{id, jdbcType=BIGINT}
+  </update>
+
+  <update id="updatePackageType" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisAuditPackageInfo">
+    update
+    <include refid="tableName"/>
+    <set>
+      packageType = #{packageType},
+    </set>
+    where id = #{id, jdbcType=BIGINT}
+  </update>
+
+  <update id="updateExt">
+    update
+    <include refid="tableName"/>
+    <set>
+      ext = #{ext}, userInfo = #{userInfo}
+    </set>
+    where id = #{id, jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByBuildUUid" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      appId = #{appId} and terminalId = #{terminalId} and buildUUID = #{buildUUID}
+    </where>
+    order by createTime desc limit 1
+  </select>
+
+  <select id="selectByBuildUUids" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      appId = #{appId} and buildUUID in
+      <foreach collection="buildUUIDs" index="index" item="buildUUID" open="(" separator="," close=")">
+        #{buildUUID}
+      </foreach>
+    </where>
+  </select>
+
+
+  <select id="selectByReq" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      relatedReq = #{relatedReq}
+    </where>
+  </select>
+
+  <select id="scan" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      id > #{offset}
+    </where>
+    limit 500
+  </select>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord" useGeneratedKeys="true">
+    insert into eis_audit_package_info (appId, terminalId, packageType,
+    buildUUID, versionId, relatedReq,
+    auditId, userInfo, ext, createTime, updateTime
+    )
+    values (#{appId,jdbcType=BIGINT}, #{terminalId,jdbcType=INTEGER}, #{packageType,jdbcType=INTEGER},
+    #{buildUUID,jdbcType=VARCHAR}, #{versionId,jdbcType=VARCHAR}, #{relatedReq,jdbcType=VARCHAR},
+    #{auditId,jdbcType=BIGINT}, #{userInfo,jdbcType=VARCHAR}, #{ext,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+</mapper>

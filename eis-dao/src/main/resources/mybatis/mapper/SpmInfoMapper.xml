@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.SpmInfoMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="spm" jdbcType="VARCHAR" property="spm"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="version" jdbcType="VARCHAR" property="version"/>
+        <result column="note" jdbcType="VARCHAR" property="note"/>
+        <result column="app_id" jdbcType="BIGINT" property="appId"/>
+        <result column="terminal_id" jdbcType="BIGINT" property="terminalId"/>
+        <result column="source" jdbcType="INTEGER" property="source"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Table_Name">
+        `eis_spm_info`
+    </sql>
+    <sql id="Base_Column_List">
+        id, spm, name, status, version, note, app_id, terminal_id, source,
+        create_email, create_name, update_email, update_name, create_time, update_time
+    </sql>
+
+    <!--
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="spm != null">
+                spm,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+            <if test="appId != null">
+                app_id
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            <if test="spm != null">
+                #{spm, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status, jdbcType=INTEGER},
+            </if>
+            <if test="version != null">
+                #{version, jdbcType=VARCHAR},
+            </if>
+            <if test="note != null">
+                #{note, jdbcType=VARCHAR},
+            </if>
+            <if test="appId != null">
+                #{appId, jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    -->
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into <include refid="Table_Name"/>
+        (<include refid="Base_Column_List"/>)
+        values
+        <foreach collection="spmInfoCollection" item="spmInfo" separator=",">
+            (#{spmInfo.id,jdbcType=BIGINT}, #{spmInfo.spm,jdbcType=VARCHAR},
+            #{spmInfo.name,jdbcType=VARCHAR}, #{spmInfo.status,jdbcType=VARCHAR},
+            #{spmInfo.version,jdbcType=VARCHAR}, #{spmInfo.note,jdbcType=VARCHAR},
+            #{spmInfo.appId,jdbcType=BIGINT}, #{spmInfo.terminalId, jdbcType=BIGINT}, #{spmInfo.source, jdbcType=INTEGER},
+            #{spmInfo.createEmail, jdbcType=VARCHAR}, #{spmInfo.createName, jdbcType=VARCHAR},
+            #{spmInfo.updateEmail, jdbcType=VARCHAR}, #{spmInfo.updateName, jdbcType=VARCHAR},
+            #{spmInfo.createTime, jdbcType=TIMESTAMP}, #{spmInfo.updateTime, jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <select id="listAll" resultMap="BaseResultMap"
+            parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+    </select>
+
+    <select id="select" resultMap="BaseResultMap"
+            parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        <where>
+            app_id = #{appId, jdbcType=BIGINT}
+            <if test="id != null">
+                and id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="spm != null">
+                and spm = #{spm, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                and name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status, jdbcType=INTEGER}
+            </if>
+            <if test="version != null">
+                and version = #{version, jdbcType=VARCHAR}
+            </if>
+            <if test="note != null">
+                and note = #{note, jdbcType=VARCHAR}
+            </if>
+            <if test="terminalId != null">
+                and terminal_id = #{terminalId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBySpm" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and spm in
+        <foreach collection="spmCollection" item="spm" separator="," open="(" close=")">
+            #{spm, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <update id="updateById" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        update
+        <include refid="Table_Name"/>
+        <set>
+            <if test="spm != null">
+                spm = #{spm, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="version != null">
+                version = #{version, jdbcType=VARCHAR},
+            </if>
+            <if test="note != null">
+                note = #{note, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 批量更新 -->
+    <update id="update" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        update <include refid="Table_Name"/>
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="status =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.status != null and item.status != ''">
+                        when id=#{item.id} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="version =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.version != null">
+                        when id=#{item.id} then #{item.version}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="note =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.note != null">
+                        when id=#{item.id} then #{item.note}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+
+    <delete id="delete" parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        delete from
+        <include refid="Table_Name"/>
+        <where>
+            <if test="id != null">
+                and id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="spm != null and spm != ''">
+                and spm = #{spm, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status, jdbcType=INTEGER}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version, jdbcType=VARCHAR}
+            </if>
+            <if test="appId != null">
+                and app_id = #{appId, jdbcType=BIGINT}
+            </if>
+            <if test="terminalId != null">
+                and terminal_id = #{terminalId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+
+    <delete id="deleteBySpm">
+        delete from
+        <include refid="Table_Name"/>
+        where app_id = #{appId, jdbcType=BIGINT}
+        and spm in
+        <foreach collection="spmCollection" open="(" close=")" separator="," item="spm">
+            #{spm, jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByIds">
+        delete from
+        <include refid="Table_Name"/>
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id, jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBySource">
+        delete from
+        <include refid="Table_Name"/>
+        where source = #{source, jdbcType=INTEGER}
+    </delete>
+
+
+</mapper>

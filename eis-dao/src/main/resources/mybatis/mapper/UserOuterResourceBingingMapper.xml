@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.UserOuterResourceBindingMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.UserOuterResourceBinding">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="email" jdbcType="VARCHAR" property="email"/>
+    <result column="type" jdbcType="VARCHAR" property="type"/>
+    <result column="bindValue" jdbcType="VARCHAR" property="bindValue"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_user_outer_resource_bindings`
+  </sql>
+  <sql id="Base_Column_List">
+    id, email, type, bindValue
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.UserOuterResourceBinding"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      email, type, bindValue
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+        #{email,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},#{bindValue,jdbcType=VARCHAR}
+    </trim>
+  </insert>
+
+  <update id="updateBindValue" parameterType="com.netease.hz.bdms.easyinsight.dao.model.UserOuterResourceBinding"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    update
+    <include refid="tableName"/>
+    set bindValue = #{bindValue,jdbcType=VARCHAR}
+    where email = #{email,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
+  </update>
+
+  <select id="getByEmailAndType" resultType="com.netease.hz.bdms.easyinsight.dao.model.UserOuterResourceBinding">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where email = #{email,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getByTypeAndValue" resultType="com.netease.hz.bdms.easyinsight.dao.model.UserOuterResourceBinding">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where bindValue = #{bindValue,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getByEmailsAndType" resultType="com.netease.hz.bdms.easyinsight.dao.model.UserOuterResourceBinding">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where type = #{type,jdbcType=BIGINT} and email in
+    <foreach collection="emails" open="(" close=")" item="email" separator=",">
+      #{email, jdbcType=VARCHAR}
+    </foreach>
+  </select>
+
+  <delete id="deleteByEmailAndType">
+    delete from
+    <include refid="tableName"/>
+    where email = #{email,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
+  </delete>
+</mapper>

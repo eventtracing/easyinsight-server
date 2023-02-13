@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.RuleTemplateMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.RuleTemplate">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="rule" jdbcType="VARCHAR" property="rule"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createEmail"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="update_email" jdbcType="VARCHAR" property="updateEmail"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+    `eis_rule_template`
+  </sql>
+    <sql id="Base_Column_List">
+    id, name, rule, create_email, create_name, update_email,
+    update_name, create_time, update_time
+  </sql>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tableName"/>
+    </select>
+
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.RuleTemplate"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="rule != null">
+                rule,
+            </if>
+            <if test="createEmail != null">
+                create_email,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="updateEmail != null">
+                update_email,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="rule != null">
+                #{rule, jdbcType=VARCHAR},
+            </if>
+            <if test="createEmail != null">
+                #{createEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateEmail != null">
+                #{updateEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete">
+        delete from
+        <include refid="tableName"/>
+        where id = #{id, jdbcType=BIGINT}
+    </delete>
+
+</mapper>

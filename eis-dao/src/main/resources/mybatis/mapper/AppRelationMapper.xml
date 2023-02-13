@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.AppRelationMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.AppRelation">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="parent_app_id" jdbcType="BIGINT" property="parentAppId"/>
+    <result column="app_id" jdbcType="BIGINT" property="appId"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_app_relation`
+  </sql>
+  <sql id="Base_Column_List">
+    id, parent_app_id, app_id
+  </sql>
+
+  <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.AppRelation"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      parent_app_id, app_id
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+        #{parentAppId,jdbcType=BIGINT},#{appId,jdbcType=BIGINT},
+    </trim>
+  </insert>
+
+  <select id="listAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+  </select>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where parent_app_id = #{parentAppId,jdbcType=BIGINT} and app_id = #{appId,jdbcType=BIGINT}
+  </delete>
+</mapper>

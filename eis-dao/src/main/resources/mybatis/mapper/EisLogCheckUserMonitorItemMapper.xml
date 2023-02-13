@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisLogCheckUserMonitorItemMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.logcheck.EisLogCheckUserMonitorItem">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="appId" jdbcType="BIGINT" property="appId"/>
+        <result column="userEmail" jdbcType="VARCHAR" property="userEmail"/>
+        <result column="monitorItemId" jdbcType="BIGINT" property="monitorItemId"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+        `eis_logcheck_user_monitor_item`
+    </sql>
+    <sql id="BASE_COLUMN_LIST">
+        id,appId,userEmail,monitorItemId,type,createTime,updateTime
+    </sql>
+
+    <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.logcheck.EisLogCheckUserMonitorItem"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        <include refid="tableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="appId != null">
+                appId,
+            </if>
+            <if test="userEmail != null">
+                userEmail,
+            </if>
+            <if test="monitorItemId != null">
+                monitorItemId,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="createTime != null">
+                createTime,
+            </if>
+            <if test="updateTime != null">
+                updateTime,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=BIGINT},
+            </if>
+            <if test="userEmail != null">
+                #{userEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="monitorItemId != null">
+                #{monitorItemId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="listOrderByCreateTimeTime" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST"/>
+        from eis_logcheck_user_monitor_item
+        <where>
+            appId = #{appId} and userEmail = #{userEmail}
+        </where>
+        order by createTime desc limit 1000
+    </select>
+
+    <select id="getByUserAndMonitorId" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST"/>
+        from eis_logcheck_user_monitor_item
+        <where>
+            userEmail = #{userEmail} and monitorItemId = #{monitorId}
+        </where>
+    </select>
+
+    <delete id="deleteAllByMonitorId">
+        delete from eis_logcheck_user_monitor_item
+        where monitorItemId =
+            #{monitorId, jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteById">
+        delete from eis_logcheck_user_monitor_item
+        where id =
+            #{id, jdbcType=BIGINT}
+    </delete>
+
+</mapper>

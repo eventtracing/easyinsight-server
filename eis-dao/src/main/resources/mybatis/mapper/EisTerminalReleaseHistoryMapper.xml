@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisTerminalReleaseHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisTerminalReleaseHistory">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="terminal_id" jdbcType="BIGINT" property="terminalId" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="pre_release_id" jdbcType="BIGINT" property="preReleaseId" />
+    <result column="latest" jdbcType="BOOLEAN" property="latest" />
+    <result column="terminal_version_id" jdbcType="BIGINT" property="terminalVersionId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_terminal_release_history`
+  </sql>
+  <sql id="Base_Column_List">
+    id, terminal_id, app_id, pre_release_id, latest, terminal_version_id,
+    create_email, create_name, update_email, update_name, create_time, update_time
+  </sql>
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </select>
+
+</mapper>

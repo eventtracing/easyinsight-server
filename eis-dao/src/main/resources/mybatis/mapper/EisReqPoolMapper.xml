@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisReqPoolMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisReqPool">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="data_owners" jdbcType="VARCHAR" property="dataOwners" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="editable" jdbcType="TINYINT" property="editable" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_req_pool`
+  </sql>
+
+  <sql id="Base_Column_List">
+    id, name, data_owners, description, app_id,editable,
+    create_email, create_name, update_email, update_name, create_time, update_time
+  </sql>
+
+  <select id="queryForPage" resultMap="BaseResultMap">
+    select *
+    from eis_req_pool
+    <where>
+      app_id = #{appId}
+      <if test="dataOwner != null and dataOwner != ''">
+        and data_owners like "%"#{dataOwner}"%"
+      </if>
+      <if test="id != null and id != ''">
+        and id = #{id}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </select>
+</mapper>

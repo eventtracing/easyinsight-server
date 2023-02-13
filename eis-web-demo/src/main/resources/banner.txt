@@ -1,0 +1,10 @@
+${AnsiColor.CYAN}
+
+
+   【曙光埋点服务端】
+   【网易云音乐技术团队荣誉出品】
+
+
+  Spring Boot Version: ${spring-boot.formatted-version}
+===========================================================
+

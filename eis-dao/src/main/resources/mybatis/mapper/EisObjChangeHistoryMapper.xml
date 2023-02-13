@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisObjChangeHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisObjChangeHistory">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="create_email" jdbcType="VARCHAR" property="createEmail" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="update_email" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="req_pool_id" jdbcType="BIGINT" property="reqPoolId"/>
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="consistency" jdbcType="BOOLEAN" property="consistency"/>
+    <result column="conflict_status" jdbcType="VARCHAR" property="conflictStatus"/>
+  </resultMap>
+
+  <sql id="BASIC_COLUMN_LIST">
+    id, obj_id, create_email, create_name, update_email, update_name,
+    create_time, update_time, req_pool_id, type, consistency, conflict_status
+  </sql>
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select
+    <include refid="BASIC_COLUMN_LIST"/>
+    from eis_obj_change_history
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </select>
+
+  <select id="selectByReqPoolIdsAndConflictStatus" resultMap="BaseResultMap">
+    select
+    <include refid="BASIC_COLUMN_LIST"/>
+    from eis_obj_change_history
+    where conflict_status = #{conflictStatus} and req_pool_id in
+    <foreach collection="reqPoolIds" item="reqPoolId" open="(" separator="," close=")">
+      #{reqPoolId, jdbcType=BIGINT}
+    </foreach>
+  </select>
+
+  <select id="selectByConflictStatus" resultMap="BaseResultMap">
+    select
+    <include refid="BASIC_COLUMN_LIST"/>
+    from eis_obj_change_history
+    where conflict_status = #{conflictStatus}
+  </select>
+
+  <select id="selectAllNotConsistency" resultMap="BaseResultMap">
+    select
+    <include refid="BASIC_COLUMN_LIST"/>
+    from eis_obj_change_history
+    where consistency = 0
+  </select>
+
+  <select id="selectDistinctReqPoolIdByConflictStatus" resultType="java.lang.Long">
+    select distinct req_pool_id
+    from eis_obj_change_history
+    where conflict_status = #{conflictStatus}
+  </select>
+
+  <delete id="deleteByIds" >
+    delete from eis_obj_change_history
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_obj_change_history
+    (<include refid="BASIC_COLUMN_LIST"/>)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.id}, #{entity.objId},
+      #{entity.createEmail},#{entity.createName},#{entity.updateEmail},#{entity.updateName},#{entity.createTime},
+      #{entity.updateTime},#{entity.reqPoolId},#{entity.type},#{entity.consistency})
+    </foreach>
+  </insert>
+
+  <update id="updateConflictStatus">
+    update eis_obj_change_history
+    <set>
+      conflict_status = #{conflictStatus}
+    </set>
+    where req_pool_id = #{reqPoolId} and obj_id in
+    <foreach collection="objIds" item="objId" separator="," open="(" close=")">
+      #{objId}
+    </foreach>
+  </update>
+
+</mapper>
