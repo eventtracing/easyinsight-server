@@ -2,7 +2,7 @@
 
 曙光 Easyinsight 平台 server 项目
 
-跟 [easyinsight-wev](https://github.com/eventtracing/easyinsight-web) 配套使用
+跟 [easyinsight-front](https://github.com/eventtracing/easyinsight-front) 配套使用
 
 # 服务端埋点平台说明文档
 
