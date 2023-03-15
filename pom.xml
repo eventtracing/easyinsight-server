@@ -152,12 +152,6 @@
             </dependency>
 
             <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>1.0.1-m-3.5.2</version>
-            </dependency>
-
-            <dependency>
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>${validation-api.version}</version>
