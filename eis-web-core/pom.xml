@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.netease.hz.bdms</groupId>
     <artifactId>easy-insight</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
   </parent>
 
   <groupId>com.netease.hz.bdms</groupId>

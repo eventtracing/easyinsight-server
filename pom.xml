@@ -14,7 +14,7 @@
     <groupId>com.netease.hz.bdms</groupId>
     <artifactId>easy-insight</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>${project.artifactId}</name>
 
     <modules>
@@ -65,22 +65,12 @@
             <dependency>
                 <groupId>com.netease.hz.bdms</groupId>
                 <artifactId>eis-common</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.netease.hz.bdms</groupId>
                 <artifactId>eis-dao</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netease.hz.bdms</groupId>
-                <artifactId>eis-service</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netease.hz.bdms</groupId>
-                <artifactId>eis-web</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
