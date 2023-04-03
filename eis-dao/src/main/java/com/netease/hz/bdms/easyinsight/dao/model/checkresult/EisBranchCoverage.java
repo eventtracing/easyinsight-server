@@ -17,6 +17,7 @@ public class EisBranchCoverage {
     private String oid;           // 筛选字段，日志中标明的oid
     private String eventCode;           // 筛选字段，日志中标明的eventCode
     private String spm;           // 筛选字段，日志中标明的spm
+    private String ruleVer;
     /**
      * 覆盖参数类型
      * {@link BranchCoverageParamTypeEnum}

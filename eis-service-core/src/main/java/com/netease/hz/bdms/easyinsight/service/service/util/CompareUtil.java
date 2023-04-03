@@ -39,10 +39,6 @@ public class CompareUtil {
         String paramCode = param.getCode();
         String logValue = LogUtil.getString(logMap, paramCode);
         boolean containsKey = MapUtils.isNotEmpty(logMap) && logMap.containsKey(paramCode);
-        // 临时逻辑：验证完后删除
-        if (StringUtils.startsWith(logValue, "_v6_")) {
-            log.info("v6prefix found {} {}", JsonUtils.toJson(param), JsonUtils.toJson(logMap));
-        }
         CheckItemResultSimpleDTO checkResult = ruleCompareLog(containsKey, logValue, param);
         if (checkResult == null) {
             return null;

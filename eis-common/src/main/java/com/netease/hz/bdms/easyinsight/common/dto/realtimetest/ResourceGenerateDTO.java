@@ -12,4 +12,5 @@ public class ResourceGenerateDTO {
     private List<String> reqList;
     private Long terminalId;
     private String versionId;
+    private Long ruleVerion;
 }

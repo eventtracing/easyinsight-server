@@ -14,5 +14,6 @@ public class SpmInfoVO {
     private String rootOid;
     private String rootName;
     private String ownerName;
+    private long checkResult;
     private long count;
 }

@@ -5,6 +5,7 @@ import com.netease.eis.adapters.CacheAdapter;
 import com.netease.hz.bdms.easyinsight.common.dto.processor.realtime.statistic.ReqTestInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.processor.realtime.statistic.TreeModeStatisticResultDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.realtimetest.RealTimeTestResourceDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.realtimetest.ServerLogParam;
 import com.netease.hz.bdms.easyinsight.common.enums.BuryPointLogTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.ParamValueTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.RealTestResultEnum;
@@ -17,6 +18,8 @@ import com.netease.hz.bdms.easyinsight.common.vo.logcheck.BranchCoverageDetailVO
 import com.netease.hz.bdms.easyinsight.common.dto.audit.BloodLink;
 import com.netease.hz.bdms.easyinsight.service.service.audit.BuryPointRule;
 import com.netease.hz.bdms.easyinsight.service.service.util.LogUtil;
+import com.netease.hz.bdms.eistest.cache.ConversationMetaCache;
+import com.netease.hz.bdms.eistest.entity.AppPushLogAction;
 import com.netease.hz.bdms.eistest.entity.BuryPointLogRuleCheckDto;
 import com.netease.hz.bdms.eistest.entity.BuryPointMetaInfoDto;
 import com.netease.hz.bdms.eistest.entity.BuryPointStatisticsDto;
@@ -66,6 +69,8 @@ public class RealtimeTestController {
     private BuryPointTestInfoCacheService buryPointTestInfoCacheService;
     @Resource
     private ElasticsearchQueryService elasticsearchQueryService;
+    @Resource
+    private ConversationMetaCache conversationMetaCache;
 
     /**
      * @return {@link BuryPointMetaInfoDto}
@@ -108,6 +113,31 @@ public class RealtimeTestController {
             cacheAdapter.setWithExpireTime(key, JsonUtils.toJson(param), 86400 * 30); // 30d
         }
         return HttpResult.success(true);
+    }
+
+    /**
+     * 上报服务端日志
+     */
+    @PostMapping("/upload/serverlog")
+    public HttpResult<String> uploadServerLog(@RequestBody ServerLogParam param) {
+        log.info("/upload/serverlog param={}", JsonUtils.toJson(param));
+        if (param.getData() == null) {
+            param.setData(new HashMap<>());
+        }
+        param.getData().put("_action", param.getAction());
+        String data = JsonUtils.toJson(param.getData());
+        String conversation = String.valueOf(param.getCode());
+        BuryPointMetaInfo buryPointMetaInfo = conversationMetaCache.get(conversation);
+        if (buryPointMetaInfo == null) {
+            return HttpResult.success("会话ID不存在 " + conversation);
+        }
+        // TODO
+        try {
+            buryPointAnaysisService.parseBuryPointResource(conversation, null, data, AppPushLogAction.LOG.getName());
+        } catch (Exception e) {
+            log.error("parseBuryPointResource failed! code {} data {}", conversation, data, e);
+        }
+        return HttpResult.success(null);
     }
 
     /**

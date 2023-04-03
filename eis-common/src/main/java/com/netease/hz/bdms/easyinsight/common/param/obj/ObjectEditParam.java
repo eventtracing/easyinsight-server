@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.common.param.obj;
 
+import com.netease.hz.bdms.easyinsight.common.enums.TerminalBigTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.param.tag.CidTagInfo;
 import com.netease.hz.bdms.easyinsight.common.param.tag.ObjBasicTagDTO;
 import lombok.Data;
@@ -115,4 +116,9 @@ public class ObjectEditParam {
      * 是否解析CID信息
      */
     private boolean analyseCid;
+
+    /**
+     * 是服务端还是客户端埋点 {@link TerminalBigTypeEnum}
+     */
+    private Integer terminalBigType = TerminalBigTypeEnum.CLIENT.getType();
 }

@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 /**
  * HTTP 响应格式
+ * 基于前端需求及猛犸规范: http://doc.hz.netease.com/pages/viewpage.action?pageId=230130318
  */
 @Data
 public class HttpResult<T> implements Serializable {

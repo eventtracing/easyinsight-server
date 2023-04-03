@@ -366,11 +366,18 @@ public class ReqTaskFacade {
     }
 
     @Transactional(rollbackFor = Throwable.class)
-    public void transTaskStatusToNext(Long id){
+    public void transTaskStatusToNext(Long id, boolean isInTestFinishPage){
         EisReqTask task = reqTaskService.getById(id);
         Integer status = task.getStatus();
-        if(status >= 5){
-            throw new CommonException("状态为测试完成/上线，无法在当前页面操作流转");
+        // 测试完成后，无法通过此接口流转
+        if(status >= ReqTaskStatusEnum.TEST_FINISHED.getState()){
+            return;
+        }
+        // 从'开发完成'流转到'测试完成'，必须在测试完成页面
+        if(ReqTaskStatusEnum.DEV_FINISHED.getState().equals(status)) {
+            if (!isInTestFinishPage) {
+                throw new CommonException("请点击'测试完成'按钮操作");
+            }
         }
 
         // 检查是否有基线合并冲突，有冲突要卡住
@@ -457,7 +464,7 @@ public class ReqTaskFacade {
         }
         if(!CollectionUtils.isEmpty(taskIds)){
             for (Long taskId : taskIds) {
-                transTaskStatusToNext(taskId);
+                transTaskStatusToNext(taskId, false);
             }
         }
     }

@@ -7,12 +7,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RequestMapping("/connection")
 @RestController
-public class ConnectionTestController {
+public class HealthController {
 
-    @GetMapping("/test")
+    @RequestMapping("/connection/test")
     public HttpResult<String> testConnection() {
+        return HttpResult.success("OK");
+    }
+
+    @RequestMapping("/health/online")
+    public HttpResult<String> online() {
+        log.info("应用上线");
+        return HttpResult.success("OK");
+    }
+
+    @RequestMapping("/health/offline")
+    public HttpResult<String> offline() {
+        log.info("应用下线");
         return HttpResult.success("OK");
     }
 }

@@ -223,6 +223,8 @@ public class ParamBindHelper {
                         }
 
                         itemDTO.setValues(values == null ? Lists.newArrayList() : values)
+                                .setSource(paramBindSimpleDTO.getSource())
+                                .setSourceDetail(paramBindSimpleDTO.getSourceDetail())
                                 .setMust(paramBindSimpleDTO.getMust())
                                 .setNotEmpty(paramBindSimpleDTO.getNotEmpty())
                                 .setNeedTest(paramBindSimpleDTO.getNeedTest())

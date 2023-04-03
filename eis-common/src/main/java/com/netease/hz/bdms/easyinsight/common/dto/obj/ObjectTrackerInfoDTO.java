@@ -71,4 +71,9 @@ public class ObjectTrackerInfoDTO {
      */
     private List<ParamBindItemDTO> privateParam;
 
+    /**
+     * tracker内容
+     */
+    private Map<String, String> trackerContents;
+
 }

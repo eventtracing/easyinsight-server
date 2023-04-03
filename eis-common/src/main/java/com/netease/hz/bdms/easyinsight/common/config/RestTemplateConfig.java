@@ -2,6 +2,7 @@ package com.netease.hz.bdms.easyinsight.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -9,7 +10,8 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfig {
 
-    @Bean
+    @Primary
+    @Bean(name="restTemplateWithClient")
     public RestTemplate restTemplate(ClientHttpRequestFactory factory){
         return new RestTemplate(factory);
     }

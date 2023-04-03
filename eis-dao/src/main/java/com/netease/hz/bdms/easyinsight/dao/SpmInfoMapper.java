@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.dao;
 
+import com.netease.hz.bdms.easyinsight.common.OpenSource;
 import com.netease.hz.bdms.easyinsight.dao.model.SpmInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -41,4 +42,7 @@ public interface SpmInfoMapper {
 
     // 批量更新
     void updateById(SpmInfo spmInfo);
+
+    // 按条件查询,模糊查询
+    List<SpmInfo> selectByNameOrCode(SpmInfo queryCondition);
 }

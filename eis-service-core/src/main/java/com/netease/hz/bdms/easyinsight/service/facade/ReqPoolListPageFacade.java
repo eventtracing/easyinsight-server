@@ -7,12 +7,14 @@ import com.netease.hz.bdms.easyinsight.common.context.EtContext;
 import com.netease.hz.bdms.easyinsight.common.dto.common.CommonAggregateDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserSimpleDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.obj.UserPointInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.require.ReqPoolCountsDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.terminal.TerminalSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.ProcessStatusEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.ReqSourceEnum;
 import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
 import com.netease.hz.bdms.easyinsight.common.query.ReqPoolPageQuery;
+import com.netease.hz.bdms.easyinsight.common.util.BeanConvertUtils;
 import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.*;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
@@ -23,6 +25,7 @@ import com.netease.hz.bdms.easyinsight.service.helper.MergeConflictHelper;
 import com.netease.hz.bdms.easyinsight.service.helper.RequirementPoolHelper;
 import com.netease.hz.bdms.easyinsight.service.helper.TerminalVersionInfoHelper;
 import com.netease.hz.bdms.easyinsight.service.service.impl.VersionLinkService;
+import com.netease.hz.bdms.easyinsight.service.service.obj.UserBuryPointService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.*;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +67,8 @@ public class ReqPoolListPageFacade {
     ReqPoolRelBaseService reqPoolRelBaseService;
     @Autowired
     TerminalReleaseService terminalReleaseService;
+    @Autowired
+    UserBuryPointService userBuryPointService;
     @Autowired
     TerminalVersionInfoHelper terminalVersionInfoHelper;
     @Resource
@@ -176,6 +181,9 @@ public class ReqPoolListPageFacade {
                     reqInfoVo.setCreateTime(relReqInfo.getCreateTime().getTime());
                     reqInfoVo.setCreatorName(relReqInfo.getCreateName());
                     reqInfoVo.setMergeConflict(hasMergeConflict);
+                    //用户录入埋点
+                    List<EisUserPointInfo> userPointInfos = userBuryPointService.searchWithReqId(relReqInfo.getId());
+                    reqInfoVo.setUserPointInfos(userPointInfos.stream().map(info -> BeanConvertUtils.convert(info, UserPointInfoDTO.class)).filter(Objects::nonNull).collect(Collectors.toList()));
                     reqInfoVoList.add(reqInfoVo);
                 }
             }

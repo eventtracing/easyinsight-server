@@ -19,4 +19,8 @@ public interface EisCidInfoMapper {
     Integer batchInsert(@Param("cidInfos") List<CidInfo> cidInfos);
 
     Integer deleteByIds(@Param("ids") Collection<Long> ids);
+
+    List<CidInfo> selectCidTagInfosByOid(@Param("bindType") String bindType,
+                                         @Param("oid") String oid,
+                                         @Param("appId") Long appId);
 }

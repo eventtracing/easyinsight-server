@@ -6,6 +6,7 @@ import com.netease.hz.bdms.easyinsight.common.constant.ContextConstant;
 import com.netease.hz.bdms.easyinsight.common.context.EtContext;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserDTO;
 import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
+import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.dao.EisObjChangeHistoryMapper;
 import com.netease.hz.bdms.easyinsight.dao.model.EisObjChangeHistory;
 import com.netease.hz.bdms.easyinsight.service.service.ObjChangeHistoryService;
@@ -40,6 +41,8 @@ public class ObjChangeHistoryServiceImpl implements ObjChangeHistoryService {
         }
         // 插入记录
         objChangeHistoryMapper.insert(objChangeHistory);
+        // 后续删除该日志，用来定位为何产生了多个对象
+        log.info("objChangeHistoryMapper.insert {}", JsonUtils.toJson(objChangeHistory), new RuntimeException());
 
         return objChangeHistory.getId();
     }

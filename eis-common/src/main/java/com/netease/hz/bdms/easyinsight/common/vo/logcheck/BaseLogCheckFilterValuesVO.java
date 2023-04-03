@@ -13,6 +13,17 @@ import java.util.List;
 @Data
 public class BaseLogCheckFilterValuesVO {
 
+    /**
+     * 版本号及对应包信息
+     */
     private List<VersionBuildUUIDVO> versions;
+    /**
+     * 包责任人
+     */
     private List<UserVO> packageOwners;
+    /**
+     * 包规则版本
+     */
+    private List<RuleVersionVO> ruleVersions;
+
 }

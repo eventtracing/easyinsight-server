@@ -6,10 +6,12 @@ import com.netease.hz.bdms.easyinsight.common.constant.ContextConstant;
 import com.netease.hz.bdms.easyinsight.common.context.EtContext;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.spm.SpmInfoDTO;
+import com.netease.hz.bdms.easyinsight.common.param.tag.CidTagInfo;
 import com.netease.hz.bdms.easyinsight.common.util.BeanConvertUtils;
 import com.netease.hz.bdms.easyinsight.dao.SpmInfoMapper;
 import com.netease.hz.bdms.easyinsight.dao.model.SpmInfo;
 import com.netease.hz.bdms.easyinsight.service.service.SpmInfoService;
+import com.netease.hz.bdms.easyinsight.service.service.obj.ObjCidInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 public class SpmInfoServiceImpl implements SpmInfoService {
     @Autowired
     SpmInfoMapper spmMapInfoMapper;
+    @Autowired
+    ObjCidInfoService objCidInfoService;
 
     private SpmInfoDTO do2Dto(SpmInfo spmInfo) {
         SpmInfoDTO spmInfoDTO = BeanConvertUtils
@@ -100,7 +104,41 @@ public class SpmInfoServiceImpl implements SpmInfoService {
                 .map(this::do2Dto)
                 .collect(Collectors.toList());
     }
-
+    @Override
+    public List<SpmInfoDTO> selectByNameOrCode(Long appId, SpmInfo query,boolean isSerarch) {
+        List<SpmInfoDTO> resultList=new ArrayList<>();
+        // 参数检查
+        Preconditions.checkArgument(null != query, "查询条件不能为空");
+        Preconditions.checkArgument(null != appId, "appId不能为空");
+        query.setAppId(appId);  // 必传字段
+        List<SpmInfo> spmInfoList = new ArrayList<>();
+        if (isSerarch) {
+            spmInfoList =spmMapInfoMapper.selectByNameOrCode(query);
+        }else {
+            spmInfoList =spmMapInfoMapper.select(query);
+        }
+        if (CollectionUtils.isEmpty(spmInfoList)) {
+            return new ArrayList<>(0);
+        }
+        // 数据转化
+        List<SpmInfoDTO> tempList = spmInfoList.stream()
+                .map(this::do2Dto)
+                .collect(Collectors.toList());
+        tempList.stream().forEach(spmInfo -> {
+            String oid =spmInfo.getSpm().contains("\\|")?spmInfo.getSpm():spmInfo.getSpm().split("\\|")[0];
+            List<CidTagInfo> cidTagInfos=objCidInfoService.getCidTagInfosByOid(appId,oid);
+            if (CollectionUtils.isNotEmpty(cidTagInfos)){
+                cidTagInfos.stream().forEach(cidTagInfo -> {
+                    SpmInfoDTO spmInfoDTO= new SpmInfoDTO();
+                    spmInfoDTO.setSpm(cidTagInfo.getCid().concat("|").concat(spmInfo.getSpm()));
+                    spmInfoDTO.setName(cidTagInfo.getName().concat("|").concat(spmInfo.getName()));
+                    resultList.add(spmInfoDTO);
+                });
+            }
+            resultList.add(spmInfo);
+        });
+    return resultList;
+    }
     @Override
     public List<SpmInfoDTO> listAll() {
         List<SpmInfo> spmInfoList = spmMapInfoMapper.listAll();

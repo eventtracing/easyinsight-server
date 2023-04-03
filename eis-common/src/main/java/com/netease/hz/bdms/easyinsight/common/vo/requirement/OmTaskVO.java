@@ -23,4 +23,9 @@ public class OmTaskVO {
 
     private UserDTO verifier;
 
+    /**
+     * 所属终端ID，如果为空则是不确定
+     */
+    private Long terminalId;
+
 }

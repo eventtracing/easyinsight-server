@@ -152,6 +152,11 @@ public class ObjectInfoDTO {
     private String bizGroup;
 
     /**
+     * 业务线名称
+     */
+    private String bizGroupName;
+
+    /**
      * 是否解析cid
      */
     private boolean analyseCid;

@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 /**
  * @author: xumengqiang
  * @date: 2021/10/15 17:36
+ * @see: http://doc.hz.netease.com/pages/viewpage.action?pageId=164375781 报警类型
  */
 @Data
 @Accessors(chain = true)

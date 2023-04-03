@@ -102,7 +102,7 @@ public class EsQueryOperation {
         }
         queryBuilder.must(QueryBuilders.termQuery("type", logType));
         TermsAggregationBuilder aggregationByType = AggregationBuilders.terms("agg_type").field("type");
-        TermsAggregationBuilder aggregationBySpm = AggregationBuilders.terms("agg_spm").field("spm").size(100);
+        TermsAggregationBuilder aggregationBySpm = AggregationBuilders.terms("agg_spm").field("spm").size(200);
         TermsAggregationBuilder aggregationByEvent = AggregationBuilders.terms("agg_event").field("eventCode");
         TermsAggregationBuilder aggregationByResult = AggregationBuilders.terms("agg_checkType").field("checkType");
         aggregationByType.subAggregation(aggregationBySpm);
@@ -175,7 +175,7 @@ public class EsQueryOperation {
 //        queryBuilder.must(QueryBuilders.rangeQuery("index").gte(1));
         TermsAggregationBuilder aggregationByType = AggregationBuilders.terms("agg_type").field("type");
         TermsAggregationBuilder aggregationByEvent = AggregationBuilders.terms("agg_event").field("eventCode");
-        TermsAggregationBuilder aggregationBySpm = AggregationBuilders.terms("agg_spm").field("spm").size(100);
+        TermsAggregationBuilder aggregationBySpm = AggregationBuilders.terms("agg_spm").field("spm").size(200);
         aggregationByType.subAggregation(aggregationByEvent);
         aggregationByEvent.subAggregation(aggregationBySpm);
         sourceBuilder.aggregation(aggregationByType);
@@ -342,7 +342,7 @@ public class EsQueryOperation {
             queryBuilder.must(QueryBuilders.termQuery("code", code));
         }
         queryBuilder.must(QueryBuilders.termQuery("type", logType));
-        TermsAggregationBuilder aggregationBySpm = AggregationBuilders.terms("agg_spm").field("spm").size(100);
+        TermsAggregationBuilder aggregationBySpm = AggregationBuilders.terms("agg_spm").field("spm").size(200);
 
         sourceBuilder.aggregation(aggregationBySpm);
         sourceBuilder.query(queryBuilder);

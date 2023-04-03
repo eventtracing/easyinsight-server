@@ -2,7 +2,7 @@ package com.netease.hz.bdms.eistest.ws.common;
 
 /**
  * WebSocket Uri 里的路径变量,
- * 例如 ws://xxx.com/process/realtime/scancode/22076 里的 22076 就是一个路径变量
+ * 例如 ws://intern.easyinsight-dev.bdms.netease.com/process/realtime/scancode/22076 里的 22076 就是一个路径变量
  *
  * @author wangliangyuan
  * @date 2021-09-07 下午 05:12

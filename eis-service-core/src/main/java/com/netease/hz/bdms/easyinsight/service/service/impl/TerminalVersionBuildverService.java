@@ -1,11 +1,13 @@
 package com.netease.hz.bdms.easyinsight.service.service.impl;
 
 import com.netease.hz.bdms.easyinsight.common.enums.CommonKVCodeEnum;
+import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,8 +33,8 @@ public class TerminalVersionBuildverService {
         return result;
     }
 
-    public void updateBuildVersion(long terminalVersionId, String buildver) {
+    public void updateBuildVersion(long terminalVersionId, String buildUUids) {
         String k = String.valueOf(terminalVersionId);
-        commonKVService.set(CommonKVCodeEnum.T_V_BUILDVER.name(), k, buildver);
+        commonKVService.set(CommonKVCodeEnum.T_V_BUILDVER.name(), k, buildUUids);
     }
 }
