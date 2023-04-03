@@ -229,12 +229,15 @@ public class ObjectFacade implements InitializingBean {
             objectBasic.setExt(JsonUtils.toJson(objectExtDTO));
             final Long objId = objectBasicService.insert(objectBasic);
             //写入用户埋点表
-            EisUserPointInfo userPointInfo = userBuryPointService.getById(param.getUserPointId());
-            if(userPointInfo != null && userPointInfo.getId() > 0) {
-                Map<String, String> extMap = JsonUtils.parseObject(userPointInfo.getExtInfo(), new TypeReference<Map<String, String>>() {});
-                extMap.put("objName", objectBasic.getName());
-                extMap.put("oid", objectBasic.getOid());
-                userBuryPointService.updateExtById(userPointInfo.getId(), JsonUtils.toJson(extMap));
+            if(param.getUserPointId() != null && param.getUserPointId() > 0) {
+                EisUserPointInfo userPointInfo = userBuryPointService.getById(param.getUserPointId());
+                if (userPointInfo != null && userPointInfo.getId() > 0) {
+                    Map<String, String> extMap = JsonUtils.parseObject(userPointInfo.getExtInfo(), new TypeReference<Map<String, String>>() {
+                    });
+                    extMap.put("objName", objectBasic.getName());
+                    extMap.put("oid", objectBasic.getOid());
+                    userBuryPointService.updateExtById(userPointInfo.getId(), JsonUtils.toJson(extMap));
+                }
             }
             // 处理对象新建/变更标识信息，即向表`eis_obj_change_history`中插入记录
             EisObjChangeHistory objChangeHistory = new EisObjChangeHistory();
