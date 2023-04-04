@@ -130,14 +130,18 @@ public class SpmInfoServiceImpl implements SpmInfoService {
             if (CollectionUtils.isNotEmpty(cidTagInfos)){
                 cidTagInfos.stream().forEach(cidTagInfo -> {
                     SpmInfoDTO spmInfoDTO= new SpmInfoDTO();
-                    spmInfoDTO.setSpm(cidTagInfo.getCid().concat("|").concat(spmInfo.getSpm()));
+                    String cid=cidTagInfo.getCid();
+                    if (cid.contains(":")){
+                        cid=cid.replace(":","#");
+                    }
+                    spmInfoDTO.setSpm(cid.concat("|").concat(spmInfo.getSpm()));
                     spmInfoDTO.setName(cidTagInfo.getName().concat("|").concat(spmInfo.getName()));
                     resultList.add(spmInfoDTO);
                 });
             }
             resultList.add(spmInfo);
         });
-    return resultList;
+        return resultList;
     }
     @Override
     public List<SpmInfoDTO> listAll() {
