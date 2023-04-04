@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisUserPointInfoMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisUserPointInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="line" jdbcType="VARCHAR" property="line"/>
+    <result column="terminal" jdbcType="BIGINT" property="terminal" />
+    <result column="page" jdbcType="VARCHAR" property="page"/>
+    <result column="subPage" jdbcType="VARCHAR" property="subPage"/>
+    <result column="module" jdbcType="VARCHAR" property="module"/>
+    <result column="location" jdbcType="VARCHAR" property="location"/>
+    <result column="eventId" jdbcType="BIGINT" property="eventId" />
+    <result column="image" jdbcType="VARCHAR" property="image"/>
+    <result column="reqId" jdbcType="BIGINT" property="reqId" />
+    <result column="designed" jdbcType="INTEGER" property="designed" />
+    <result column="invalid" jdbcType="INTEGER" property="invalid" />
+    <result column="consistency" jdbcType="INTEGER" property="consistency" />
+    <result column="creator" jdbcType="VARCHAR" property="creator"/>
+    <result column="developer" jdbcType="VARCHAR" property="developer"/>
+    <result column="extInfo" jdbcType="VARCHAR" property="extInfo"/>
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_user_point_info`
+  </sql>
+  <sql id="Base_Column_List">
+    id, line, terminal, page, subPage, module, location, eventId, image, reqId, designed, invalid, consistency, creator, developer, extInfo, createTime, updateTime
+  </sql>
+
+  <select id="getById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from eis_user_point_info
+    <where>
+      id = #{id}
+    </where>
+  </select>
+
+  <select id="selectByReqId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from eis_user_point_info
+    <where>
+      reqId = #{reqId,jdbcType=BIGINT}
+    </where>
+  </select>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into eis_user_point_info (line, terminal, page, subPage, module, location, eventId, image, reqId, designed, invalid, consistency, creator, developer, extInfo, createTime, updateTime)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.line},#{entity.terminal},#{entity.page},#{entity.subPage},#{entity.module},#{entity.location},#{entity.eventId},#{entity.image},#{entity.reqId},#{entity.designed},#{entity.invalid},#{entity.consistency},#{entity.creator},#{entity.developer},#{entity.extInfo},#{entity.createTime},#{entity.updateTime})
+    </foreach>
+  </insert>
+
+  <update id="updateExtInfo">
+    update eis_user_point_info
+    <set>
+      extInfo = #{extInfo}
+    </set>
+      where id = #{id}
+  </update>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+</mapper>

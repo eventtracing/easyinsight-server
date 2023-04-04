@@ -11,6 +11,7 @@ import com.netease.hz.bdms.eistest.cache.BuryPointProcessorKey;
 import com.netease.hz.bdms.eistest.service.impl.ConversationBasicInfoService;
 import com.netease.hz.bdms.eistest.ws.SessionManager;
 import com.netease.hz.bdms.eistest.ws.dto.AppStorage;
+import com.netease.hz.bdms.eistest.ws.handler.AppWsHandler;
 import com.netease.hz.bdms.eistest.ws.session.AppSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,21 @@ public class RealtimeExamController {
 
         testDetailInfo.setBaseLineName(conversationBasicInfoService.getBaseLineName(conversation));
         return HttpResult.success(testDetailInfo);
+    }
+
+    @GetMapping("/check-scanned")
+    public HttpResult<Boolean> checkScanned(String conversation) {
+        if (StringUtils.isEmpty(conversation)) {
+            throw new CommonException("conversation 参数错误，不能为空");
+        }
+
+        try {
+            String s = cacheAdapter.get(AppWsHandler.getAppScanSuccessCacheKey(conversation));
+            return HttpResult.success(StringUtils.isNotBlank(s));
+        } catch (Exception e) {
+            log.error("获取APP是否扫码成功失败", e);
+            return HttpResult.error(500, "获取APP是否扫码成功失败");
+        }
     }
 
     @DeleteMapping("/clear/log")

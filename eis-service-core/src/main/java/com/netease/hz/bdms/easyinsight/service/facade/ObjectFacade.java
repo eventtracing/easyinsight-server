@@ -1,6 +1,9 @@
 package com.netease.hz.bdms.easyinsight.service.facade;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.netease.eis.adapters.CacheAdapter;
 import com.netease.eis.adapters.RealtimeConfigAdapter;
+import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
 import com.netease.hz.bdms.easyinsight.service.service.*;
 import com.netease.hz.bdms.easyinsight.common.dto.obj.*;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamBindItemDTO;
@@ -46,6 +49,7 @@ import com.netease.hz.bdms.easyinsight.service.helper.TrackerDiffHelper;
 import com.netease.hz.bdms.easyinsight.service.service.obj.AllTrackerReleaseService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.ObjCidInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.ObjTerminalTrackerService;
+import com.netease.hz.bdms.easyinsight.service.service.obj.UserBuryPointService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
@@ -137,6 +141,9 @@ public class ObjectFacade implements InitializingBean {
     @Autowired
     SpmInfoService spmInfoService;
 
+    @Autowired
+    UserBuryPointService userBuryPointService;
+
     @Resource
     private TrackerDiffHelper trackerDiffHelper;
 
@@ -145,18 +152,19 @@ public class ObjectFacade implements InitializingBean {
 
     @Resource
     private CacheAdapter cacheAdapter;
+
     /**
      * 是否一定要传图片 key: appId
      */
-    private static CheckObjImageNotEmptyConfig checkObjImageNotEmptyConfig = new CheckObjImageNotEmptyConfig();
+    private static Map<String, CheckConfig> checkConfigs = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        realtimeConfigAdapter.listenJSON("checkObjImageNotEmpty", (s) ->  checkObjImageNotEmptyConfig = JsonUtils.parseObject(s, CheckObjImageNotEmptyConfig.class));
+        realtimeConfigAdapter.listenJSON("checkConfigs", (s) ->  checkConfigs = JsonUtils.parseObject(s, new TypeReference<Map<String, CheckConfig>>() {}));
     }
 
     @Data
-    public static class CheckObjImageNotEmptyConfig {
+    public static class CheckConfig {
         private boolean defaultValue = false;
         private Map<Long, Boolean> appValues = new HashMap<>();
     }
@@ -175,9 +183,15 @@ public class ObjectFacade implements InitializingBean {
         Preconditions.checkArgument(null != param, "新建对象信息不能为空！");
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(param.getBasics()), "对象基本信息不能为空！");
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(param.getTrackers()), "对象埋点信息不能为空！");
+        if (param.getTerminalBigType() == null) {
+            param.setTerminalBigType(TerminalBigTypeEnum.CLIENT.getType());
+        }
         for (ObjectBasicCreateParam basic : param.getBasics()) {
             ParamCheckUtil.checkOid(basic.getOid());
         }
+
+        // 0. 检查
+        checkTerminalId(param.getTrackers().stream().map(o -> o.getTerminalId()).collect(Collectors.toSet()), param.getTerminalBigType());
 
         // 1. 检查对象是否已经存在 检查oid命名
         List<ObjectBasicCreateParam> objBasicInfoList = param.getBasics();
@@ -189,7 +203,9 @@ public class ObjectFacade implements InitializingBean {
                 .collect(Collectors.toList());
         objBasicInfoList.forEach(o -> objectHelper.checkOidByType(o.getOid(), o.getType()));
         objBasicInfoList.forEach(o -> objectHelper.checkBridge(o.getBridgeSubAppId(), o.getBridgeSubTerminalId(), o.getSpecialType()));
-        objectHelper.checkObjExists(objectOidList, objectNameList, objBasicInfoList.get(0).getType());
+        if (mustCheckOidUnique(appId)) {
+            objectHelper.checkObjExists(objectOidList, objectNameList, objBasicInfoList.get(0).getType());
+        }
 
         // 检查父对象是否存在
         param.getTrackers().forEach(trackerCreateParam -> objectHelper.checkParentExist(appId, trackerCreateParam.getParentObjs(), trackerCreateParam.getTerminalId(), param.getReqPoolId()));
@@ -212,6 +228,17 @@ public class ObjectFacade implements InitializingBean {
             objectExtDTO.setAnalyseCid(objectExtDTO.isAnalyseCid());
             objectBasic.setExt(JsonUtils.toJson(objectExtDTO));
             final Long objId = objectBasicService.insert(objectBasic);
+            //写入用户埋点表
+            if(param.getUserPointId() != null && param.getUserPointId() > 0) {
+                EisUserPointInfo userPointInfo = userBuryPointService.getById(param.getUserPointId());
+                if (userPointInfo != null && userPointInfo.getId() > 0) {
+                    Map<String, String> extMap = JsonUtils.parseObject(userPointInfo.getExtInfo(), new TypeReference<Map<String, String>>() {
+                    });
+                    extMap.put("objName", objectBasic.getName());
+                    extMap.put("oid", objectBasic.getOid());
+                    userBuryPointService.updateExtById(userPointInfo.getId(), JsonUtils.toJson(extMap));
+                }
+            }
             // 处理对象新建/变更标识信息，即向表`eis_obj_change_history`中插入记录
             EisObjChangeHistory objChangeHistory = new EisObjChangeHistory();
             objChangeHistory.setObjId(objId);
@@ -219,9 +246,14 @@ public class ObjectFacade implements InitializingBean {
             objChangeHistory.setType(OperationTypeEnum.CREATE.getOperationType());
             objChangeHistory.setConsistency(param.getConsistency());
             final Long objChangeHistoryId = objChangeHistoryService.insert(objChangeHistory);
+            List<EisObjChangeHistory> objChangeHistoryList = objChangeHistoryService.getByObjAndReqPoolId(objId, param.getReqPoolId());
+            if(objChangeHistoryList.size() > 1) {
+                log.info("重复操做插入objChangeHistory {} {}", objId, param.getReqPoolId());
+                throw new CommonException("请勿重复操作！");
+            }
             // 插入对象关联图片信息
             List<String> imgUrls = objectBasicInfo.getImgUrls();
-            checkImageUrlsNotEmpty(appId, imgUrls);
+            checkImageUrlsNotEmpty(appId, objectBasic.getType(), imgUrls);
             List<ImageRelationDTO> imageRelationDTOS = Lists.newArrayList();
             for (String imgUrl : imgUrls) {
                 ImageRelationDTO imageRelationDTO = new ImageRelationDTO();
@@ -259,6 +291,22 @@ public class ObjectFacade implements InitializingBean {
         return result;
     }
 
+    private void checkTerminalId(Set<Long> terminalIds, Integer terminalBigType) {
+        // 每次创建埋点输入的端数量都非常有限，因此这里直接循环调用
+        terminalIds.forEach(terminalId -> {
+            if (terminalId == null) {
+                throw new CommonException("未指定端");
+            }
+            TerminalSimpleDTO terminalSimpleDTO = terminalService.getById(terminalId);
+            if (terminalSimpleDTO == null) {
+                throw new CommonException("terminalId无效");
+            }
+            if (!Objects.equals(terminalBigType, terminalSimpleDTO.getType())) {
+                throw new CommonException("服务端埋点只能建在服务端下，客户端埋点只能建在客户端下，请检查端是不是选错了");
+            }
+        });
+    }
+
     /**
      * 仅更新对象名字
      * @param id
@@ -274,7 +322,6 @@ public class ObjectFacade implements InitializingBean {
         objectBasicService.update(objectBasic);
         return objectBasicService.getById(id);
     }
-
 
     /**
      * 变更对象
@@ -322,6 +369,11 @@ public class ObjectFacade implements InitializingBean {
         objChangeHistory.setType(reuse ? OperationTypeEnum.REUSER.getOperationType() : OperationTypeEnum.CHANGE.getOperationType());
         objChangeHistory.setConsistency(param.getConsistency());
         final Long objChangeHistoryId = objChangeHistoryService.insert(objChangeHistory);
+        List<EisObjChangeHistory> objChangeHistoryList = objChangeHistoryService.getByObjAndReqPoolId(objId, reqPoolId);
+        if(objChangeHistoryList.size() > 1) {
+            log.info("重复操做插入objChangeHistory {} {}", objId, reqPoolId);
+            throw new CommonException("请勿重复操作！");
+        }
         // 1.3 插入对象关联图片信息
         List<String> imgUrls = param.getImgUrls();
         List<ImageRelationDTO> imageRelationDTOS = Lists.newArrayList();
@@ -379,7 +431,18 @@ public class ObjectFacade implements InitializingBean {
             throw new ObjException("对象基本信息有误，无法完成编辑");
         }
         objectBasic.setSpecialType(null);
-        ObjectExtDTO ext = getExt(objId);
+        ObjectBasic originBasic = objectBasicService.getById(objId);
+        if (originBasic == null) {
+            throw new CommonException("objId = " + objId + " 对象不存在");
+        }
+        // 编辑基本信息时，不可修改涉及埋点规则的字段
+        if (!StringUtils.equals(originBasic.getOid(), param.getOid())) {
+            throw new CommonException("编辑基本信息时，不可改变线上埋点规则。因此对象oid不可改变");
+        }
+        if (!Objects.equals(originBasic.getType(), param.getType())) {
+            throw new CommonException("编辑基本信息时，不可改变线上埋点规则。因此对象类型不可改变");
+        }
+        ObjectExtDTO ext = getExt(originBasic);
         // 只更新基本属性，不修改更改是否是桥梁、也不支持更改桥梁属性
         ext.setBasicTag(convertObjBasicTag(param.getOid(), param.getType(), param.getBasicTag()));
         ext.setAnalyseCid(param.isAnalyseCid());
@@ -389,7 +452,7 @@ public class ObjectFacade implements InitializingBean {
         imageRelationService.deleteImageRelation(Collections.singletonList(objHistoryId),
                 EntityTypeEnum.OBJHISTORY.getType());
         List<String> imgUrls = param.getImgUrls();
-        checkImageUrlsNotEmpty(appId, imgUrls);
+        checkImageUrlsNotEmpty(appId, objectBasic.getType(), imgUrls);
         List<ImageRelationDTO> imageRelationDTOS = Lists.newArrayList();
         for (String imgUrl : imgUrls) {
             ImageRelationDTO imageRelationDTO = new ImageRelationDTO();
@@ -433,6 +496,7 @@ public class ObjectFacade implements InitializingBean {
                 "对象埋点信息不能为空！");
         ParamCheckUtil.checkOid(param.getOid());
 
+        checkTerminalId(param.getTrackers().stream().map(o -> o.getTerminalId()).collect(Collectors.toSet()), param.getTerminalBigType());
 
         // 勾选多端同步时，参数绑定不一致问题处理
         fixParamBindsConsitency(param);
@@ -496,6 +560,11 @@ public class ObjectFacade implements InitializingBean {
                 throw new CommonException("只有新增对象才可以更新OID");
             }
         }
+        ObjTypeEnum originType = ObjTypeEnum.fromType(objectBasic.getType());
+        ObjTypeEnum targetType = ObjTypeEnum.fromType(param.getType());
+        if (originType.getNamespace() != targetType.getNamespace()) {
+            throw new CommonException("请确认勾选的对象类型：无法在客户端对象和服务端对象之间相互转换。");
+        }
 
         if (objectBasic.getSpecialType() == null) {
             objectBasic.setSpecialType(ObjSpecialTypeEnum.NORMAL.getName());
@@ -520,7 +589,7 @@ public class ObjectFacade implements InitializingBean {
         imageRelationService.deleteImageRelation(Collections.singletonList(objHistoryId),
                 EntityTypeEnum.OBJHISTORY.getType());
         List<String> imgUrls = param.getImgUrls();
-        checkImageUrlsNotEmpty(appId, imgUrls);
+        checkImageUrlsNotEmpty(appId, objectBasic.getType(), imgUrls);
         List<ImageRelationDTO> imageRelationDTOS = Lists.newArrayList();
         for (String imgUrl : imgUrls) {
             ImageRelationDTO imageRelationDTO = new ImageRelationDTO();
@@ -649,6 +718,7 @@ public class ObjectFacade implements InitializingBean {
         objDetailsVO.setBasicTag(new ObjBasicTagDTO());
         objDetailsVO.getBasicTag().setObjSubType(objectBasicInfo.getObjSubType());
         objDetailsVO.getBasicTag().setBizGroup(objectBasicInfo.getBizGroup());
+        objDetailsVO.getBasicTag().setBizGroupName(objectBasicInfo.getBizGroupName());
         composeCidInfo(objectBasicInfo.getAppId(), objDetailsVO);
         return objDetailsVO;
     }
@@ -679,6 +749,7 @@ public class ObjectFacade implements InitializingBean {
         objDetailsVO.setBasicTag(new ObjBasicTagDTO());
         objDetailsVO.getBasicTag().setObjSubType(objectBasicInfo.getObjSubType());
         objDetailsVO.getBasicTag().setBizGroup(objectBasicInfo.getBizGroup());
+        objDetailsVO.getBasicTag().setBizGroupName(objectBasicInfo.getBizGroupName());
         composeCidInfo(objectBasicInfo.getAppId(), objDetailsVO);
 
         // 判断对象是否已经上线
@@ -1028,14 +1099,153 @@ public class ObjectFacade implements InitializingBean {
         return result;
     }
 
+    /**
+     * 根据对象id搜索子树
+     * @param terminalId 端类型
+     * @param oid 搜索条件
+     * @return
+     */
+    public ObjTreeVO searchTreeByOid(String oid, Long terminalId){
+        EisTerminalReleaseHistory latestRelease = terminalReleaseService.getLatestRelease(terminalId);
+        Preconditions.checkArgument(null != latestRelease, "发布版本为空！");
+        Long releasedId = latestRelease.getId();
+        ObjTreeVO result = new ObjTreeVO();
+        //获取全量血缘图
+        LinageGraph graph = lineageHelper.genReleasedLinageGraph(releasedId);
+
+        Map<Long, Set<Long>> parentsMap = graph.getParentsMap();
+        Set<Long> objIds = Sets.newHashSet();
+        for (Long objId : parentsMap.keySet()) {
+            objIds.add(objId);
+            objIds.addAll(parentsMap.getOrDefault(objId, Sets.newHashSet()));
+        }
+        //查询当前发布版本下的所有对象信息
+        List<ObjectBasic> allList = objectBasicService.getByIds(objIds);
+        List<ObjectBasic> objectBasicList = new ArrayList<>(allList);
+        Map<String, Long> oidToObjIdMap = objectBasicList.stream().collect(Collectors.toMap(ObjectBasic::getOid, ObjectBasic::getId, (oldV, newV) -> oldV));
+        //若为空集，直接返回
+        if (CollectionUtils.isEmpty(objectBasicList)) {
+            return result;
+        }
+        //构建简易的对象层级关系（获取对象列表树）
+        Set<Long> selectedObjIds = objectBasicList.stream()
+                .map(ObjectBasic::getId)
+                .collect(Collectors.toSet());
+        Long targetObjId = oidToObjIdMap.get(oid);
+        List<Node> rootNodes = lineageHelper.getSonTree(graph, selectedObjIds, targetObjId);
+        if (StringUtils.isNotBlank(oid)) {
+            String spmByObjId = CommonUtil.transSpmByOidToSpmByObjId(oidToObjIdMap, oid);
+            rootNodes = lineageHelper.filterObjTreeBySpm(rootNodes, spmByObjId);
+        }
+        Set<Long> objIdSet = lineageHelper.getObjIdsFromTree(rootNodes);
+        //对象详细信息
+        List<ObjectInfoDTO> objectBasicInfoDTOList = this.getObjInfoByReleaseId(releasedId, allList);
+        Map<Long, ObjectInfoDTO> objInfoMap = objectBasicInfoDTOList.stream()
+                .filter(k -> objIdSet.contains(k.getId()))
+                .collect(Collectors.toMap(ObjectInfoDTO::getId, Function.identity()));
+        //遍历树，拼上oid name
+        for(Node root : rootNodes){
+            traverseTree(root, objInfoMap);
+        }
+        //构造返回结果
+        result.setTree(rootNodes);
+        result.setObjInfoMap(objInfoMap);
+        return result;
+    }
+
+
+    /**
+     * 搜索对象路径
+     * @param oid 对象名称
+     * @param terminalId 端类型
+     * @return
+     */
+    public ObjTreeVO getPathTreeByOid(String oid, Long terminalId){
+        EisTerminalReleaseHistory latestRelease = terminalReleaseService.getLatestRelease(terminalId);
+        Preconditions.checkArgument(null != latestRelease, "发布版本为空！");
+        Long releasedId = latestRelease.getId();
+
+        ObjTreeVO result = new ObjTreeVO();
+        // 1. 获取全量血缘图
+        LinageGraph graph = lineageHelper.genReleasedLinageGraph(releasedId);
+
+        Map<Long, Set<Long>> parentsMap = graph.getParentsMap();
+        Set<Long> objIds = Sets.newHashSet();
+        for (Long objId : parentsMap.keySet()) {
+            objIds.add(objId);
+            objIds.addAll(parentsMap.getOrDefault(objId, Sets.newHashSet()));
+        }
+
+        // 2. 查询当前发布版本下的所有对象信息
+        List<ObjectBasic> allList = objectBasicService.getByIds(objIds);
+        List<ObjectBasic> objectBasicList = new ArrayList<>(allList);
+
+        // 若为空集，直接返回
+        if (CollectionUtils.isEmpty(objectBasicList)) {
+            return result;
+        }
+
+        // 4. 构建简易的对象层级关系（获取对象列表树）
+        Set<Long> selectedObjIds = objectBasicList.stream()
+                .map(ObjectBasic::getId)
+                .collect(Collectors.toSet());
+
+        List<Node> rootNodes = lineageHelper.getObjTree(graph, selectedObjIds);
+
+        // 3. 根据条件筛选对象
+        // 根据对象名称或者Oid过滤
+
+        // 获取匹配方法，这里会根据是否是SPM，走SPM匹配，或按名字oid匹配
+        if (StringUtils.isNotBlank(oid)) {
+            Map<String, Long> oidToObjIdMap = objectBasicList.stream().collect(Collectors.toMap(ObjectBasic::getOid, ObjectBasic::getId, (oldV, newV) -> oldV));
+            Map<Long, ObjectBasic> allObjBasicMap = objectBasicList.stream().collect(Collectors.toMap(ObjectBasic::getId, o -> o, (oldV, newV) -> oldV));
+            Pair<String, List<Node>> p = filterRootNodes(rootNodes, oid, objectBasicList, oidToObjIdMap, allObjBasicMap);
+            rootNodes = p.getValue();
+        }
+
+        Set<Long> objIdSet = lineageHelper.getObjIdsFromTree(rootNodes);
+
+        // 5. 对象详细信息
+        List<ObjectInfoDTO> objectBasicInfoDTOList = this.getObjInfoByReleaseId(releasedId, allList);
+        Map<Long, ObjectInfoDTO> objInfoMap = objectBasicInfoDTOList.stream()
+                .filter(k -> objIdSet.contains(k.getId()))
+                .collect(Collectors.toMap(ObjectInfoDTO::getId, Function.identity()));
+
+        //遍历树，拼上oid name
+        for(Node root : rootNodes){
+            traverseTree(root, objInfoMap);
+            if(root.getOid().equals(oid)){
+                root.setChildren(new ArrayList<>());
+            }
+        }
+
+        // 构造返回结果
+        result.setTree(rootNodes);
+        result.setObjInfoMap(objInfoMap);
+        return result;
+    }
+
+
+    private void traverseTree(Node root, Map<Long, ObjectInfoDTO> objInfoMap){
+        if(root.getObjId() != null && objInfoMap.get(root.getObjId()) != null){
+            root.setOid(objInfoMap.get(root.getObjId()).getOid());
+            root.setObjName(objInfoMap.get(root.getObjId()).getName());
+        }
+        if(CollectionUtils.isNotEmpty(root.getChildren())){
+            for(Node childNode : root.getChildren()){
+                traverseTree(childNode, objInfoMap);
+            }
+        }
+    }
+
     private void composeBizGroup(Long appId, List<Node> rootNodes, Set<Long> objIdSet) {
         List<ObjectBasic> all = objectBasicService.getByIds(objIdSet);
         Map<Long, String> bizGroupMap = new HashMap<>();
         all.forEach(obj -> {
             ObjectExtDTO objectExtDTO = parseExt(obj.getExt());
-            String bizGroup = objectExtDTO.getBasicTag() == null ? null : objectExtDTO.getBasicTag().getBizGroup();
-            if (StringUtils.isNotBlank(bizGroup)) {
-                bizGroupMap.put(obj.getId(), bizGroup);
+            String bizGroupName = objectExtDTO.getBasicTag() == null ? null : objectExtDTO.getBasicTag().getBizGroupName();
+            if (StringUtils.isNotBlank(bizGroupName)) {
+                bizGroupMap.put(obj.getId(), bizGroupName);
             }
         });
         if (MapUtils.isEmpty(bizGroupMap)) {
@@ -1051,14 +1261,16 @@ public class ObjectFacade implements InitializingBean {
      * @param dataMap
      */
     private void doComposeBizGroup(Node current, Map<Long, String> dataMap, String parentBizGroup) {
-        current.setBizGroup(parentBizGroup);    // 默认继承父亲
+        //current.setBizGroup(parentBizGroup);    // 默认继承父亲
+        current.setBizGroupName(parentBizGroup);// 默认继承父亲
         String bizGroupOfCurrentObjId = dataMap.get(current.getObjId());
         if (bizGroupOfCurrentObjId != null) {
             current.setBizGroup(bizGroupOfCurrentObjId);    // 如果当前objId有指定则覆盖
+            current.setBizGroupName(bizGroupOfCurrentObjId);
         }
         if (CollectionUtils.isNotEmpty(current.getChildren())) {
             current.getChildren().forEach(child -> {
-                doComposeBizGroup(child, dataMap, current.getBizGroup());
+                doComposeBizGroup(child, dataMap, current.getBizGroupName());
             });
         }
     }
@@ -2197,8 +2409,7 @@ public class ObjectFacade implements InitializingBean {
     /**
      * 获取对象的ObjectExtDTO
      */
-    public ObjectExtDTO getExt(long objId) {
-        ObjectBasic objectBasic = objectBasicService.getById(objId);
+    public ObjectExtDTO getExt(ObjectBasic objectBasic) {
         if (objectBasic == null) {
             return null;
         }
@@ -2213,8 +2424,13 @@ public class ObjectFacade implements InitializingBean {
         return JsonUtils.parseObject(ext, ObjectExtDTO.class);
     }
 
-    private void checkImageUrlsNotEmpty(Long appId, List<String> imgUrls) {
+    private void checkImageUrlsNotEmpty(Long appId, Integer objType, List<String> imgUrls) {
         if (CollectionUtils.isNotEmpty(imgUrls)) {
+            return;
+        }
+        // 服务端埋点不需要图片
+        ObjTypeEnum objTypeEnum = ObjTypeEnum.fromType(objType);
+        if (objTypeEnum.getNamespace() == ObjTypeNamespaceEnum.SERVER) {
             return;
         }
         boolean isMustCheckImageUrls = mustCheckImageUrls(appId);
@@ -2223,16 +2439,32 @@ public class ObjectFacade implements InitializingBean {
         }
     }
 
-    private boolean mustCheckImageUrls(Long appId) {
-        if (checkObjImageNotEmptyConfig == null || appId == null) {
+    private boolean mustCheckOidUnique(Long appId) {
+        if (MapUtils.isEmpty(checkConfigs)) {
             return false;
         }
-        if (checkObjImageNotEmptyConfig.getAppValues() == null) {
-            return checkObjImageNotEmptyConfig.isDefaultValue();
+        CheckConfig config = checkConfigs.get("checkOidUnique");
+        return judgeByAppIdAndCheckConfig(config, appId);
+    }
+
+    private boolean mustCheckImageUrls(Long appId) {
+        if (MapUtils.isEmpty(checkConfigs)) {
+            return false;
         }
-        Boolean byAppId = checkObjImageNotEmptyConfig.getAppValues().get(appId);
+        CheckConfig config = checkConfigs.get("checkObjImageNotEmpty");
+        return judgeByAppIdAndCheckConfig(config, appId);
+    }
+
+    private boolean judgeByAppIdAndCheckConfig(CheckConfig config, Long appId) {
+        if (config == null || appId == null) {
+            return false;
+        }
+        if (config.getAppValues() == null) {
+            return config.isDefaultValue();
+        }
+        Boolean byAppId = config.getAppValues().get(appId);
         if (byAppId == null) {
-            return checkObjImageNotEmptyConfig.isDefaultValue();
+            return config.isDefaultValue();
         }
         return byAppId;
     }

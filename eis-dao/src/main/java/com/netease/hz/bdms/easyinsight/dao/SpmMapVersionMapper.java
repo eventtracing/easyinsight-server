@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.dao;
 
+import com.netease.hz.bdms.easyinsight.common.OpenSource;
 import com.netease.hz.bdms.easyinsight.dao.model.SpmMapVersion;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

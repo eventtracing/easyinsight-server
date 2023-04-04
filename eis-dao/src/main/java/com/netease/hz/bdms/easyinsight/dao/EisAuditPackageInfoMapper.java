@@ -5,6 +5,7 @@ import com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,8 @@ public interface EisAuditPackageInfoMapper {
 
   List<EisAuditPackageInfo> listLatestPackage(@Param("appId") Long appId, @Param("terminalId") Long terminalId, @Param("packageType") Integer packageType,
                                               @Param("versionId") String versionId, @Param("userInfo") String userInfo);
+
+  List<EisAuditPackageInfo> listRecentPackage(@Param("appId") Long appId, @Param("terminalId") Long terminalId);
 
   EisAuditPackageInfo selectByBuildUUid(@Param("appId") Long appId, @Param("terminalId") Long terminalId, @Param("buildUUID") String buildUUID);
 

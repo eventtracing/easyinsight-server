@@ -1,6 +1,6 @@
 package com.netease.hz.bdms.easyinsight.common.param.obj;
 
-import com.netease.hz.bdms.easyinsight.common.param.obj.tracker.ObjTrackerCreateParam;
+import com.netease.hz.bdms.easyinsight.common.enums.TerminalBigTypeEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -41,5 +41,15 @@ public class ObjectCreateParam {
      */
     @NotNull(message = "需求组ID不能为空")
     private Long reqPoolId;
+
+    /**
+     * 是服务端还是客户端埋点 {@link TerminalBigTypeEnum}
+     */
+    private Integer terminalBigType = TerminalBigTypeEnum.CLIENT.getType();
+
+    /**
+     * 关联用户录入埋点
+     */
+    private Long userPointId;
 
 }

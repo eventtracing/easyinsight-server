@@ -83,6 +83,22 @@
       order by createTime desc limit 5000
   </select>
 
+
+  <select id="listRecentPackage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      appId = #{appId}
+      <if test="terminalId != null">
+        and terminalId = #{terminalId}
+      </if>
+        and DATE_ADD(createTime,INTERVAL 3 MONTH) > NOW()
+    </where>
+    order by createTime desc limit 1000
+  </select>
+
   <update id="updateAuditId" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisAuditPackageInfo">
     update
     <include refid="tableName"/>

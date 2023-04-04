@@ -51,6 +51,24 @@
     )
   </insert>
 
+
+  <update id="updateBatch">
+    update eis_audit_resource_meta
+    <set>
+      <trim prefix=",resource =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.resource != null and item.resource != ''">
+            when id=#{item.id} then #{item.resource}
+          </if>
+        </foreach>
+      </trim>
+    </set>
+    where id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id}
+    </foreach>
+  </update>
+
   <delete id="delete">
     delete from
     <include refid="tableName"/>

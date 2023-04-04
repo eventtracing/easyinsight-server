@@ -137,9 +137,36 @@
             <if test="terminalId != null">
                 and terminal_id = #{terminalId, jdbcType=BIGINT}
             </if>
+            <if test="terminalId != null">
+                and source = #{source, jdbcType=INTEGER}
+            </if>
         </where>
     </select>
-
+    <select id="selectByNameOrCode" resultMap="BaseResultMap"
+            parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        <where>
+            app_id = #{appId, jdbcType=BIGINT}
+            <if test="spm != null">
+                and spm   like concat('%',#{spm,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="name != null">
+                and name like concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null">
+                and status = #{status, jdbcType=INTEGER}
+            </if>
+            <if test="terminalId != null">
+                and terminal_id = #{terminalId, jdbcType=BIGINT}
+            </if>
+            <if test="terminalId != null">
+                and source = #{source, jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
     <select id="selectBySpm" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

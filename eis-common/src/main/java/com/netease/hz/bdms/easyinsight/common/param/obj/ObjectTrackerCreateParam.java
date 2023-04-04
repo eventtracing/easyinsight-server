@@ -48,4 +48,8 @@ public class ObjectTrackerCreateParam {
      */
     private List<ParamBindItermParam> paramBinds;
 
+    /**
+     * tracker内容
+     */
+    private Map<String, String> trackerContents;
 }

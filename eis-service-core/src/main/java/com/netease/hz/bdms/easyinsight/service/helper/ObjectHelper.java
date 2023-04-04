@@ -33,10 +33,7 @@ import com.netease.hz.bdms.easyinsight.common.util.BeanConvertUtils;
 import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
 import com.netease.hz.bdms.easyinsight.service.service.impl.AppRelationService;
-import com.netease.hz.bdms.easyinsight.service.service.obj.AllTrackerReleaseService;
-import com.netease.hz.bdms.easyinsight.service.service.obj.ObjRelationReleaseService;
-import com.netease.hz.bdms.easyinsight.service.service.obj.ObjTerminalTrackerService;
-import com.netease.hz.bdms.easyinsight.service.service.obj.ReqObjRelationService;
+import com.netease.hz.bdms.easyinsight.service.service.obj.*;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
 import lombok.extern.slf4j.Slf4j;
@@ -125,6 +122,9 @@ public class ObjectHelper {
 
     @Resource
     private AppRelationService appRelationService;
+
+    @Resource
+    private TrackerContentService trackerContentService;
 
 
     public static final Long virtualRootNode = -12345L;
@@ -275,7 +275,9 @@ public class ObjectHelper {
                         .setMust(paramItem.getMust())
                         .setNotEmpty(paramItem.getNotEmpty())
                         .setDescription(paramItem.getDescription())
-                        .setIsEncode(paramItem.getIsEncode());
+                        .setIsEncode(paramItem.getIsEncode())
+                        .setSource(paramItem.getSource())
+                        .setSourceDetail(paramItem.getSourceDetail());
                 Long bindId = paramBindService.createParamBind(paramBind);
                 List<ParamBindValueSimpleDTO> paramBindValueList = Lists.newArrayList();
                 for(Long valueId: paramItem.getValues()){
@@ -289,10 +291,11 @@ public class ObjectHelper {
                 }
                 paramBindValueService.createParamBindValue(paramBindValueList);
             }
+            // 4. 更新额外的绑定在tracker上的内容
+            trackerContentService.updateAll(trackerId, TrackerContentService.toTrackerContents(trackerId, trackerInfo.getTrackerContents()));
         }
         return trackerIds;
     }
-
 
     /**
      * 变更对象埋点相关信息（血缘关系信息、埋点基本信息、事件关联信息、对象私参信息）
@@ -412,6 +415,8 @@ public class ObjectHelper {
                 }
                 paramBindValueService.createParamBindValue(paramBindValueList);
             }
+            // 5. 更新额外的绑定在tracker上的内容
+            trackerContentService.updateAll(trackerId, TrackerContentService.toTrackerContents(trackerId, trackerChangeInfo.getTrackerContents()));
         }
         return trackerIds;
     }
@@ -561,7 +566,9 @@ public class ObjectHelper {
                         .setMust(paramItem.getMust())
                         .setNotEmpty(paramItem.getNotEmpty())
                         .setDescription(paramItem.getDescription())
-                        .setIsEncode(paramItem.getIsEncode());
+                        .setIsEncode(paramItem.getIsEncode())
+                        .setSource(paramItem.getSource())
+                        .setSourceDetail(paramItem.getSourceDetail());
                 Long bindId = paramBindService.createParamBind(paramBind);
 
                 List<ParamBindValueSimpleDTO> paramBindValueList = Lists.newArrayList();
@@ -576,6 +583,9 @@ public class ObjectHelper {
                 }
                 paramBindValueService.createParamBindValue(paramBindValueList);
             }
+
+            // 4. 更新额外的绑定在tracker上的内容
+            trackerContentService.updateAll(trackerId, TrackerContentService.toTrackerContents(trackerId, trackerEditInfo.getTrackerContents()));
         }
         return trackerIdList;
     }
@@ -780,6 +790,8 @@ public class ObjectHelper {
                             ObjTrackerEventSimpleDTO::getEventParamVersionId));
             objectTrackerInfoDTO.setEventParamVersionIdMap(eventIdToParamPackageId);
             objectTrackerInfoDTO.setEvents(eventSimpleDTOS);
+            Map<String, String> trackerContents = TrackerContentService.fromTrackerContents(trackerContentService.getAllByTrackerId(trackerId));
+            objectTrackerInfoDTO.setTrackerContents(trackerContents);
             // 加入列表
             results.add(objectTrackerInfoDTO);
         }
@@ -1066,6 +1078,7 @@ public class ObjectHelper {
                 result.setBridgeSubTerminalId(objectExtDTO.getSubTerminalId() == null ? 0L : objectExtDTO.getSubTerminalId());
                 result.setObjSubType(objectExtDTO.getBasicTag() == null ? ObjSubTypeEnum.UNKNOWN.getOidPrefix() : objectExtDTO.getBasicTag().getObjSubType());
                 result.setBizGroup(objectExtDTO.getBasicTag() == null ? null : objectExtDTO.getBasicTag().getBizGroup());
+                result.setBizGroupName(objectExtDTO.getBasicTag() == null ? null : objectExtDTO.getBasicTag().getBizGroupName());
                 result.setAnalyseCid(objectExtDTO.isAnalyseCid());
             }
         }

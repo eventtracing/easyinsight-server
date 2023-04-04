@@ -51,4 +51,9 @@ public class ObjectTrackerEditParam {
      * 对象标准私参、业务私参信息
      */
     private List<ParamBindItermParam> paramBinds;
+
+    /**
+     * tracker内容
+     */
+    private Map<String, String> trackerContents;
 }

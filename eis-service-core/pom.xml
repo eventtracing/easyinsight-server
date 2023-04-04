@@ -6,30 +6,31 @@
   <parent>
     <groupId>com.netease.hz.bdms</groupId>
     <artifactId>easy-insight</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
   </parent>
 
   <groupId>com.netease.hz.bdms</groupId>
   <artifactId>eis-service-core</artifactId>
   <name>${project.artifactId}</name>
+  <version>1.0.1.1</version>
 
   <dependencies>
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-dao</artifactId>
-      <version>${project.version}</version>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-common</artifactId>
-      <version>${project.version}</version>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-adapter</artifactId>
-      <version>${project.version}</version>
+      <version>1.0.1</version>
     </dependency>
 
     <!-- web框架 -->
