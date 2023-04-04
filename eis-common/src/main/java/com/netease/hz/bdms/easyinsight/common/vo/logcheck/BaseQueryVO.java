@@ -49,6 +49,11 @@ public class BaseQueryVO {
     private List<String> buildUUIDs;
 
     /**
+     * 规则版本
+     */
+    private Long ruleVersion;
+
+    /**
      * 负责人
      */
     private String owner;

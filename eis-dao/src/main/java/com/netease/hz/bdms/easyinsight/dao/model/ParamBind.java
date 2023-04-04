@@ -1,6 +1,8 @@
 package com.netease.hz.bdms.easyinsight.dao.model;
 
 import java.sql.Timestamp;
+
+import com.netease.hz.bdms.easyinsight.common.enums.ParamSourceTypeEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -77,4 +79,14 @@ public class ParamBind {
    * 参数对应上报日志是否使用urlEncode编码
    */
   private Boolean isEncode;
+  /**
+   * 参数来源
+   * {@link ParamSourceTypeEnum}
+   */
+  private String source;
+
+  /**
+   * 参数来源详情
+   */
+  private String sourceDetail;
 }

@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.common.util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -8,13 +9,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 @Component
 public class RestTemplateUtils {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    @Resource(name="restTemplateWithClient")
+    private RestTemplate restTemplateWithClient;
 
     // ----------------------------------GET-------------------------------------------------------
 
@@ -26,7 +28,7 @@ public class RestTemplateUtils {
      * @return ResponseEntity 响应对象封装类
      */
     public <T> ResponseEntity<T> get(String url, Class<T> responseType) throws RestClientException {
-        return restTemplate.getForEntity(url, responseType);
+        return restTemplateWithClient.getForEntity(url, responseType);
     }
 
     /**
@@ -39,7 +41,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> get(String url, Class<T> responseType, Object... uriVariables)
             throws RestClientException {
-        return restTemplate.getForEntity(url, responseType, uriVariables);
+        return restTemplateWithClient.getForEntity(url, responseType, uriVariables);
     }
 
     /**
@@ -52,7 +54,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> get(String url, Class<T> responseType, Map<String, ?> uriVariables)
             throws RestClientException {
-        return restTemplate.getForEntity(url, responseType, uriVariables);
+        return restTemplateWithClient.getForEntity(url, responseType, uriVariables);
     }
 
     /**
@@ -127,7 +129,7 @@ public class RestTemplateUtils {
      * @return
      */
     public <T> ResponseEntity<T> post(String url, Class<T> responseType) throws RestClientException {
-        return restTemplate.postForEntity(url, HttpEntity.EMPTY, responseType);
+        return restTemplateWithClient.postForEntity(url, HttpEntity.EMPTY, responseType);
     }
 
     /**
@@ -140,7 +142,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> post(String url, Object requestBody, Class<T> responseType)
             throws RestClientException {
-        return restTemplate.postForEntity(url, requestBody, responseType);
+        return restTemplateWithClient.postForEntity(url, requestBody, responseType);
     }
 
     /**
@@ -154,7 +156,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> post(String url, Object requestBody, Class<T> responseType, Object... uriVariables)
             throws RestClientException {
-        return restTemplate.postForEntity(url, requestBody, responseType, uriVariables);
+        return restTemplateWithClient.postForEntity(url, requestBody, responseType, uriVariables);
     }
 
     /**
@@ -168,7 +170,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> post(String url, Object requestBody, Class<T> responseType,
                                       Map<String, ?> uriVariables) throws RestClientException {
-        return restTemplate.postForEntity(url, requestBody, responseType, uriVariables);
+        return restTemplateWithClient.postForEntity(url, requestBody, responseType, uriVariables);
     }
 
     /**
@@ -248,7 +250,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> post(String url, HttpEntity<?> requestEntity, Class<T> responseType,
                                       Object... uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables);
     }
 
     /**
@@ -262,7 +264,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> post(String url, HttpEntity<?> requestEntity, Class<T> responseType,
                                       Map<String, ?> uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables);
     }
 
     // ----------------------------------PUT-------------------------------------------------------
@@ -387,7 +389,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> put(String url, HttpEntity<?> requestEntity, Class<T> responseType,
                                      Object... uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, HttpMethod.PUT, requestEntity, responseType, uriVariables);
     }
 
     /**
@@ -401,7 +403,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> put(String url, HttpEntity<?> requestEntity, Class<T> responseType,
                                      Map<String, ?> uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, HttpMethod.PUT, requestEntity, responseType, uriVariables);
     }
 
     // ----------------------------------DELETE-------------------------------------------------------
@@ -601,7 +603,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> delete(String url, HttpEntity<?> requestEntity, Class<T> responseType,
                                         Object... uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, HttpMethod.DELETE, requestEntity, responseType, uriVariables);
     }
 
     /**
@@ -615,7 +617,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> delete(String url, HttpEntity<?> requestEntity, Class<T> responseType,
                                         Map<String, ?> uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, HttpMethod.DELETE, requestEntity, responseType, uriVariables);
     }
 
     // ----------------------------------通用方法-------------------------------------------------------
@@ -632,7 +634,7 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
                                           Class<T> responseType, Object... uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     /**
@@ -647,6 +649,6 @@ public class RestTemplateUtils {
      */
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
                                           Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
-        return restTemplate.exchange(url, method, requestEntity, responseType, uriVariables);
+        return restTemplateWithClient.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 }

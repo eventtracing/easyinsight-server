@@ -5,6 +5,8 @@ import com.netease.hz.bdms.easyinsight.common.dto.param.ParamValueSimpleDTO;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+
+import com.netease.hz.bdms.easyinsight.common.enums.ParamSourceTypeEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -41,6 +43,17 @@ public class ParamBindItemDTO {
    * 是否必须传
    */
   private Boolean must = true;
+
+  /**
+   * 参数来源
+   * {@link ParamSourceTypeEnum}
+   */
+  private String source;
+
+  /**
+   * 参数来源详情
+   */
+  private String sourceDetail;
 
   /**
    * 是否非空

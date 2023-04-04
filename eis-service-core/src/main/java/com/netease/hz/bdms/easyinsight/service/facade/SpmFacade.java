@@ -421,14 +421,21 @@ public class SpmFacade {
     }
 
     public PageResultVO<SpmMapInfoVO> listWithCache(SpmMapInfoListQueryVO param) {
-
+        String cacheKey = SPM_CACHE_KEY_PREFIX + getMD5(param);
         // 如果最近有发布，不走缓存，防止不准
         if (cacheAdapter.get(SPM_CACHE_HAS_RELEASE_KEY_PREFIX) != null) {
             List<SpmMapInfoVO> spmMapInfoVOS = list(param);
+            if (spmMapInfoVOS == null) {
+                spmMapInfoVOS = new ArrayList<>(0);
+            }
+            ListHolder v = new ListHolder().setList(spmMapInfoVOS.stream().map(JsonUtils::toJson).collect(Collectors.toList()));
+            // 穿透后，刷新缓存，下次可命中
+            cacheAdapter.setWithExpireTime(cacheKey, JsonUtils.toJson(v), CACHE_TTL);
+            cacheAdapter.del(SPM_CACHE_HAS_RELEASE_KEY_PREFIX);
             return new PageResultVO<>(spmMapInfoVOS,
                     param.getPageSize(), param.getPageNum());
         }
-        ListHolder listHolder = CacheUtils.getAndSetIfAbsent(() -> SPM_CACHE_KEY_PREFIX + getMD5(param),
+        ListHolder listHolder = CacheUtils.getAndSetIfAbsent(() -> cacheKey,
                 () -> {
                     List<SpmMapInfoVO> list = list(param);
                     if (list == null) {
@@ -446,6 +453,29 @@ public class SpmFacade {
                 param.getPageSize(), param.getPageNum());
     }
 
+    /**
+     * 流量罗盘pc端对象分析强制走缓存查询spm列表，如果最近有发布，不走缓存，防止不准
+     * @param param
+     * @return
+     */
+    public PageResultVO<SpmMapInfoVO> listForceUseCache(SpmMapInfoListQueryVO param) {
+        ListHolder listHolder = CacheUtils.getAndSetIfAbsent(() -> SPM_CACHE_KEY_PREFIX + getMD5(param),
+                () -> {
+                    List<SpmMapInfoVO> list = list(param);
+                    if (list == null) {
+                        list = new ArrayList<>(0);
+                    }
+                    return new ListHolder().setList(list.stream().map(JsonUtils::toJson).collect(Collectors.toList()));
+                },
+                (key) -> cacheAdapter.get(key),
+                (key, value) -> cacheAdapter.setWithExpireTime(key, value, CACHE_TTL),
+                ListHolder.class);
+        List<SpmMapInfoVO> spmMapInfoVOS = listHolder == null ? new ArrayList<>(0)
+                : listHolder.getList().stream().map(s -> JsonUtils.parseObject(s, SpmMapInfoVO.class)).collect(Collectors.toList());
+
+        return new PageResultVO<>(spmMapInfoVOS,
+                param.getPageSize(), param.getPageNum());
+    }
     /**
      * SPM列表展示  // todo 分页展示
      */

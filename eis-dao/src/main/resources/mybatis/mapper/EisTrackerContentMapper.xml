@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisTrackerContentMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.TrackerContent">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="tracker_id" jdbcType="BIGINT" property="trackerId"/>
+    <result column="type" jdbcType="VARCHAR" property="type"/>
+    <result column="content" jdbcType="VARCHAR" property="content"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_tracker_content`
+  </sql>
+  <sql id="Base_Column_List">
+    id, tracker_id, type, content, create_time, update_time
+  </sql>
+
+  <select id="listAll" resultType="com.netease.hz.bdms.easyinsight.dao.model.TrackerContent">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where tracker_id = #{trackerId}
+  </select>
+
+  <insert id="batchInsert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TrackerContent"
+          useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into
+    <include refid="tableName"/>
+    (tracker_id, type, content)
+    values
+    <foreach collection="trackerContents" item="item" separator=",">
+      (#{item.trackerId,jdbcType=BIGINT}, #{item.type,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <delete id="deleteByIds">
+    delete from
+    <include refid="tableName"/>
+    where id in
+    <foreach collection="ids" item="itemId" open="(" close=")" separator=",">
+      #{itemId}
+    </foreach>
+  </delete>
+</mapper>

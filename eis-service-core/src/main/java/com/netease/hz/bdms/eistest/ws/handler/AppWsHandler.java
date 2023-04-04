@@ -1,8 +1,10 @@
 package com.netease.hz.bdms.eistest.ws.handler;
 
+import com.netease.eis.adapters.CacheAdapter;
 import com.netease.hz.bdms.easyinsight.common.dto.realtimetest.RealTimeTestResourceDTO;
 import com.netease.hz.bdms.easyinsight.common.exception.ParamException;
 import com.netease.hz.bdms.easyinsight.common.exception.RealTimeTestException;
+import com.netease.hz.bdms.eistest.cache.ConversationMetaCache;
 import com.netease.hz.bdms.eistest.service.BloodLinkService;
 import com.netease.hz.bdms.eistest.ws.handler.AbstractWsHandler;
 import com.netease.hz.bdms.eistest.service.impl.BuryPointAlertService;
@@ -39,6 +41,10 @@ public class AppWsHandler extends AbstractWsHandler {
     private BuryPointAlertService buryPointAlertService;
     @Resource
     private ConversationBasicInfoService conversationBasicInfoService;
+    @Resource
+    private ConversationMetaCache conversationMetaCache;
+    @Resource
+    private CacheAdapter cacheAdapter;
 
     @Override
     public synchronized void afterConnectionEstablished(WebSocketSession newSession) throws Exception {
@@ -68,6 +74,7 @@ public class AppWsHandler extends AbstractWsHandler {
         if (scs != null) {
             log.info("send completion message to scancode session: {}", code);
             scs.sendData("completion");
+            cacheAdapter.setWithExpireTime(getAppScanSuccessCacheKey(code), "1", 3600);
         }
 
         //init metadata
@@ -195,5 +202,10 @@ public class AppWsHandler extends AbstractWsHandler {
             conversationBasicInfoService.setBaseLineName(conversation, realTimeTestResourceDTO.getBaseLineName());
         }
         appStorage.setMetaInfo(buryPointMetaInfo);
+        conversationMetaCache.set(conversation, taskId, terminalId, domainId, appId);
+    }
+
+    public static String getAppScanSuccessCacheKey(String conversationCode) {
+        return "et_code_app_scan_success" + conversationCode;
     }
 }

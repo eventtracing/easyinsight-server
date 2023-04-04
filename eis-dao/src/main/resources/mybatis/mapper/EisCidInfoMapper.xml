@@ -43,6 +43,13 @@
     where bindType = #{bindType} and target = #{target} and appId = #{appId} and cid = #{cid}
   </select>
 
+  <select id="selectCidTagInfosByOid" resultType="com.netease.hz.bdms.easyinsight.dao.model.CidInfo">
+    select <include refid="Base_Column_List" />
+    from eis_cid_info where target in (
+      SELECT id from eis_obj_basic where oid =#{oid} and   app_id = #{appId} )
+    and  bindType = #{bindType} and   appId = #{appId}
+  </select>
+
   <delete id="deleteByIds">
     delete from
     <include refid="tableName"/>

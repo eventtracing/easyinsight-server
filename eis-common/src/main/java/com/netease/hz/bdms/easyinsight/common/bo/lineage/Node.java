@@ -27,6 +27,16 @@ public class Node {
     Integer type;
 
     /**
+     * 对象英文名称
+     */
+    String oid;
+
+    /**
+     * 对象名称
+     */
+    String objName;
+
+    /**
      * 子节点
      */
     List<Node> children;
@@ -35,4 +45,9 @@ public class Node {
      * 业务线
      */
     private String bizGroup;
+
+    /**
+     * 业务线名称
+     */
+    private String bizGroupName;
 }

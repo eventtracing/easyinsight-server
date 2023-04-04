@@ -146,6 +146,7 @@ public class BuryPointAnaysisServiceImpl implements BuryPointAnaysisService, Ini
             }
             case EXCEPTION: {
                 BuryPointErrorContent exceptionLog = JSON.parseObject(content, BuryPointErrorContent.class);
+                log.info("exception埋点日志：{}",content);
                 List<ErrorMessageSimpleDTO> errorMessageSimpleDTOList = statisticalError(appStorage, exceptionLog);
                 BuryPointErrorContentExpand buryPointErrorContentExpand = new BuryPointErrorContentExpand();
                 buryPointErrorContentExpand.setCode(exceptionLog.getCode());

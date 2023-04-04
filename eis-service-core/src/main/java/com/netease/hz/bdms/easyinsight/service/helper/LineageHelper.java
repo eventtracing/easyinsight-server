@@ -708,7 +708,7 @@ public class LineageHelper {
         // 1. 构建当前节点的父血缘、子血缘
         Map<Long, Set<Long>> parentsMap = graph.getParentsMap();
         Map<Long, Set<Long>> childrenMap = graph.getChildrenMap();
-        List<Node> superTrees = this.buildSuperTree(parentsMap, Sets.newHashSet(objId));
+        List<Node> superTrees = this.buildSuperTree(parentsMap, Sets.newHashSet(objId), null);
         Node subTree = this.buildSubTree(childrenMap, objId);
 
         // 2. 血缘树拼接 (将subTree拼接到所有superTree的各个叶子节点上)
@@ -752,7 +752,22 @@ public class LineageHelper {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(selectedObjIds), "候选对象集不能为空");
 
         Map<Long, Set<Long>> parentsMap = graph.getParentsMap();
-        return this.buildSuperTree(parentsMap, selectedObjIds);
+        return this.buildSuperTree(parentsMap, selectedObjIds, null);
+    }
+
+    /**
+     * 给定全量血缘图以及筛选出的对象集合，获取对象子树树
+     *
+     * @param graph 血缘图
+     * @param selectedObjIds
+     * @return
+     */
+    public List<Node> getSonTree(LinageGraph graph, Set<Long> selectedObjIds, Long targetObjId){
+        Preconditions.checkArgument(null != graph, "血缘图不能为空");
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(selectedObjIds), "候选对象集不能为空");
+
+        Map<Long, Set<Long>> parentsMap = graph.getParentsMap();
+        return this.buildSuperTree(parentsMap, selectedObjIds, targetObjId);
     }
 
     /**
@@ -941,9 +956,10 @@ public class LineageHelper {
      *
      * @param parentsMap 全量血缘图
      * @param selectedObjId 叶节点对象集合
+     * @param targetObjId 目标父节点
      * @return
      */
-    private List<Node> buildSuperTree(Map<Long, Set<Long>> parentsMap, Set<Long> selectedObjId){
+    private List<Node> buildSuperTree(Map<Long, Set<Long>> parentsMap, Set<Long> selectedObjId, Long targetObjId){
         Preconditions.checkArgument(MapUtils.isNotEmpty(parentsMap), "子父关系集合不能为空！");
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(selectedObjId), "对象ID集合不能为空！");
         // 1. 环路检测
@@ -957,9 +973,6 @@ public class LineageHelper {
         while(!queue.isEmpty()){
             // 当前节点出队
             Long currObjId = queue.poll();
-            if(currObjId == null){
-                log.info("xxxx");
-            }
             Set<Long> currParentIds = parentsMap.getOrDefault(currObjId, Sets.newHashSet());
             if(CollectionUtils.isEmpty(currParentIds) || (currParentIds.size() == 1 && currParentIds.contains(null))){
                 // 根节点
@@ -996,9 +1009,11 @@ public class LineageHelper {
                 .collect(Collectors.toSet());
 
         // 4. 构建所有的父血缘树
-        List<Node> rootNodes = this.buildTreeCore(childrenMap, rootNodeIds);
-
-        return rootNodes;
+        if(targetObjId != null){
+            return this.buildTreeCore(childrenMap, Collections.singleton(targetObjId));
+        }else {
+            return this.buildTreeCore(childrenMap, rootNodeIds);
+        }
     }
 
     /**

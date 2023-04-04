@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import com.netease.hz.bdms.easyinsight.common.enums.ParamSourceTypeEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -62,6 +64,16 @@ public class ParamBindSimpleDTO {
    * 绑定描述
    */
   private String description;
+  /**
+   * 参数来源
+   * {@link ParamSourceTypeEnum}
+   */
+  private String source;
+
+  /**
+   * 参数来源详情
+   */
+  private String sourceDetail;
   /**
    * 创建人
    */

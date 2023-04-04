@@ -12,9 +12,14 @@ import lombok.experimental.Accessors;
 public class ObjBasicTagDTO {
 
     /**
-     * 业务线
+     * 业务线code
      */
     private String bizGroup;
+
+    /**
+     * 业务线名称
+     */
+    private String bizGroupName;
 
     /**
      * 元素类型 {@link ObjSubTypeEnum}

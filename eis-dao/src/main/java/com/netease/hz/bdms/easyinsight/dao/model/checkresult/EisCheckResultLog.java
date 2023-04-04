@@ -35,4 +35,6 @@ public class EisCheckResultLog {
     private String failKey;       // 失败描述
     private String appver;       // appver
     private String os;            // os
+    private String ruleVer;            // 规则版本
+
 }

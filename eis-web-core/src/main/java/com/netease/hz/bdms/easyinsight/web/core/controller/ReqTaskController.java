@@ -10,6 +10,7 @@ import com.netease.hz.bdms.easyinsight.dao.model.EisReqTask;
 import com.netease.hz.bdms.easyinsight.service.facade.ReqTaskFacade;
 import com.netease.hz.bdms.easyinsight.service.service.RealTimeTestRecordService;
 import com.netease.hz.bdms.easyinsight.service.service.impl.AuditReportService;
+import com.netease.hz.bdms.easyinsight.service.service.impl.LockService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqTaskService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -25,6 +26,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/eis/task")
 public class ReqTaskController {
+
+    @Resource
+    private LockService lockService;
 
     @Autowired
     ReqTaskFacade reqTaskFacade;
@@ -80,6 +84,9 @@ public class ReqTaskController {
         if (vo == null) {
             throw new CommonException("参数为空");
         }
+        if (vo.getTaskId() == null) {
+            throw new CommonException("参数taskId为空");
+        }
         return HttpResult.success(reqTaskFacade.getProcessVo(vo));
     }
 
@@ -93,19 +100,26 @@ public class ReqTaskController {
                                             @RequestParam(name = "code", required = false) Long code,
                                             @RequestParam(name = "comment", required = false) String comment,
                                             @RequestParam(name = "alert", required = false) boolean alert) {
-        boolean isTransferToTestComplete = StringUtils.isNotBlank(comment);
-        if (!isTransferToTestComplete) {
-            reqTaskFacade.transTaskStatusToNext(id);
-            return HttpResult.success();
+        String lockKey = "lock_taskforward_" + id;
+        lockService.tryLock(lockKey);
+        try {
+            boolean isTransferToTestComplete = StringUtils.isNotBlank(comment);
+            if (!isTransferToTestComplete) {
+                reqTaskFacade.transTaskStatusToNext(id, false);
+                return HttpResult.success();
+            }
+            // 流转到测试完成
+            TestHistoryRecordDTO testHistoryRecordDTO = realTimeTestRecordService.getTestHistoryById(code);
+            if (testHistoryRecordDTO != null && !testHistoryRecordDTO.getTestResult().equals(TestResultEnum.UNPASS.getType())) {
+                reqTaskFacade.transTaskStatusToNext(id, true);
+                return HttpResult.success();
+            }
+            //发送popo通知（测试记录不是通过）
+            processIntoTestOverAlert(id, comment);
+            throw new CommonException("测试记录为不通过");
+        } finally {
+            lockService.releaseLock(lockKey);
         }
-        // 流转到测试完成
-        TestHistoryRecordDTO testHistoryRecordDTO = realTimeTestRecordService.getTestHistoryById(code);
-        if (testHistoryRecordDTO != null && !testHistoryRecordDTO.getTestResult().equals(TestResultEnum.UNPASS.getType())) {
-            reqTaskFacade.transTaskStatusToNext(id);
-        }
-        //发送popo通知（测试记录不是通过）
-        processIntoTestOverAlert(id, comment);
-        throw new CommonException("测试记录为不通过");
     }
 
     private void processIntoTestOverAlert(Long taskId, String comment) {

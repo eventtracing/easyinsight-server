@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.ParamRuleAuditMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.ParamRuleAudit">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="objId" jdbcType="BIGINT" property="objId" />
+    <result column="paramId" jdbcType="BIGINT" property="paramId" />
+    <result column="setRate" jdbcType="INTEGER" property="setRate" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `param_rule_audit_info`
+  </sql>
+  <sql id="Base_Column_List">
+    id, objId, paramId, setRate, createTime, updateTime
+  </sql>
+
+  <select id="selectByObjId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from param_rule_audit_info
+    <where>
+      objId = #{objId,jdbcType=BIGINT}
+    </where>
+  </select>
+
+  <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+    insert into param_rule_audit_info (objId, paramId, setRate, createTime, updateTime)
+    values
+    <foreach collection="list" item="entity" separator=",">
+      (#{entity.objId},#{entity.paramId},#{entity.setRate},#{entity.createTime},#{entity.updateTime})
+    </foreach>
+  </insert>
+
+  <update id="updateBatch">
+    update param_rule_audit_info
+    <set>
+      <trim prefix=",setRate =case" suffix="end">
+        <foreach collection="list" item="item" index="index">
+          <if test="item.setRate != null and item.setRate != ''">
+            when id=#{item.id} then #{item.setRate}
+          </if>
+        </foreach>
+      </trim>
+    </set>
+    where id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id}
+    </foreach>
+  </update>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+</mapper>

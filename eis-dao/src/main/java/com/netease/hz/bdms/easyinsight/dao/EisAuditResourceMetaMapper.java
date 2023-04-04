@@ -18,6 +18,8 @@ public interface EisAuditResourceMetaMapper {
 
   List<EisAuditResource> selectBatchByIds(@Param("ids") Set<Long> ids);
 
+  void updateBatch(List<EisAuditResource> list);
+
   Integer delete(Long id);
 
 }

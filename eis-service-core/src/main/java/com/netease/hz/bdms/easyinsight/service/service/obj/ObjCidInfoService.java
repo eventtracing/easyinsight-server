@@ -30,6 +30,24 @@ public class ObjCidInfoService {
         return m.entrySet().stream().map(o -> new CidTagInfo().setCid(o.getKey()).setName(o.getValue())).collect(Collectors.toList());
     }
 
+    public List<CidTagInfo> getCidTagInfosByOid(Long appId, String oid) {
+        if (appId == null || oid == null) {
+            return Collections.emptyList();
+        }
+        List<CidInfo> cidInfos = eisCidInfoMapper.selectCidTagInfosByOid(BIND_TYPE, oid, appId);
+        if (CollectionUtils.isEmpty(cidInfos)) {
+            return Collections.emptyList();
+        }
+        Map<String, String> result = new HashMap<>();
+        cidInfos.forEach(cidInfo -> {
+            result.put(cidInfo.getCid(), cidInfo.getCidName());
+        });
+        if (MapUtils.isEmpty(result)) {
+            return new ArrayList<>(0);
+        }
+        return result.entrySet().stream().map(o -> new CidTagInfo().setCid(o.getKey()).setName(o.getValue())).collect(Collectors.toList());
+    }
+
     public Map<String, String> listAll(Long appId, Long objId) {
         if (appId == null || objId == null) {
             return new HashMap<>();

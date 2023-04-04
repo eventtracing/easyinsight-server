@@ -5,10 +5,12 @@ import com.netease.hz.bdms.easyinsight.common.http.HttpResult;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.ReqEntityVO;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.ReqPoolCreateVO;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.ReqPoolEditVO;
+import com.netease.hz.bdms.easyinsight.common.vo.requirement.ReqPoolPagingListVO;
 import com.netease.hz.bdms.easyinsight.service.facade.ReqPoolListPageFacade;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/eis/reqPool")
@@ -97,7 +99,7 @@ public class ReqPoolListController {
      * @param dataOwnerEmail
      * @param creatorEmail
      * @param
-     * @return
+     * @return {@link List<ReqPoolPagingListVO>}
      */
     @GetMapping("/query")
     public HttpResult queryPaging(Long reqPoolId, Long reqId, String dataOwnerEmail, String creatorEmail, Integer status,

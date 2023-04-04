@@ -3,6 +3,8 @@ package com.netease.hz.bdms.easyinsight.common.param.param.paramBind;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import com.netease.hz.bdms.easyinsight.common.enums.ParamSourceTypeEnum;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -50,4 +52,15 @@ public class ParamBindItermParam {
    */
   @NotNull(message = "参数对应上报日志是否使用urlEncode编码不能为空")
   private Boolean isEncode;
+
+  /**
+   * 参数来源
+   * {@link ParamSourceTypeEnum}
+   */
+  private String source;
+
+  /**
+   * 参数来源详情
+   */
+  private String sourceDetail;
 }

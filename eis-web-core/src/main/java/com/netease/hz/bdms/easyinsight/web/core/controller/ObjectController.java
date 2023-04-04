@@ -9,6 +9,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.obj.ObjectBasicDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.obj.ObjectTrackerInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.param.ParamValueSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamBindItemDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.tag.TagSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.terminal.TerminalSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.TerminalCodeTypeEum;
@@ -172,10 +173,10 @@ public class ObjectController {
                     paramBinds.add(paramBind);
                 }
                 objectTrackerChangeParam.setParamBinds(paramBinds);
+                objectTrackerChangeParam.setTrackerContents(objectTrackerInfoDTO.getTrackerContents());
                 paramTrackers.add(objectTrackerChangeParam);
             }
             objectChangeParam.setTrackers(paramTrackers);
-
             objectFacade.changeObject(objectChangeParam, objDetails);
         }
         return HttpResult.success();

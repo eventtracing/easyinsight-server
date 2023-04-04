@@ -20,6 +20,8 @@ public interface SpmInfoService {
     // 搜索
     List<SpmInfoDTO> search(Long appId, SpmInfo query);
 
+    List<SpmInfoDTO> selectByNameOrCode(Long appId, SpmInfo query,boolean isSerarch);
+
     // 列出全部
     List<SpmInfoDTO> listAll();
 

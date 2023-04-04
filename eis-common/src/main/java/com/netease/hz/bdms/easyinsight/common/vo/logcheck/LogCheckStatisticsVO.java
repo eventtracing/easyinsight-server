@@ -26,6 +26,11 @@ public class LogCheckStatisticsVO {
     private HistogramVO checkFailedSpms;
 
     /**
+     * 校验失败涉及错误类型列表
+     */
+    private HistogramVO checkFailedTypes;
+
+    /**
      * 各buildUUID的校验失败涉及SPM列表
      */
     private PieVO buildUUIDcheckFailedSpms;
