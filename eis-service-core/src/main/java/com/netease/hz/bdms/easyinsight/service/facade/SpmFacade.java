@@ -486,13 +486,13 @@ public class SpmFacade {
         Long terminalId = param.getTerminalId();
         Map<String, EisReqPoolSpm> reqPoolSpmMap = reqPoolSpmHelper.getLatestSpmMap(appId, terminalId);
         Map<String, Boolean> spmToDeployedMap =reqPoolSpmHelper.getSpmIsDeployed(appId, terminalId);
-        Map<Long, Integer> spmStatusMap = reqPoolSpmHelper.getReqPoolSpmStatusMap();
+        Map<Long, Integer> spmStatusMap = reqPoolSpmHelper.getReqPoolSpmStatusMap(appId, terminalId);
 
 
         // 2. 读取表`eis_spm_info`中当前产品下的全部信息
         SpmInfo query = new SpmInfo();
         query.setTerminalId(terminalId);
-        List<SpmInfoDTO> spmInfoDTOS = spmInfoService.search(appId, query);
+        List<SpmInfoDTO> spmInfoDTOS = spmInfoService.searchLast(appId, query);
         List<SpmInfoDTO> atificialSpmInfoDTOS = spmInfoDTOS.stream()
                 .filter(spmInfoDTO -> spmInfoDTO.getSource().equals(SpmSourceTypeEnum.AITIFICIAL.getStatus()) || spmInfoDTO.getSource().equals(SpmSourceTypeEnum.POPVOLE.getStatus()))
                 .collect(Collectors.toList());

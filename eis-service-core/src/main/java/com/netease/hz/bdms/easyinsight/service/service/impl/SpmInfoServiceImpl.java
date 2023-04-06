@@ -104,6 +104,23 @@ public class SpmInfoServiceImpl implements SpmInfoService {
                 .map(this::do2Dto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<SpmInfoDTO> searchLast(Long appId, SpmInfo query) {
+        // 参数检查
+        Preconditions.checkArgument(null != query, "查询条件不能为空");
+        Preconditions.checkArgument(null != appId, "appId不能为空");
+        query.setAppId(appId);  // 必传字段
+        List<SpmInfo> spmInfoList = spmMapInfoMapper.selectLast(query);
+        if (CollectionUtils.isEmpty(spmInfoList)) {
+            return new ArrayList<>(0);
+        }
+        // 数据转化
+        return spmInfoList.stream()
+                .map(this::do2Dto)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<SpmInfoDTO> selectByNameOrCode(Long appId, SpmInfo query,boolean isSerarch) {
         List<SpmInfoDTO> resultList=new ArrayList<>();

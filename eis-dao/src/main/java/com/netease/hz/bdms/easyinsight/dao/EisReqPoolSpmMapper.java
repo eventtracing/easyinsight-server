@@ -13,6 +13,8 @@ public interface EisReqPoolSpmMapper extends Mapper<EisReqPoolSpm> {
 
     List<EisReqPoolSpm> selectBatchByObjIds(@Param("objIds") Set<Long> ids);
 
+    List<EisReqPoolSpm> queryLastSpm(EisReqPoolSpm query);
+
     void insertBatch(@Param("list") List<EisReqPoolSpm> list);
 
     void deleteByIds(@Param("ids") Set<Long> ids);

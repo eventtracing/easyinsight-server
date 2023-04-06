@@ -20,6 +20,9 @@ public interface SpmInfoMapper {
     // 按条件查询
     List<SpmInfo> select(SpmInfo queryCondition);
 
+    // 按条件查询
+    List<SpmInfo> selectLast(SpmInfo queryCondition);
+
     // 全部列出，建议后续改成分页，这样很坑
     List<SpmInfo> listAll();
 

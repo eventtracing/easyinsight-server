@@ -57,6 +57,18 @@
     </where>
   </select>
 
+
+  <select id="queryLastSpm" resultMap="BaseResultMap">
+    select *
+    from eis_req_pool_spm as t1, (select max(id) as id from eis_req_pool_spm group by spm_by_obj_id ) as t2
+    <where>
+      t1.id = t2.id and app_id = #{appId}
+      <if test="terminalId != null and terminalId != ''">
+        and terminal_id = #{terminalId}
+      </if>
+    </where>
+  </select>
+
   <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
     insert into eis_req_pool_spm
     (<include refid="BASE_COLUMN_LIST"/>)

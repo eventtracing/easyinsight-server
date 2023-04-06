@@ -44,7 +44,7 @@ public class ReqPoolSpmHelper {
         EisReqPoolSpm query = new EisReqPoolSpm();
         query.setAppId(appId);
         query.setTerminalId(terminalId);
-        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.search(query);
+        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.searchLast(query);
 
         Set<Long> allObjIds = CollectionUtils.isEmpty(reqPoolSpmList) ? new HashSet<>() :
                 reqPoolSpmList.stream().flatMap(o -> CommonUtil.transSpmToObjIdList(o.getSpmByObjId()).stream()).collect(Collectors.toSet());
@@ -149,7 +149,7 @@ public class ReqPoolSpmHelper {
         EisReqPoolSpm query = new EisReqPoolSpm();
         query.setAppId(appId);
         query.setTerminalId(terminalId);
-        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.search(query);
+        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.searchLast(query);
 
         Set<Long> objIds = reqPoolSpmList.stream()
                 .map(EisReqPoolSpm::getSpmByObjId)
@@ -160,7 +160,7 @@ public class ReqPoolSpmHelper {
         Map<Long, String> objIdToOidMap = objectBasicList.stream()
                 .collect(Collectors.toMap(ObjectBasic::getId, ObjectBasic::getOid));
 
-        Map<Long, Integer> reqPoolEntityIdToStatusMap = this.getReqPoolSpmStatusMap();
+        Map<Long, Integer> reqPoolEntityIdToStatusMap = this.getReqPoolSpmStatusMap(appId, terminalId);
 
         // 2. 构建(spm, isDeployed)映射
         Map<String, Boolean> spmToIsDeployedMap = Maps.newHashMap();
@@ -185,10 +185,12 @@ public class ReqPoolSpmHelper {
      *
      * @return
      */
-    public Map<Long, Integer> getReqPoolSpmStatusMap() {
+    public Map<Long, Integer> getReqPoolSpmStatusMap(Long appId, Long terminalId) {
         // 1.获取全部信息
         EisReqPoolSpm query = new EisReqPoolSpm();
-        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.search(query);
+        query.setAppId(appId);
+        query.setTerminalId(terminalId);
+        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.searchLast(query);
 
         Set<Long> reqPoolEntityIds = reqPoolSpmList.stream()
                 .map(EisReqPoolSpm::getId).collect(Collectors.toSet());
