@@ -150,8 +150,7 @@
         <include refid="Table_Name"/>
         <where>
             <if test="spm != null and spm != ''">
-                spm like concat("%", #{spm}, "%")
-                or name like concat("%", #{spm}, "%")
+                (spm like concat("%", #{spm}, "%") or name like concat("%", #{spm}, "%"))
             </if>
             and app_id = #{appId, jdbcType=BIGINT} and terminal_id = #{terminalId, jdbcType=BIGINT}
         </where>

@@ -6,6 +6,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.common.UserDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.exception.ServerException;
 import com.netease.hz.bdms.easyinsight.common.param.obj.ObjectUserParam;
+import com.netease.hz.bdms.easyinsight.common.param.obj.UserBuryPointParam;
 import com.netease.hz.bdms.easyinsight.common.util.BeanConvertUtils;
 import com.netease.hz.bdms.easyinsight.dao.EisUserPointInfoMapper;
 import com.netease.hz.bdms.easyinsight.dao.model.EisUserPointInfo;
@@ -33,6 +34,10 @@ public class UserBuryPointService {
 
     public void updateExtById(Long id, String extInfo){
         eisUserPointInfoMapper.updateExtInfo(id, extInfo);
+    }
+
+    public void updateById(UserBuryPointParam param){
+        eisUserPointInfoMapper.updateUserPoint(BeanConvertUtils.convert(param, EisUserPointInfo.class));
     }
 
     public void delById(Long id){
