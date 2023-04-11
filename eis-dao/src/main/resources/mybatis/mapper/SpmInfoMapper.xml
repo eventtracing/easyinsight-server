@@ -143,6 +143,20 @@
         </where>
     </select>
 
+    <select id="selectByLikeSpm" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        <where>
+            <if test="spm != null and spm != ''">
+                spm like concat("%", #{spm}, "%")
+                or name like concat("%", #{spm}, "%")
+            </if>
+            and app_id = #{appId, jdbcType=BIGINT} and terminal_id = #{terminalId, jdbcType=BIGINT}
+        </where>
+    </select>
+
     <select id="selectLast" resultMap="BaseResultMap"
             parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
         select

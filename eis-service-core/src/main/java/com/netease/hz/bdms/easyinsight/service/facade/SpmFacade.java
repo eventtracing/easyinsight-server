@@ -476,8 +476,45 @@ public class SpmFacade {
         return new PageResultVO<>(spmMapInfoVOS,
                 param.getPageSize(), param.getPageNum());
     }
+
     /**
-     * SPM列表展示  // todo 分页展示
+     * SPM搜索
+     */
+    public List<SpmMapInfoVO> search(SpmMapInfoListQueryVO param) {
+        Long appId = EtContext.get(ContextConstant.APP_ID);
+        Preconditions.checkArgument(null != appId, "未指定产品信息");
+        Long terminalId = param.getTerminalId();
+        // 1. 读取表`eis_spm_info`中搜索的spm
+        SpmInfo query = new SpmInfo();
+        query.setSpm(param.getSpmOrName());
+        query.setTerminalId(terminalId);
+        query.setAppId(appId);
+        List<SpmInfoDTO> spmInfoDTOS = spmInfoService.searchLike(query);
+
+        //
+        List<String> oids = spmInfoDTOS.stream().map(dto -> {
+            if(dto == null || StringUtils.isBlank(dto.getSpm())){
+                return null;
+            }
+            List<String> oidSplit = Arrays.asList(dto.getSpm().split("\\|"));
+            if(CollectionUtils.isEmpty(oidSplit)){
+                return null;
+            }
+            return oidSplit.get(0);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+        //
+        Set<Long> objIds = objectBasicService.getByOids(appId, oids).stream().map(ObjectBasic::getId).collect(Collectors.toSet());
+        Map<String, EisReqPoolSpm> reqPoolSpmMap = reqPoolSpmHelper.getSpmMapByObjIds(appId, objIds);
+        Map<String, Boolean> spmToDeployedMap = reqPoolSpmHelper.getSpmIsDeployedByObjIds(appId, terminalId, objIds);
+        Map<Long, Integer> spmStatusMap = reqPoolSpmHelper.getReqPoolSpmStatusMapByObjIds(objIds);
+
+        return querySpm(param, spmInfoDTOS, reqPoolSpmMap, spmToDeployedMap, spmStatusMap);
+
+    }
+
+
+    /**
+     * SPM列表展示
      */
     public List<SpmMapInfoVO> list(SpmMapInfoListQueryVO param) {
         Long appId = EtContext.get(ContextConstant.APP_ID);
@@ -485,14 +522,20 @@ public class SpmFacade {
         // 1. 获取当前产品下 指定端的spm及其信息
         Long terminalId = param.getTerminalId();
         Map<String, EisReqPoolSpm> reqPoolSpmMap = reqPoolSpmHelper.getLatestSpmMap(appId, terminalId);
-        Map<String, Boolean> spmToDeployedMap =reqPoolSpmHelper.getSpmIsDeployed(appId, terminalId);
+        Map<String, Boolean> spmToDeployedMap = reqPoolSpmHelper.getSpmIsDeployed(appId, terminalId);
         Map<Long, Integer> spmStatusMap = reqPoolSpmHelper.getReqPoolSpmStatusMap(appId, terminalId);
-
 
         // 2. 读取表`eis_spm_info`中当前产品下的全部信息
         SpmInfo query = new SpmInfo();
         query.setTerminalId(terminalId);
         List<SpmInfoDTO> spmInfoDTOS = spmInfoService.searchLast(appId, query);
+        return querySpm(param, spmInfoDTOS, reqPoolSpmMap, spmToDeployedMap, spmStatusMap);
+    }
+
+    /**
+     * spm 组装
+     */
+    public List<SpmMapInfoVO> querySpm(SpmMapInfoListQueryVO param, List<SpmInfoDTO> spmInfoDTOS, Map<String, EisReqPoolSpm> reqPoolSpmMap, Map<String, Boolean> spmToDeployedMap, Map<Long, Integer> spmStatusMap) {
         List<SpmInfoDTO> atificialSpmInfoDTOS = spmInfoDTOS.stream()
                 .filter(spmInfoDTO -> spmInfoDTO.getSource().equals(SpmSourceTypeEnum.AITIFICIAL.getStatus()) || spmInfoDTO.getSource().equals(SpmSourceTypeEnum.POPVOLE.getStatus()))
                 .collect(Collectors.toList());
@@ -518,7 +561,7 @@ public class SpmFacade {
         Map<Long, List<CommonAggregateDTO>> spmIdToTagAggregateDTOMap = Maps.newHashMap();
         List<SpmTagSimpleDTO> spmTagSimpleDTOList = spmTagService.getBySpmIds(spmIds);
         TagSimpleDTO tagQuery = new TagSimpleDTO();
-        tagQuery.setAppId(appId);
+        tagQuery.setAppId(EtContext.get(ContextConstant.APP_ID));
         List<TagSimpleDTO> tagList = tagService.search(tagQuery);
         Map<Long, String> tagIdToNameMap = tagList.stream()
                 .collect(Collectors.toMap(TagSimpleDTO::getId, TagSimpleDTO::getName));
@@ -595,7 +638,7 @@ public class SpmFacade {
         //人工编辑spm
         if(CollectionUtils.isNotEmpty(atificialSpmInfoDTOS)) {
             List<String> spms = atificialSpmInfoDTOS.stream().map(SpmInfoDTO::getSpm).collect(Collectors.toList());
-            List<ArtificialSpmInfoDTO> artificialSpmInfos = artificialSpmInfoService.getBySpm(spms, appId);
+            List<ArtificialSpmInfoDTO> artificialSpmInfos = artificialSpmInfoService.getBySpm(spms, EtContext.get(ContextConstant.APP_ID));
             Map<TwoTuple<String, Long>, ArtificialSpmInfoDTO> artificialSpmInfoDTOMap = artificialSpmInfos.stream().collect(Collectors.toMap(k -> new TwoTuple<>(k.getSpm(), k.getTerminalId()), Function.identity()));
 
             for (SpmInfoDTO spmInfoDTO : atificialSpmInfoDTOS) {

@@ -122,6 +122,20 @@ public class SpmInfoServiceImpl implements SpmInfoService {
     }
 
     @Override
+    public List<SpmInfoDTO> searchLike(SpmInfo query) {
+        // 参数检查
+        Preconditions.checkArgument(null != query, "查询条件不能为空");
+        List<SpmInfo> spmInfoList = spmMapInfoMapper.selectByLikeSpm(query.getAppId(), query.getTerminalId(), query.getSpm());
+        if (CollectionUtils.isEmpty(spmInfoList)) {
+            return new ArrayList<>(0);
+        }
+        // 数据转化
+        return spmInfoList.stream()
+                .map(this::do2Dto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<SpmInfoDTO> selectByNameOrCode(Long appId, SpmInfo query,boolean isSerarch) {
         List<SpmInfoDTO> resultList=new ArrayList<>();
         // 参数检查

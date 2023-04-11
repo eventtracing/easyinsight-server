@@ -70,6 +70,35 @@ public class ReqPoolSpmHelper {
         return reqPoolSpmMap;
     }
 
+    public Map<String, EisReqPoolSpm> getSpmMapByObjIds(Long appId, Set<Long> objIds){
+
+        // 1. 查询指定产品及端下 所有spm信息
+        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.getBatchByObjIds(objIds);
+
+        Set<Long> allObjIds = CollectionUtils.isEmpty(reqPoolSpmList) ? new HashSet<>() :
+                reqPoolSpmList.stream().flatMap(o -> CommonUtil.transSpmToObjIdList(o.getSpmByObjId()).stream()).collect(Collectors.toSet());
+
+        // 2. 查询对象Oid
+        ObjMappings objMappings = objectBasicService.getMapping(appId, allObjIds);
+        Map<Long, String> objIdToOidMap = objMappings.getObjIdToOidMap();
+
+        // 3. 对于同一spm, 保留最新需求下的
+        Map<String, EisReqPoolSpm> reqPoolSpmMap = Maps.newHashMap();
+        for (EisReqPoolSpm reqPoolSpm : reqPoolSpmList) {
+            String spmByObjId = reqPoolSpm.getSpmByObjId();
+            String spm = Arrays.stream(spmByObjId.split("\\|"))
+                    .map(Long::valueOf)
+                    .map(k -> objIdToOidMap.getOrDefault(k, "error"))
+                    .collect(Collectors.joining("|"));
+            if(reqPoolSpmMap.containsKey(spm)
+                    && reqPoolSpmMap.get(spm).getUpdateTime().compareTo(reqPoolSpm.getUpdateTime()) > 0){
+                continue;
+            }
+            reqPoolSpmMap.put(spm, reqPoolSpm);
+        }
+        return reqPoolSpmMap;
+    }
+
     /**
      *
      * @return
@@ -181,6 +210,40 @@ public class ReqPoolSpmHelper {
         return spmToIsDeployedMap;
     }
 
+    public Map<String, Boolean> getSpmIsDeployedByObjIds(Long appId, Long terminalId, Set<Long> searchObjIds){
+        // 1.获取全部信息
+        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.getBatchByObjIds(searchObjIds);
+
+        Set<Long> objIds = reqPoolSpmList.stream()
+                .map(EisReqPoolSpm::getSpmByObjId)
+                .flatMap(k -> Arrays.stream(k.split("\\|")))
+                .map(Long::valueOf)
+                .collect(Collectors.toSet());
+        List<ObjectBasic> objectBasicList = objectBasicService.getByIds(objIds);
+        Map<Long, String> objIdToOidMap = objectBasicList.stream()
+                .collect(Collectors.toMap(ObjectBasic::getId, ObjectBasic::getOid));
+
+        Map<Long, Integer> reqPoolEntityIdToStatusMap = this.getReqPoolSpmStatusMap(appId, terminalId);
+
+        // 2. 构建(spm, isDeployed)映射
+        Map<String, Boolean> spmToIsDeployedMap = Maps.newHashMap();
+        for (EisReqPoolSpm reqPoolSpm : reqPoolSpmList) {
+            String spmByObjId = reqPoolSpm.getSpmByObjId();
+            String spm = Arrays.stream(spmByObjId.split("\\|"))
+                    .map(Long::valueOf)
+                    .map(k -> objIdToOidMap.getOrDefault(k, "error"))
+                    .collect(Collectors.joining("|"));
+            Long reqPoolEntityId = reqPoolSpm.getId();
+            Integer status = reqPoolEntityIdToStatusMap.getOrDefault(reqPoolEntityId, 0);
+            if(ProcessStatusEnum.ONLINE.getState().equals(status)){
+                spmToIsDeployedMap.put(spm, true);
+            }else {
+                spmToIsDeployedMap.putIfAbsent(spm, false);
+            }
+        }
+        return spmToIsDeployedMap;
+    }
+
     /**
      *
      * @return
@@ -191,6 +254,19 @@ public class ReqPoolSpmHelper {
         query.setAppId(appId);
         query.setTerminalId(terminalId);
         List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.searchLast(query);
+
+        Set<Long> reqPoolEntityIds = reqPoolSpmList.stream()
+                .map(EisReqPoolSpm::getId).collect(Collectors.toSet());
+        List<EisTaskProcess> taskProcessesList = taskProcessService.getByReqPoolEntityIds(ReqPoolTypeEnum.SPM_DEV, reqPoolEntityIds);
+        Map<Long, Integer> reqPoolEntityIdToStatusMap = taskProcessesList.stream()
+                .collect(Collectors.toMap(EisTaskProcess::getReqPoolEntityId, EisTaskProcess::getStatus, (oldV, newV) -> oldV));
+
+        return reqPoolEntityIdToStatusMap;
+    }
+
+    public Map<Long, Integer> getReqPoolSpmStatusMapByObjIds(Set<Long> objIds) {
+        // 1.获取全部信息
+        List<EisReqPoolSpm> reqPoolSpmList = reqSpmPoolService.getBatchByObjIds(objIds);
 
         Set<Long> reqPoolEntityIds = reqPoolSpmList.stream()
                 .map(EisReqPoolSpm::getId).collect(Collectors.toSet());
