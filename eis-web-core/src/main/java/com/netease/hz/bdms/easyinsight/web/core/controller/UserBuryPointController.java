@@ -2,6 +2,7 @@ package com.netease.hz.bdms.easyinsight.web.core.controller;
 
 import com.netease.hz.bdms.easyinsight.common.http.HttpResult;
 import com.netease.hz.bdms.easyinsight.common.param.obj.ObjectUserParam;
+import com.netease.hz.bdms.easyinsight.common.param.obj.UserBuryPointParam;
 import com.netease.hz.bdms.easyinsight.service.service.obj.UserBuryPointService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,9 +28,23 @@ public class UserBuryPointController {
      * @return {@link Boolean}
      */
     @RequestMapping("/create")
-    public HttpResult getEventsPool(@RequestBody ObjectUserParam param){
+    public HttpResult createUserPoint(@RequestBody ObjectUserParam param){
         if(CollectionUtils.isNotEmpty(param.getPointParams())){
             userBuryPointService.userPointEntry(param);
+        }
+        return HttpResult.success(true);
+    }
+
+    /**
+     * 埋点更新
+     *
+     * @param param 埋点信息
+     * @return {@link Boolean}
+     */
+    @RequestMapping("/update")
+    public HttpResult updateUserPoint(@RequestBody UserBuryPointParam param){
+        if(param != null && param.getId() > 0){
+            userBuryPointService.updateById(param);
         }
         return HttpResult.success(true);
     }

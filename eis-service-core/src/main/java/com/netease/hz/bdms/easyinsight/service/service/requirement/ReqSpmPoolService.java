@@ -47,6 +47,10 @@ public class ReqSpmPoolService {
         return Optional.ofNullable(eisReqPoolSpmMapper.select(query)).orElse(new ArrayList<>());
     }
 
+    public List<EisReqPoolSpm> searchLast(EisReqPoolSpm query){
+        return Optional.ofNullable(eisReqPoolSpmMapper.queryLastSpm(query)).orElse(new ArrayList<>());
+    }
+
     public void insert(EisReqPoolSpm entity){
         UserDTO currUser = EtContext.get(ContextConstant.USER);
         Long appId = EtContext.get(ContextConstant.APP_ID);

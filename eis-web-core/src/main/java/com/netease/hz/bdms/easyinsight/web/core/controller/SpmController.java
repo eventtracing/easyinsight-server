@@ -12,10 +12,12 @@ import com.netease.hz.bdms.easyinsight.service.facade.SpmFacade;
 import com.netease.hz.bdms.easyinsight.service.helper.SpmMapHelper;
 import com.netease.hz.bdms.easyinsight.service.service.ArtificialSpmInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.SpmInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -99,6 +101,21 @@ public class SpmController {
     public HttpResult listSpmMapInfo(@RequestBody SpmMapInfoListQueryVO param){
         PageResultVO<SpmMapInfoVO> page= spmFacade.listWithCache(param);
         return HttpResult.success(page);
+    }
+
+    /**
+     * SPM 搜索
+     *
+     * @return
+     */
+    @PostMapping("/info/search")
+    @PermissionAction(requiredPermission = PermissionEnum.SPM_READ)
+    public HttpResult searchSpmMapInfo(@RequestBody SpmMapInfoListQueryVO param){
+        if(param == null || StringUtils.isBlank(param.getSpmOrName())){
+            return HttpResult.success();
+        }
+        List<SpmMapInfoVO> spmMapInfoVOS= spmFacade.search(param);
+        return HttpResult.success(new PageResultVO<>(spmMapInfoVOS, param.getPageSize(), param.getPageNum()));
     }
 
     /**

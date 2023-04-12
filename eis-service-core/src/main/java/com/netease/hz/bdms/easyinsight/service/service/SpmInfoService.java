@@ -20,6 +20,13 @@ public interface SpmInfoService {
     // 搜索
     List<SpmInfoDTO> search(Long appId, SpmInfo query);
 
+
+    // 搜索最近的
+    List<SpmInfoDTO> searchLast(Long appId, SpmInfo query);
+
+    // 模糊搜索
+    List<SpmInfoDTO> searchLike(SpmInfo query);
+
     List<SpmInfoDTO> selectByNameOrCode(Long appId, SpmInfo query,boolean isSerarch);
 
     // 列出全部

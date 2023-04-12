@@ -1,6 +1,7 @@
 package com.netease.hz.bdms.easyinsight.dao;
 
 import com.netease.hz.bdms.easyinsight.common.OpenSource;
+import com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic;
 import com.netease.hz.bdms.easyinsight.dao.model.SpmInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,12 @@ public interface SpmInfoMapper {
 
     // 按条件查询
     List<SpmInfo> select(SpmInfo queryCondition);
+
+    // 按条件查询
+    List<SpmInfo> selectLast(SpmInfo queryCondition);
+
+    // 模糊查询spm
+    List<SpmInfo> selectByLikeSpm(@Param("appId") Long appId, @Param("terminalId") Long terminalId, @Param("spm") String spm);
 
     // 全部列出，建议后续改成分页，这样很坑
     List<SpmInfo> listAll();

@@ -56,6 +56,25 @@
     </foreach>
   </insert>
 
+  <update id="updateUserPoint" parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisUserPointInfo">
+    update <include refid="tableName"/>
+    <set>
+      <if test="line != null">
+        line = #{line,jdbcType=VARCHAR},
+      </if>
+      <if test="eventId != null">
+        eventId = #{eventId,jdbcType=BIGINT},
+      </if>
+      <if test="designed != null">
+        designed = #{designed,jdbcType=INTEGER},
+      </if>
+      <if test="invalid != null">
+        invalid = #{invalid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
   <update id="updateExtInfo">
     update eis_user_point_info
     <set>

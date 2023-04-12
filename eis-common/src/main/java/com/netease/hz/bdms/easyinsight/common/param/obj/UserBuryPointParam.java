@@ -11,6 +11,10 @@ import java.util.List;
 @Accessors(chain = true)
 public class UserBuryPointParam {
     /**
+     * id
+     */
+    private Long id;
+    /**
      * 业务线
      */
     private String line;
