@@ -15,8 +15,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +61,9 @@ public class ArtificialSpmInfoServiceImpl implements ArtificialSpmInfoService {
                 spmInfo.setCreateEmail(currUser.getEmail())
                         .setCreateName(currUser.getUserName())
                         .setUpdateEmail(currUser.getEmail())
-                        .setUpdateName(currUser.getUserName());
+                        .setUpdateName(currUser.getUserName())
+                        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                        .setUpdateTime(new Timestamp(System.currentTimeMillis()));
             });
         }
         // 批量插入

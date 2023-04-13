@@ -53,6 +53,8 @@ public class ReqObjRelationService {
                 reqObjRelation.setCreateEmail(userEmail);
                 reqObjRelation.setUpdateName(userName);
                 reqObjRelation.setUpdateEmail(userEmail);
+                reqObjRelation.setCreateTime(new Date());
+                reqObjRelation.setUpdateTime(new Date());
             });
 
             reqObjRelationMapper.insertBatch(list);
@@ -70,6 +72,8 @@ public class ReqObjRelationService {
         entity.setCreateEmail(userEmail);
         entity.setUpdateName(userName);
         entity.setUpdateEmail(userEmail);
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         // 插入记录
         reqObjRelationMapper.insert(entity);
     }

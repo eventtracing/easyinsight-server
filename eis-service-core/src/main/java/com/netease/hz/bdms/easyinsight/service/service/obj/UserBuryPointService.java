@@ -53,13 +53,14 @@ public class UserBuryPointService {
         List<EisUserPointInfo> list = objectUserParam.getPointParams().stream().map(param -> BeanConvertUtils.convert(param, EisUserPointInfo.class)).filter(Objects::nonNull).collect(Collectors.toList());
         // 公共信息
         UserDTO currUser = EtContext.get(ContextConstant.USER);
-        if(null != currUser) {
-            list.forEach(userPointInfo -> {
+        list.forEach(userPointInfo -> {
+            if(null != currUser) {
                 userPointInfo.setCreator(currUser.getUserName());
-                userPointInfo.setCreateTime(new Date());
-                userPointInfo.setUpdateTime(new Date());
-            });
-        }
+            }
+            userPointInfo.setCreateTime(new Date());
+            userPointInfo.setUpdateTime(new Date());
+        });
+
         try {
             eisUserPointInfoMapper.insertBatch(list);
         }catch (Exception e){

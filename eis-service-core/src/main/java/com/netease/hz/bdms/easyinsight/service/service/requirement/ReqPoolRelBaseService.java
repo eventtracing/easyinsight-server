@@ -105,6 +105,8 @@ public class ReqPoolRelBaseService {
             entity.setUpdateName(currUser.getUserName());
             entity.setUpdateEmail(currUser.getEmail());
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         reqPoolRelBaseReleaseMapper.insert(entity);
     }
 
@@ -112,14 +114,16 @@ public class ReqPoolRelBaseService {
         if(CollectionUtils.isNotEmpty(list)){
             // 公共信息填充
             UserDTO currUser = EtContext.get(ContextConstant.USER);
-            if(currUser != null){
-                list.forEach(entity -> {
+            list.forEach(entity -> {
+                if(currUser != null) {
                     entity.setCreateName(currUser.getUserName());
                     entity.setCreateEmail(currUser.getEmail());
                     entity.setUpdateName(currUser.getUserName());
                     entity.setUpdateEmail(currUser.getEmail());
-                });
-            }
+                }
+                entity.setCreateTime(new Date());
+                entity.setUpdateTime(new Date());
+            });
 
             reqPoolRelBaseReleaseMapper.insertBatch(list);
         }

@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +169,8 @@ public class ParamBindServiceImpl implements ParamBindService {
         paramBind.setCreateEmail(userEmail);
         paramBind.setUpdateName(userName);
         paramBind.setUpdateEmail(userEmail);
+        paramBind.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        paramBind.setUpdateTime(new Timestamp(System.currentTimeMillis()));
 
         paramBindMapper.insert(paramBind);
         return paramBind.getId();

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +56,12 @@ public class ParamValueServiceImpl implements ParamValueService {
       if (updater != null) {
         paramValue.setUpdateEmail(updater.getEmail())
             .setUpdateName(updater.getUserName());
+      }
+      if(paramValue.getCreateTime() == null){
+        paramValue.setCreateTime(new Timestamp(System.currentTimeMillis()));
+      }
+      if(paramValue.getUpdateTime() == null){
+        paramValue.setUpdateTime(new Timestamp(System.currentTimeMillis()));
       }
     }
     return paramValue;

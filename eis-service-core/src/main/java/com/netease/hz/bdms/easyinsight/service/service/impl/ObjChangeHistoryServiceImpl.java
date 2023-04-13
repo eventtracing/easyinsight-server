@@ -39,6 +39,8 @@ public class ObjChangeHistoryServiceImpl implements ObjChangeHistoryService {
             objChangeHistory.setUpdateName(currentUser.getUserName());
             objChangeHistory.setUpdateEmail(currentUser.getEmail());
         }
+        objChangeHistory.setCreateTime(new Date());
+        objChangeHistory.setUpdateTime(new Date());
         // 插入记录
         objChangeHistoryMapper.insert(objChangeHistory);
         // 后续删除该日志，用来定位为何产生了多个对象

@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +60,12 @@ public class VersionServiceImpl implements VersionService {
       if (updater != null) {
         version.setUpdateEmail(updater.getEmail())
             .setUpdateName(updater.getUserName());
+      }
+      if(version.getCreateTime() == null){
+        version.setCreateTime(new Timestamp(System.currentTimeMillis()));
+      }
+      if(version.getUpdateTime() == null){
+        version.setUpdateTime(new Timestamp(System.currentTimeMillis()));
       }
     }
     return version;
@@ -179,7 +186,9 @@ public class VersionServiceImpl implements VersionService {
         .setCreateEmail(currentEmail)
         .setCreateName(currentName)
         .setUpdateEmail(currentEmail)
-        .setUpdateName(currentName);
+        .setUpdateName(currentName)
+        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+        .setUpdateTime(new Timestamp(System.currentTimeMillis()));
     versionMapper.insert(version);
     return version.getId();
   }

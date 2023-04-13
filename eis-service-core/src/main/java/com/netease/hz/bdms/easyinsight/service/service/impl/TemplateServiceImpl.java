@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,6 +55,12 @@ public class TemplateServiceImpl implements TemplateService {
       if (updater != null) {
         template.setUpdateEmail(updater.getEmail())
             .setUpdateName(updater.getUserName());
+      }
+      if(template.getCreateTime() == null){
+        template.setCreateTime(new Timestamp(System.currentTimeMillis()));
+      }
+      if(template.getUpdateTime() == null){
+        template.setUpdateTime(new Timestamp(System.currentTimeMillis()));
       }
     }
     return template;

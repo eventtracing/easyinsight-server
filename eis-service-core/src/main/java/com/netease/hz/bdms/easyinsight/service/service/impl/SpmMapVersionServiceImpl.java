@@ -10,10 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,14 +29,17 @@ public class SpmMapVersionServiceImpl implements SpmMapVersionService {
         }
         // 插入公共信息
         UserDTO currUser= EtContext.get(ContextConstant.USER);
-        if(null != currUser){
-            spmMapVersionList.forEach(spmMapVersion -> {
+
+        spmMapVersionList.forEach(spmMapVersion -> {
+            if(null != currUser) {
                 spmMapVersion.setCreateEmail(currUser.getEmail())
                         .setCreateName(currUser.getUserName())
                         .setUpdateEmail(currUser.getEmail())
                         .setUpdateName(currUser.getUserName());
-            });
-        }
+            }
+            spmMapVersion.setCreateTime(new Date());
+            spmMapVersion.setUpdateTime(new Date());
+        });
         spmMapVersionMapper.insert(spmMapVersionList);
         return spmMapVersionList.stream()
                 .map(SpmMapVersion::getId).collect(Collectors.toList());

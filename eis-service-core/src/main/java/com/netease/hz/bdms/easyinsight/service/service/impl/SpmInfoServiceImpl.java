@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,14 +59,17 @@ public class SpmInfoServiceImpl implements SpmInfoService {
                 .collect(Collectors.toList());
         // 公共信息填入
         UserDTO currUser= EtContext.get(ContextConstant.USER);
-        if(null != currUser){
-            spmInfoList.forEach(spmInfo -> {
+        spmInfoList.forEach(spmInfo -> {
+            if(null != currUser) {
                 spmInfo.setCreateEmail(currUser.getEmail())
                         .setCreateName(currUser.getUserName())
                         .setUpdateEmail(currUser.getEmail())
                         .setUpdateName(currUser.getUserName());
-            });
-        }
+            }
+            spmInfo.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            spmInfo.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        });
+
         // 批量插入
         spmMapInfoMapper.insert(spmInfoList);
         List<Long> result = spmInfoList.stream()

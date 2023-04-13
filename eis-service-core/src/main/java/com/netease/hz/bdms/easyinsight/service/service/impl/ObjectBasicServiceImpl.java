@@ -217,6 +217,8 @@ public class ObjectBasicServiceImpl implements ObjectBasicService {
                     .setUpdateName(currentUser.getUserName())
                     .setUpdateEmail(currentUser.getEmail());
         }
+        objectBasic.setCreateTime(new Date());
+        objectBasic.setUpdateTime(new Date());
         if(null != appId){
             objectBasic.setAppId(appId);
         }

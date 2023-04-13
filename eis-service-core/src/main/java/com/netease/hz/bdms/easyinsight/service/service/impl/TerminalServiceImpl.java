@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +64,12 @@ public class TerminalServiceImpl implements TerminalService {
             if (updater != null) {
                 terminal.setUpdateEmail(updater.getEmail())
                         .setUpdateName(updater.getUserName());
+            }
+            if(terminal.getCreateTime() == null){
+                terminal.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            }
+            if(terminal.getUpdateTime() == null){
+                terminal.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             }
         }
         return terminal;

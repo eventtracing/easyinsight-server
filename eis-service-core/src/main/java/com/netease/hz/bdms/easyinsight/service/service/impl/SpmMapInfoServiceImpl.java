@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,14 @@ public class SpmMapInfoServiceImpl implements SpmMapInfoService {
     }
 
     private SpmMapInfo dto2Do(SpmMapInfoDTO spmMapInfoDTO) {
-        return BeanConvertUtils.convert(spmMapInfoDTO, SpmMapInfo.class);
+        SpmMapInfo spmMapInfo = BeanConvertUtils.convert(spmMapInfoDTO, SpmMapInfo.class);
+        if(spmMapInfo != null && spmMapInfo.getCreateTime() == null){
+            spmMapInfo.setCreateTime(new Date());
+        }
+        if(spmMapInfo != null && spmMapInfo.getUpdateTime() == null){
+            spmMapInfo.setUpdateTime(new Date());
+        }
+        return spmMapInfo;
     }
 
     @Override
