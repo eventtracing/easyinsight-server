@@ -120,4 +120,11 @@ public interface ObjectBasicMapper {
     Integer deleteByIds(@Param("ids") Collection<Long> ids);
 
     void insertBatch(@Param("list") List<ObjectBasic> list);
+
+    /**
+     * 流量罗盘查询对象列表
+     * @param search
+     * @return
+     */
+    List<ObjectBasic> searchLike4Compass(Search search);
 }

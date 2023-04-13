@@ -328,4 +328,21 @@
         </foreach>
     </delete>
 
+    <select id="searchLike4Compass" parameterType="com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic"
+            resultMap="BaseResultMap">
+        select id,oid,name,replace(json_extract(ext,'$.basicTag.objSubType'),'"','') as tag
+        from
+        <include refid="TableName"/>
+        <where>
+            <if test="search != null and search != ''">
+                oid like concat("%", #{search}, "%")
+                or name like concat("%", #{search}, "%")
+            </if>
+            <if test="tag != null and tag != ''">
+                and json_extract(ext,'$.basicTag.objSubType') like   concat("%", #{tag}, "%")
+            </if>
+            and app_id = #{appId, jdbcType=BIGINT}
+            and json_extract(ext,'$.basicTag.objSubType') is not null
+        </where>
+    </select>
 </mapper>

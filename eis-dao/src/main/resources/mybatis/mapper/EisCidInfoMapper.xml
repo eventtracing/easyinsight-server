@@ -69,4 +69,10 @@
       (#{item.appId,jdbcType=BIGINT}, #{item.target,jdbcType=VARCHAR},#{item.bindType,jdbcType=VARCHAR},#{item.cid,jdbcType=VARCHAR},#{item.cidName,jdbcType=VARCHAR},#{item.ext,jdbcType=VARCHAR})
     </foreach>
   </insert>
+
+  <select id="listByAppId" resultType="com.netease.hz.bdms.easyinsight.dao.model.CidInfo">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where bindType = #{bindType}  and appId = #{appId}
+  </select>
 </mapper>

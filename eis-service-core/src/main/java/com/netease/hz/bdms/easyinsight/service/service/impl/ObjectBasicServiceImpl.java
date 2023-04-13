@@ -289,6 +289,17 @@ public class ObjectBasicServiceImpl implements ObjectBasicService {
         return objectBasicMapper.selectDistinctAppIds(objIds);
     }
 
+    /**
+     * 流量罗盘用来查询对象列表
+     *
+     * @param search
+     * @return
+     */
+    @Override
+    public List<ObjectBasic> searchLike4Compass(Search search) {
+        return Optional.ofNullable(objectBasicMapper.searchLike4Compass(search)).orElse(new ArrayList<>());
+    }
+
     @Override
     public List<String> getAllOids(Long appId) {
         ListHolder listHolder = CacheUtils.getAndSetIfAbsent(() -> "getAllOids" + appId,

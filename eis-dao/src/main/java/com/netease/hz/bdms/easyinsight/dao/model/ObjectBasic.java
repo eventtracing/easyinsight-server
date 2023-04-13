@@ -87,4 +87,11 @@ public class ObjectBasic {
      * 更新时间
      */
     private Date updateTime;
+
+
+    /**
+     * 新增冗余字段-流量罗盘事件分析使用
+     **/
+
+    private String tag;
 }

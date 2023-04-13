@@ -23,4 +23,6 @@ public interface EisCidInfoMapper {
     List<CidInfo> selectCidTagInfosByOid(@Param("bindType") String bindType,
                                          @Param("oid") String oid,
                                          @Param("appId") Long appId);
+
+    List<CidInfo> listByAppId(String bindType, Long appId);
 }

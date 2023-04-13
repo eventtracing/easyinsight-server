@@ -128,4 +128,11 @@ public interface ObjectBasicService {
     List<String> getAllOids(Long appId);
 
     List<Long> getAllAppIds(Collection<Long> objIds);
+
+    /**
+     * 流量罗盘用来查询对象列表
+     * @param search
+     * @return
+     */
+    List<ObjectBasic> searchLike4Compass(Search search);
 }
