@@ -53,6 +53,8 @@ public class ObjTerminalTrackerService {
             entity.setUpdateName(currUser.getUserName());
             entity.setUpdateEmail(currUser.getEmail());
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         if(null != appId){
             entity.setAppId(appId);
         }
@@ -73,6 +75,8 @@ public class ObjTerminalTrackerService {
                 entity.setUpdateName(currUser.getUserName());
                 entity.setUpdateEmail(currUser.getEmail());
                 entity.setAppId(appId);
+                entity.setCreateTime(new Date());
+                entity.setUpdateTime(new Date());
             });
         }
         objTerminalTrackerMapper.insertBatch(list);

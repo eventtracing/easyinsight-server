@@ -39,8 +39,8 @@ public class RuleTemplateServiceImpl implements RuleTemplateService {
         if (ruleTemplate != null) {
             UserSimpleDTO updater = ruleTemplateSimpleDTO.getUpdater();
             UserSimpleDTO creator = ruleTemplateSimpleDTO.getCreator();
-            Timestamp createTime = ruleTemplateSimpleDTO.getCreateTime() != null ? new Timestamp(ruleTemplateSimpleDTO.getCreateTime()) : null;
-            Timestamp updateTime = ruleTemplateSimpleDTO.getUpdateTime() != null ? new Timestamp(ruleTemplateSimpleDTO.getUpdateTime()) : null;
+            Timestamp createTime = ruleTemplateSimpleDTO.getCreateTime() != null ? new Timestamp(ruleTemplateSimpleDTO.getCreateTime()) : new Timestamp(System.currentTimeMillis());
+            Timestamp updateTime = ruleTemplateSimpleDTO.getUpdateTime() != null ? new Timestamp(ruleTemplateSimpleDTO.getUpdateTime()) : new Timestamp(System.currentTimeMillis());
             if (creator != null) {
                 ruleTemplate.setCreateEmail(creator.getEmail())
                         .setCreateName(creator.getUserName());

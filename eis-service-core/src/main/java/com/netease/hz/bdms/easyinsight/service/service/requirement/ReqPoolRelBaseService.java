@@ -105,6 +105,8 @@ public class ReqPoolRelBaseService {
             entity.setUpdateName(currUser.getUserName());
             entity.setUpdateEmail(currUser.getEmail());
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         reqPoolRelBaseReleaseMapper.insert(entity);
     }
 
@@ -118,6 +120,8 @@ public class ReqPoolRelBaseService {
                     entity.setCreateEmail(currUser.getEmail());
                     entity.setUpdateName(currUser.getUserName());
                     entity.setUpdateEmail(currUser.getEmail());
+                    entity.setCreateTime(new Date());
+                    entity.setUpdateTime(new Date());
                 });
             }
 

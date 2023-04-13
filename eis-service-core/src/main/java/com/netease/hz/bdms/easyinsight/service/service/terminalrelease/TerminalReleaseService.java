@@ -48,6 +48,8 @@ public class TerminalReleaseService {
             entity.setUpdateName(currUser.getUserName());
             entity.setUpdateEmail(currUser.getEmail());
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         terminalReleaseHistoryMapper.insertSelective(entity);
     }
 

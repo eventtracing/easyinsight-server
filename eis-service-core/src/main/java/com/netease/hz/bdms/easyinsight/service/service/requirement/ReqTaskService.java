@@ -94,6 +94,8 @@ public class ReqTaskService {
                 eisReqTask.setCreateName(currUser.getUserName());
                 eisReqTask.setUpdateEmail(currUser.getEmail());
                 eisReqTask.setUpdateName(currUser.getUserName());
+                eisReqTask.setCreateTime(new Date());
+                eisReqTask.setUpdateTime(new Date());
             });
         }
         reqTaskMapper.insertBatch(list);

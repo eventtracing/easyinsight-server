@@ -31,14 +31,16 @@ public class AllTrackerReleaseService {
 
     public void insertBatch(List<EisAllTrackerRelease> list){
         UserDTO currUser = EtContext.get(ContextConstant.USER);
-        if(null != currUser){
-            list.forEach(eisAllTrackerRelease -> {
+        list.forEach(eisAllTrackerRelease -> {
+            if(null != currUser) {
                 eisAllTrackerRelease.setCreateName(currUser.getUserName());
                 eisAllTrackerRelease.setCreateEmail(currUser.getEmail());
                 eisAllTrackerRelease.setUpdateName(currUser.getUserName());
                 eisAllTrackerRelease.setUpdateEmail(currUser.getEmail());
-            });
-        }
+            }
+            eisAllTrackerRelease.setCreateTime(new Date());
+            eisAllTrackerRelease.setUpdateTime(new Date());
+        });
         allTrackerReleaseMapper.insertBatch(list);
     }
 

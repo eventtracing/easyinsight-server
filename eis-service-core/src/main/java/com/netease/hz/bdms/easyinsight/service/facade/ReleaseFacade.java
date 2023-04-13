@@ -390,6 +390,8 @@ public class ReleaseFacade {
         Long appId = EtContext.get(ContextConstant.APP_ID);
         newTerminalVersion.setAppId(appId);
         newTerminalVersion.setName(customName);
+        newTerminalVersion.setCreateTime(new Date());
+        newTerminalVersion.setUpdateTime(System.currentTimeMillis());
         Long terminalVersionId = terminalVersionInfoService.create(newTerminalVersion);
         // 2. 更新任务记录中的端版本字段
         EisReqTask updateEntity = new EisReqTask();

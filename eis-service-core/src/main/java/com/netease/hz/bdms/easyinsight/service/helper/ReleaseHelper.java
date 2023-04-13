@@ -327,6 +327,7 @@ public class ReleaseHelper {
         newEisTerminalVersionInfo.setUpdateEmail("SYSTEM");
         newEisTerminalVersionInfo.setUpdateName("SYSTEM");
         newEisTerminalVersionInfo.setCreateTime(new Date());
+        newEisTerminalVersionInfo.setUpdateTime(System.currentTimeMillis());
         Long terminalVersionId = terminalVersionInfoService.create(newEisTerminalVersionInfo);
         EisTerminalReleaseHistory latestRelease = terminalReleaseService.getLatestRelease(terminalId);
         Long newTerminalReleaseId = terminalReleaseService.releaseAndUpdate(appId, terminalId, terminalVersionId);
@@ -441,6 +442,8 @@ public class ReleaseHelper {
                     relation.setTerminalId(terminalId);
                     relation.setTerminalReleaseId(newTerminalReleaseId);
                     relation.setAppId(appId);
+                    relation.setCreateTime(new Date());
+                    relation.setUpdateTime(new Date());
                     newReleaseRelations.add(relation);
                 }
             }else {
@@ -449,6 +452,8 @@ public class ReleaseHelper {
                 relation.setTerminalId(terminalId);
                 relation.setTerminalReleaseId(newTerminalReleaseId);
                 relation.setAppId(appId);
+                relation.setCreateTime(new Date());
+                relation.setUpdateTime(new Date());
                 newReleaseRelations.add(relation);
             }
         }

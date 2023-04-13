@@ -73,6 +73,8 @@ public class TaskProcessService {
             entity.setUpdateName(currentUser.getUserName());
             entity.setUpdateEmail(currentUser.getEmail());
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         eisTaskProcessMapper.insert(entity);
     }
 
@@ -82,14 +84,16 @@ public class TaskProcessService {
         }
         // 公共信息插入
         UserDTO currentUser = EtContext.get(ContextConstant.USER);
-        if(null != currentUser){
-            list.forEach(taskProcess -> {
+        list.forEach(taskProcess -> {
+            if(null != currentUser) {
                 taskProcess.setCreateName(currentUser.getUserName());
                 taskProcess.setCreateEmail(currentUser.getEmail());
                 taskProcess.setUpdateName(currentUser.getUserName());
                 taskProcess.setUpdateEmail(currentUser.getEmail());
-            });
-        }
+            }
+            taskProcess.setCreateTime(new Date());
+            taskProcess.setUpdateTime(new Date());
+        });
         eisTaskProcessMapper.insertBatch(list);
     }
 

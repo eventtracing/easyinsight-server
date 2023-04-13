@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,6 +60,8 @@ public class TrackerContentService {
             content.setTrackerId(trackerId);
             content.setType(o.getKey());
             content.setContent(o.getValue());
+            content.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            content.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return content;
         }).collect(Collectors.toList());
     }

@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -257,6 +258,8 @@ public class ObjectHelper {
                 Long eventParamVersionId = eventIdToParamVersionIdMap.getOrDefault(eventId, 0L);
                 eventSimpleDTO.setEventId(eventId)
                         .setTrackerId(trackerId)
+                        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                        .setUpdateTime(new Timestamp(System.currentTimeMillis()))
                         .setEventParamVersionId(eventParamVersionId);
                 // 加入列表
                 eventSimpleDTOS.add(eventSimpleDTO);
@@ -385,7 +388,10 @@ public class ObjectHelper {
                 Long eventParamVersionId = eventIdToParamVersionIdMap.getOrDefault(eventId, 0L);
                 eventSimpleDTO.setEventId(eventId)
                         .setTrackerId(trackerId)
+                        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                        .setUpdateTime(new Timestamp(System.currentTimeMillis()))
                         .setEventParamVersionId(eventParamVersionId);
+
                 // 加入列表
                 eventSimpleDTOS.add(eventSimpleDTO);
             }
@@ -548,6 +554,8 @@ public class ObjectHelper {
                 Long eventParamVersionId = eventIdToParamVersionIdMap.getOrDefault(eventId, 0L);
                 eventSimpleDTO.setEventId(eventId)
                         .setTrackerId(trackerId)
+                        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                        .setUpdateTime(new Timestamp(System.currentTimeMillis()))
                         .setEventParamVersionId(eventParamVersionId);
                 // 加入列表
                 eventSimpleDTOS.add(eventSimpleDTO);

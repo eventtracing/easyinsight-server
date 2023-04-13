@@ -10,10 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -51,6 +48,8 @@ public class ReqEventPoolService {
         entity.setCreateEmail(currUser.getEmail());
         entity.setUpdateName(currUser.getUserName());
         entity.setUpdateEmail(currUser.getEmail());
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
 
         reqPoolEventMapper.insert(entity);
     }

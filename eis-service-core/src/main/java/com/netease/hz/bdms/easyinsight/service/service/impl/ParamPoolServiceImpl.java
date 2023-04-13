@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -88,6 +89,12 @@ public class ParamPoolServiceImpl implements ParamPoolService {
     ParamPoolItem paramPoolItem = dto2Do(paramPoolItemDTO);
     if (paramPoolItem == null) {
       throw new CommonException("参数对象不能为空");
+    }
+    if(paramPoolItem.getCreateTime() == null){
+      paramPoolItem.setCreateTime(new Timestamp(System.currentTimeMillis()));
+    }
+    if(paramPoolItem.getUpdateTime() == null){
+      paramPoolItem.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     }
     paramPoolMapper.insert(paramPoolItem);
     return paramPoolItem.getId();

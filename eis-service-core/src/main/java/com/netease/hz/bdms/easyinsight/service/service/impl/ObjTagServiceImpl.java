@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -104,6 +105,8 @@ public class ObjTagServiceImpl implements ObjTagService {
                 objTag.setCreateEmail(currUser.getEmail());
                 objTag.setUpdateName(currUser.getUserName());
                 objTag.setUpdateEmail(currUser.getEmail());
+                objTag.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                objTag.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             });
             objTagMapper.batchInsert(objTagList);
         }

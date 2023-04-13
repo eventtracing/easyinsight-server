@@ -10,10 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * spm待指派项CRUD
@@ -63,7 +60,8 @@ public class ReqSpmPoolService {
         if(null != appId){
             entity.setAppId(appId);
         }
-
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
 
         eisReqPoolSpmMapper.insert(entity);
     }
@@ -83,6 +81,8 @@ public class ReqSpmPoolService {
                 if (null != appId) {
                     reqPoolSpm.setAppId(appId);
                 }
+                reqPoolSpm.setCreateTime(new Date());
+                reqPoolSpm.setUpdateTime(new Date());
             });
             eisReqPoolSpmMapper.insertBatch(list);
         }

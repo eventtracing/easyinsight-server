@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +39,12 @@ public class SpmTagServiceImpl implements SpmTagService {
             if (updater != null) {
                 spmTag.setUpdateEmail(updater.getEmail())
                         .setUpdateName(updater.getUserName());
+            }
+            if(spmTag.getCreateTime() == null){
+                spmTag.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            }
+            if(spmTag.getUpdateTime() == null){
+                spmTag.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             }
         }
         return spmTag;

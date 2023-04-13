@@ -44,6 +44,8 @@ public class RequirementInfoService {
         if(appId != null){
             entity.setAppId(appId);
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         requirementInfoMapper.insertSelective(entity);
     }
 

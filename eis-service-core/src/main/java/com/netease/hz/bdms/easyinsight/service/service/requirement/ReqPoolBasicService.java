@@ -46,6 +46,8 @@ public class ReqPoolBasicService {
         if(appId != null){
             entity.setAppId(appId);
         }
+        entity.setCreateTime(new Date());
+        entity.setUpdateTime(new Date());
         reqPoolMapper.insertSelective(entity);
     }
 
