@@ -111,4 +111,21 @@ public class ObjCidInfoService {
             eisCidInfoMapper.batchInsert(toInsert);
         }
     }
+
+    /**
+     * 流量罗盘用来查询对象的tag信息
+     * @param appId
+     * @return
+     */
+    public List<CidTagInfo> getCidTagInfos(Long appId) {
+        List<CidInfo> cidInfos = eisCidInfoMapper.listByAppId(BIND_TYPE, appId);
+        if (CollectionUtils.isEmpty(cidInfos)) {
+            return   Collections.emptyList();
+        }
+        Map<String, String> result = new HashMap<>();
+        cidInfos.forEach(cidInfo -> {
+            result.put(cidInfo.getCid(), cidInfo.getCidName());
+        });
+        return result.entrySet().stream().map(o -> new CidTagInfo().setCid(o.getKey()).setName(o.getValue())).collect(Collectors.toList());
+    }
 }
