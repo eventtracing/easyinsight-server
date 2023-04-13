@@ -72,6 +72,7 @@ public class BuryPointRule {
         List<Map<String, CompareItemSimpleDTO>> eListMapsInRule = Lists.newArrayList();
         Map<String, CompareItemSimpleDTO> otherMapInRule = Maps.newHashMap();
         Map<String, String> logCauseMap = new HashMap<>();
+        List<String> unMatchedParamCode = new ArrayList<>();
 
         LogCheckResultEnum totalCheckResult = LogCheckResultEnum.OK;// 全局的校验结果，若任一参数的校验过程中出现了NOT_PASS, 则该字段为NOT_PASS
         int allPrivateParamInRule = 0;// 规则中的所有私参数目
@@ -129,6 +130,8 @@ public class BuryPointRule {
                                     .setCause("")
                                     .setComment("");
                             pListInLog.put(log.getKey(), log);
+                            // 记录写入
+                            unMatchedParamCode.add(key);
                         }
                     }
                 } else {
@@ -287,6 +290,8 @@ public class BuryPointRule {
                                     .setCause("")
                                     .setComment("");
                             eListInLog.put(log.getKey(), log);
+                            // 记录写入
+                            unMatchedParamCode.add(key);
                         }
                     }
                 } else {
@@ -561,7 +566,8 @@ public class BuryPointRule {
                 .setProps(buryPointLog.getProps())
                 .setRule(ruleCheck)
                 .setDetectionIndicator(detectionIndicator)
-                .setTrackerId(trackerId);
+                .setTrackerId(trackerId)
+                .setUnMatchedParamCode(unMatchedParamCode);
         // 组装失败分类key
         if (CollectionUtils.isNotEmpty(failKeys)) {
             List<String> failKeyStrings = failKeys.stream().distinct().map(FailKeyDTO::toFailKey).collect(Collectors.toList());

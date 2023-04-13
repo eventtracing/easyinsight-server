@@ -16,7 +16,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,6 +77,8 @@ public class ImageRelationServiceImpl implements ImageRelationService {
             imageRelation.setUpdateName(currUser.getUserName());
             imageRelation.setUpdateEmail(currUser.getEmail());
         }
+        imageRelation.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        imageRelation.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         imageRelationMapper.insert(imageRelation);
     }
 
@@ -85,14 +89,17 @@ public class ImageRelationServiceImpl implements ImageRelationService {
                     .map(this::dto2Do).collect(Collectors.toList());
             // 设置公共基本信息
             UserDTO currUser = EtContext.get(ContextConstant.USER);
-            if(null != currUser){
-                imageRelations.forEach(imageRelation -> {
+
+            imageRelations.forEach(imageRelation -> {
+                if(null != currUser) {
                     imageRelation.setCreateName(currUser.getUserName());
                     imageRelation.setCreateEmail(currUser.getEmail());
                     imageRelation.setUpdateName(currUser.getUserName());
                     imageRelation.setUpdateEmail(currUser.getEmail());
-                });
-            }
+                }
+                imageRelation.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                imageRelation.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            });
 
             imageRelationMapper.batchInsert(imageRelations);
         }

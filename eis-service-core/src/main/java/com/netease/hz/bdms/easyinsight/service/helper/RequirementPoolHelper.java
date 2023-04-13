@@ -504,6 +504,18 @@ public class RequirementPoolHelper {
 
     @Transactional(rollbackFor = Throwable.class)
     public void rebaseForReqSpms(Long reqPoolId, Long terminalId, Long newReleaseId, boolean autoRebase){
+        Set<Long> mergeFailedObjs = mergeFailedObjs(reqPoolId, terminalId, newReleaseId);
+        if (CollectionUtils.isNotEmpty(mergeFailedObjs)) {
+            // 有冲突对象，更新冲突状态，基线不调整
+            objChangeHistoryService.updateConflictStatus(reqPoolId, mergeFailedObjs, ConflictStatusEnum.MERGE_CONFLICT.getStatus());
+        } else {
+            // 无冲突才调整基线
+            reqPoolRelBaseService.changeCurrentUse(reqPoolId, terminalId, newReleaseId, autoRebase);
+        }
+
+    }
+
+    public Set<Long> mergeFailedObjs(Long reqPoolId, Long terminalId, Long newReleaseId){
         EisTerminalReleaseHistory releaseHistory = terminalReleaseService.getById(newReleaseId);
         if (releaseHistory == null) {
             throw new CommonException("newReleaseId 不存在 " + newReleaseId);
@@ -586,21 +598,13 @@ public class RequirementPoolHelper {
             }
         });
 
-        Set<Long> mergeFailedObjs = mergeObjs(needMergeObjIds.stream()
+        return mergeObjs(needMergeObjIds.stream()
                 .map(o ->
                         new MergeObjReqDTO().setObjId(o)
                                 .setReqPoolId(reqPoolId)
                                 .setTargetReleaseId(newReleaseId)
                                 .setObjHistoryIdOfReqPool(historyIdMap.get(o)))
                 .collect(Collectors.toList()));
-        if (CollectionUtils.isNotEmpty(mergeFailedObjs)) {
-            // 有冲突对象，更新冲突状态，基线不调整
-            objChangeHistoryService.updateConflictStatus(reqPoolId, mergeFailedObjs, ConflictStatusEnum.MERGE_CONFLICT.getStatus());
-        } else {
-            // 无冲突才调整基线
-            reqPoolRelBaseService.changeCurrentUse(reqPoolId, terminalId, newReleaseId, autoRebase);
-        }
-
     }
 
     /**

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +79,12 @@ public class AppServiceImpl implements AppService {
     App app = dto2Do(appSimpleDTO);
     if (app == null) {
       throw new CommonException("产品对象不能为空");
+    }
+    if(app.getCreateTime() == null){
+      app.setCreateTime(new Timestamp(System.currentTimeMillis()));
+    }
+    if(app.getUpdateTime() == null){
+      app.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     }
     appMapper.insert(app);
     return app.getId();

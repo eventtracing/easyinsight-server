@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.common.dto.processor.realtime.rulecheck;
 
+import java.util.List;
 import java.util.Map;
 
 import lombok.*;
@@ -115,4 +116,9 @@ public class RuleCheckSimpleDTO {
    * 埋点ID
    */
   private Long trackerId;
+
+  /**
+   * 没有规则的参数
+   */
+  private List<String> unMatchedParamCode;
 }

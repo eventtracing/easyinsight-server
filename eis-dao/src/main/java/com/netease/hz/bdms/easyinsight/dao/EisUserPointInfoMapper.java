@@ -17,6 +17,8 @@ public interface EisUserPointInfoMapper {
 
   void updateExtInfo(@Param("id") Long id, @Param("extInfo") String extInfo);
 
+  void updateUserPoint(EisUserPointInfo userPointInfo);
+
   Integer delete(Long id);
 
 }

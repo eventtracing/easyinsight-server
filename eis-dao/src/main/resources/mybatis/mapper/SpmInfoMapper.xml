@@ -137,11 +137,61 @@
             <if test="terminalId != null">
                 and terminal_id = #{terminalId, jdbcType=BIGINT}
             </if>
-            <if test="terminalId != null">
+            <if test="source != null">
                 and source = #{source, jdbcType=INTEGER}
             </if>
         </where>
     </select>
+
+    <select id="selectByLikeSpm" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        <where>
+            <if test="spm != null and spm != ''">
+                (spm like concat("%", #{spm}, "%") or name like concat("%", #{spm}, "%"))
+            </if>
+            and app_id = #{appId, jdbcType=BIGINT} and terminal_id = #{terminalId, jdbcType=BIGINT}
+        </where>
+    </select>
+
+    <select id="selectLast" resultMap="BaseResultMap"
+            parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        <where>
+            app_id = #{appId, jdbcType=BIGINT}
+            <if test="id != null">
+                and id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="spm != null">
+                and spm = #{spm, jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                and name = #{name, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status, jdbcType=INTEGER}
+            </if>
+            <if test="version != null">
+                and version = #{version, jdbcType=VARCHAR}
+            </if>
+            <if test="note != null">
+                and note = #{note, jdbcType=VARCHAR}
+            </if>
+            <if test="terminalId != null">
+                and terminal_id = #{terminalId, jdbcType=BIGINT}
+            </if>
+            <if test="source != null">
+                and source = #{source, jdbcType=INTEGER}
+            </if>
+            order by update_time desc limit 5000
+        </where>
+    </select>
+
     <select id="selectByNameOrCode" resultMap="BaseResultMap"
             parameterType="com.netease.hz.bdms.easyinsight.dao.model.SpmInfo">
         select
@@ -162,7 +212,7 @@
             <if test="terminalId != null">
                 and terminal_id = #{terminalId, jdbcType=BIGINT}
             </if>
-            <if test="terminalId != null">
+            <if test="source != null">
                 and source = #{source, jdbcType=INTEGER}
             </if>
         </where>

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author: xumengqiang
@@ -43,6 +44,8 @@ public class TerminalVersionInfoHelper {
             terminalVersionInfo.setUpdateName(userName);
             terminalVersionInfo.setUpdateEmail(userEmail);
             terminalVersionInfo.setName(name);
+            terminalVersionInfo.setCreateTime(new Date());
+            terminalVersionInfo.setUpdateTime(System.currentTimeMillis());
 
             terminalVersionInfoService.create(terminalVersionInfo);
         }

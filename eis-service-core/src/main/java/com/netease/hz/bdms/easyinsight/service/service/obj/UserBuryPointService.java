@@ -6,6 +6,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.common.UserDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.exception.ServerException;
 import com.netease.hz.bdms.easyinsight.common.param.obj.ObjectUserParam;
+import com.netease.hz.bdms.easyinsight.common.param.obj.UserBuryPointParam;
 import com.netease.hz.bdms.easyinsight.common.util.BeanConvertUtils;
 import com.netease.hz.bdms.easyinsight.dao.EisUserPointInfoMapper;
 import com.netease.hz.bdms.easyinsight.dao.model.EisUserPointInfo;
@@ -35,6 +36,10 @@ public class UserBuryPointService {
         eisUserPointInfoMapper.updateExtInfo(id, extInfo);
     }
 
+    public void updateById(UserBuryPointParam param){
+        eisUserPointInfoMapper.updateUserPoint(BeanConvertUtils.convert(param, EisUserPointInfo.class));
+    }
+
     public void delById(Long id){
         try {
             eisUserPointInfoMapper.delete(id);
@@ -48,13 +53,14 @@ public class UserBuryPointService {
         List<EisUserPointInfo> list = objectUserParam.getPointParams().stream().map(param -> BeanConvertUtils.convert(param, EisUserPointInfo.class)).filter(Objects::nonNull).collect(Collectors.toList());
         // 公共信息
         UserDTO currUser = EtContext.get(ContextConstant.USER);
-        if(null != currUser) {
-            list.forEach(userPointInfo -> {
+        list.forEach(userPointInfo -> {
+            if(null != currUser) {
                 userPointInfo.setCreator(currUser.getUserName());
-                userPointInfo.setCreateTime(new Date());
-                userPointInfo.setUpdateTime(new Date());
-            });
-        }
+            }
+            userPointInfo.setCreateTime(new Date());
+            userPointInfo.setUpdateTime(new Date());
+        });
+
         try {
             eisUserPointInfoMapper.insertBatch(list);
         }catch (Exception e){

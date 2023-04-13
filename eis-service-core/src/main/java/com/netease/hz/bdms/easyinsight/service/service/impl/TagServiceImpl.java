@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,6 +67,12 @@ public class TagServiceImpl implements TagService {
             if (updater != null) {
                 tag.setUpdateEmail(updater.getEmail())
                         .setUpdateName(updater.getUserName());
+            }
+            if(tag.getCreateTime() == null){
+                tag.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            }
+            if(tag.getUpdateTime() == null){
+                tag.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             }
         }
         return tag;

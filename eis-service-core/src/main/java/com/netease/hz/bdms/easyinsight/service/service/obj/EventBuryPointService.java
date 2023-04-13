@@ -12,10 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -47,6 +44,8 @@ public class EventBuryPointService {
             eventBuryPoint.setUpdateName(currUser.getUserName());
             eventBuryPoint.setUpdateEmail(currUser.getEmail());
         }
+        eventBuryPoint.setCreateTime(new Date());
+        eventBuryPoint.setUpdateTime(new Date());
         eisEventBuryPointMapper.insertSelective(eventBuryPoint);
     }
 
@@ -60,6 +59,8 @@ public class EventBuryPointService {
                 eventBuryPoint.setCreateEmail(currUser.getEmail());
                 eventBuryPoint.setUpdateName(currUser.getUserName());
                 eventBuryPoint.setUpdateEmail(currUser.getEmail());
+                eventBuryPoint.setCreateTime(new Date());
+                eventBuryPoint.setUpdateTime(new Date());
             });
         }
 

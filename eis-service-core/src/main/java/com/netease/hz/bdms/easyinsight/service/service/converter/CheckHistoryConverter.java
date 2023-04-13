@@ -32,8 +32,8 @@ public class CheckHistoryConverter {
                     saverName = saver.getUserName();
                 }
             }
-            Timestamp saveTime = checkHistorySimpleDTO.getSaveTime() != null ? new Timestamp(checkHistorySimpleDTO.getSaveTime()) : null;
-            Timestamp updateTime = checkHistorySimpleDTO.getUpdateTime() != null ? new Timestamp(checkHistorySimpleDTO.getUpdateTime()) : null;
+            Timestamp saveTime = checkHistorySimpleDTO.getSaveTime() != null ? new Timestamp(checkHistorySimpleDTO.getSaveTime()) : new Timestamp(System.currentTimeMillis());
+            Timestamp updateTime = checkHistorySimpleDTO.getUpdateTime() != null ? new Timestamp(checkHistorySimpleDTO.getUpdateTime()) :  new Timestamp(System.currentTimeMillis());
             checkHistory.setLog(log)
                     .setSpm(spmWithOutPos)
                     .setRule(rule)

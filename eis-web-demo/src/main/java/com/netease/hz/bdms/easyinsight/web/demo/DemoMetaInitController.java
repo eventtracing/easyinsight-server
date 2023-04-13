@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,22 +38,22 @@ public class DemoMetaInitController {
     @Autowired
     private ParamBindValueMapper paramBindValueMapper;
 
-    ParamValue pDuration = new ParamValue().setCode("^[0-9]*$").setName("数字格式").setDescription("ms").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pEsParams = new ParamValue().setCode(".*").setName("json格式字符串").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pResolution = new ParamValue().setCode(".*").setName(".*").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pActSeq = new ParamValue().setCode("^[0-9]*$").setName("数字格式").setDescription("- 用户交互深度，每次交互（点击/滑动等）都会+1 - 在当前根page的一次曝光生命周期内自增，如果页面重新曝光了，则先置0 - 页面曝光，不自增").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pCarrier = new ParamValue().setCode(".*").setName(".*").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pImei = new ParamValue().setCode(".*").setName(".*").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pDevice = new ParamValue().setCode(".*").setName(".*").setDescription("设备标识：https://www.theiphonewiki.com/wiki/Models").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    ParamValue pOaid = new ParamValue().setCode(".*").setName(".*").setDescription(".*").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param carrier = new Param().setCode("carrier").setName("运营商").setParamType(2).setValueType(2).setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param imei = new Param().setCode("imei").setName("终端唯一标识").setParamType(2).setValueType(2).setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param oaid = new Param().setCode("oaid").setName("oaid").setParamType(2).setValueType(2).setDescription("移动安全联盟针对该问题联合国内手机厂商推出补充设备标准体系方案，选择 OAID 字段作为 IMEI 等的替代字段").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param device = new Param().setCode("device").setName("设备标识").setParamType(2).setValueType(2).setDescription("Identifier https://www.theiphonewiki.com/wiki/Models").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param resolution = new Param().setCode("resolution").setName("屏幕分辨率").setParamType(2).setValueType(2).setDescription("格式1125x2436").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param es_params =  new Param().setCode("es_params").setName("滑动距离").setParamType(2).setValueType(2).setDescription("滑动结束较滑动开始的偏移量").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param _actseq = new Param().setCode("_actseq").setName("交互深度").setParamType(2).setValueType(2).setDescription("- 用户交互深度，每次交互（点击/滑动等）都会+1 - 在当前根page的一次曝光生命周期内自增，如果页面重新曝光了，则先置0 - 页面曝光，不自增").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
-    Param _duration = new Param().setCode("_duration").setName("时长").setParamType(2).setValueType(2).setDescription("单位ms； ！注意！对于pd、ed等曝光结束事件，SDK内部已经直接计算好了，不需要业务方再开发").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("");
+    ParamValue pDuration = new ParamValue().setCode("^[0-9]*$").setName("数字格式").setDescription("ms").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pEsParams = new ParamValue().setCode(".*").setName("json格式字符串").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pResolution = new ParamValue().setCode(".*").setName(".*").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pActSeq = new ParamValue().setCode("^[0-9]*$").setName("数字格式").setDescription("- 用户交互深度，每次交互（点击/滑动等）都会+1 - 在当前根page的一次曝光生命周期内自增，如果页面重新曝光了，则先置0 - 页面曝光，不自增").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pCarrier = new ParamValue().setCode(".*").setName(".*").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pImei = new ParamValue().setCode(".*").setName(".*").setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pDevice = new ParamValue().setCode(".*").setName(".*").setDescription("设备标识：https://www.theiphonewiki.com/wiki/Models").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    ParamValue pOaid = new ParamValue().setCode(".*").setName(".*").setDescription(".*").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param carrier = new Param().setCode("carrier").setName("运营商").setParamType(2).setValueType(2).setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param imei = new Param().setCode("imei").setName("终端唯一标识").setParamType(2).setValueType(2).setDescription("").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param oaid = new Param().setCode("oaid").setName("oaid").setParamType(2).setValueType(2).setDescription("移动安全联盟针对该问题联合国内手机厂商推出补充设备标准体系方案，选择 OAID 字段作为 IMEI 等的替代字段").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param device = new Param().setCode("device").setName("设备标识").setParamType(2).setValueType(2).setDescription("Identifier https://www.theiphonewiki.com/wiki/Models").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param resolution = new Param().setCode("resolution").setName("屏幕分辨率").setParamType(2).setValueType(2).setDescription("格式1125x2436").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param es_params =  new Param().setCode("es_params").setName("滑动距离").setParamType(2).setValueType(2).setDescription("滑动结束较滑动开始的偏移量").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param _actseq = new Param().setCode("_actseq").setName("交互深度").setParamType(2).setValueType(2).setDescription("- 用户交互深度，每次交互（点击/滑动等）都会+1 - 在当前根page的一次曝光生命周期内自增，如果页面重新曝光了，则先置0 - 页面曝光，不自增").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    Param _duration = new Param().setCode("_duration").setName("时长").setParamType(2).setValueType(2).setDescription("单位ms； ！注意！对于pd、ed等曝光结束事件，SDK内部已经直接计算好了，不需要业务方再开发").setCreateEmail("").setCreateName("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis()));
     Map<Param, ParamValue> paramToValueMap = new HashMap<>();
 
     /**
@@ -162,6 +163,8 @@ public class DemoMetaInitController {
                     .setCreateName("")
                     .setUpdateEmail("")
                     .setUpdateName("")
+                    .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                    .setUpdateTime(new Timestamp(System.currentTimeMillis()))
                     .setDescription("")
                     .setNotEmpty(true)
                     .setMust(true)
@@ -209,6 +212,8 @@ public class DemoMetaInitController {
                 paramBindValue.setCreateName("");
                 paramBindValue.setUpdateEmail("");
                 paramBindValue.setUpdateName("");
+                paramBindValue.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                paramBindValue.setUpdateTime(new Timestamp(System.currentTimeMillis()));
                 paramBindValues.add(paramBindValue);
             });
             if (CollectionUtils.isNotEmpty(paramBindValues)) {
@@ -287,38 +292,44 @@ public class DemoMetaInitController {
                         .setParamType(ParamTypeEnum.GLOBAL_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                         .setAppId(appId).setDescription("app版本")
                         .setCreateEmail("").setCreateName("")
-                        .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("app版本").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                        .setUpdateEmail("").setUpdateName("")
+                        .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())),k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("app版本").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
         result.computeIfAbsent(new Param().setCode("device_id").setName("deviceId")
                         .setParamType(ParamTypeEnum.GLOBAL_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                         .setAppId(appId).setDescription("deviceId")
                         .setCreateEmail("").setCreateName("")
-                        .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("deviceId").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                        .setUpdateEmail("").setUpdateName("")
+                        .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("deviceId").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
         result.computeIfAbsent(new Param().setCode("ip").setName("ip")
                         .setParamType(ParamTypeEnum.GLOBAL_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                         .setAppId(appId).setDescription("ip")
                         .setCreateEmail("").setCreateName("")
-                        .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("ip").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                        .setUpdateEmail("").setUpdateName("")
+                        .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("ip").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
         result.computeIfAbsent(new Param().setCode("log_time").setName("客户端日志时间")
                         .setParamType(ParamTypeEnum.GLOBAL_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                         .setAppId(appId).setDescription("unixtime")
                         .setCreateEmail("").setCreateName("")
-                        .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("unixtime").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                        .setUpdateEmail("").setUpdateName("")
+                        .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("unixtime").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
         result.computeIfAbsent(new Param().setCode("os_ver").setName("系统版本")
                         .setParamType(ParamTypeEnum.GLOBAL_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                         .setAppId(appId).setDescription("系统版本")
                         .setCreateEmail("").setCreateName("")
-                        .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("系统版本").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                        .setUpdateEmail("").setUpdateName("")
+                        .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("系统版本").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
         result.computeIfAbsent(new Param().setCode("os").setName("操作系统")
                         .setParamType(ParamTypeEnum.GLOBAL_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                         .setAppId(appId).setDescription("操作系统")
                         .setCreateEmail("").setCreateName("")
-                        .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("操作系统").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                        .setUpdateEmail("").setUpdateName("")
+                        .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("操作系统").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
         return result;
     }
 
@@ -328,32 +339,36 @@ public class DemoMetaInitController {
                 .setParamType(ParamTypeEnum.OBJ_NORMAL_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                 .setAppId(appId).setDescription("对象ID")
                 .setCreateEmail("").setCreateName("")
-                .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("与s_ctype类型对应的id").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                .setUpdateEmail("").setUpdateName("")
+                .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("与s_ctype类型对应的id").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
 
         List<ParamValue> sctypeParamValues = result.computeIfAbsent(new Param().setCode("s_ctype").setName("对象类型")
                 .setParamType(ParamTypeEnum.OBJ_NORMAL_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                 .setAppId(appId).setDescription("对象类型")
                 .setCreateEmail("").setCreateName("")
-                .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>());
-        sctypeParamValues.add(new ParamValue().setCode("image").setName("image").setAppId(appId).setDescription("图片").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
-        sctypeParamValues.add(new ParamValue().setCode("song").setName("song").setAppId(appId).setDescription("歌曲").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                .setUpdateEmail("").setUpdateName("")
+                .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>());
+        sctypeParamValues.add(new ParamValue().setCode("image").setName("image").setAppId(appId).setDescription("图片").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
+        sctypeParamValues.add(new ParamValue().setCode("song").setName("song").setAppId(appId).setDescription("歌曲").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
 
 
         result.computeIfAbsent(new Param().setCode("s_ctraceid").setName("请求traceID")
                 .setParamType(ParamTypeEnum.OBJ_NORMAL_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                 .setAppId(appId).setDescription("请求traceID")
                 .setCreateEmail("").setCreateName("")
-                .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("请求traceID").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                .setUpdateEmail("").setUpdateName("")
+                .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())),k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("请求traceID").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
 
 
         result.computeIfAbsent(new Param().setCode("s_ctraceid").setName("请求ID")
                 .setParamType(ParamTypeEnum.EVENT_PUBLIC_PARAM.getType()).setValueType(ParamValueTypeEnum.VARIABLE.getType())
                 .setAppId(appId).setDescription("请求ID")
                 .setCreateEmail("").setCreateName("")
-                .setUpdateEmail("").setUpdateName(""), k -> new ArrayList<>())
-                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("请求traceID").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName(""));
+                .setUpdateEmail("").setUpdateName("")
+                .setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())), k -> new ArrayList<>())
+                .add(new ParamValue().setCode(".*").setName("*").setAppId(appId).setDescription("请求traceID").setCreateName("").setCreateEmail("").setUpdateEmail("").setUpdateName("").setCreateTime(new Timestamp(System.currentTimeMillis())).setUpdateTime(new Timestamp(System.currentTimeMillis())));
 
         return result;
     }

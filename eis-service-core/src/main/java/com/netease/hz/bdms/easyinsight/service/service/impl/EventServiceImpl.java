@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -115,6 +116,12 @@ public class EventServiceImpl implements EventService {
         Event event = dto2Do(eventSimpleDTO);
         Preconditions.checkArgument(null != event, "事件类型对象不能为空");
 
+        if(event.getCreateTime() == null){
+            event.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        }
+        if(event.getUpdateTime() == null){
+            event.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        }
         eventMapper.insert(event);
         return event.getId();
     }
