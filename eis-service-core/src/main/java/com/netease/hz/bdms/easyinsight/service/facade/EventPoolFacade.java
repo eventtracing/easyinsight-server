@@ -13,6 +13,8 @@ import com.netease.hz.bdms.easyinsight.common.enums.ReqPoolTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventBuryPointCreateParam;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventBuryPointEditParam;
+import com.netease.hz.bdms.easyinsight.common.param.event.EventObjRelation;
+import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.vo.event.*;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
@@ -20,6 +22,7 @@ import com.netease.hz.bdms.easyinsight.service.service.EventService;
 import com.netease.hz.bdms.easyinsight.service.service.TerminalService;
 import com.netease.hz.bdms.easyinsight.service.service.TerminalVersionInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.EventBuryPointService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqEventObjRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqEventPoolService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqTaskService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
@@ -63,6 +66,9 @@ public class EventPoolFacade {
 
     @Autowired
     TerminalVersionInfoService terminalVersionInfoService;
+
+    @Autowired
+    ReqEventObjRelationService reqEventObjRelationService;
 
     /**
      * 需求管理模块——获取需求组下的事件埋点池
@@ -110,6 +116,29 @@ public class EventPoolFacade {
         Long appId = EtContext.get(ContextConstant.APP_ID);
         List<TerminalSimpleDTO> terminals = terminalService.getByAppId(appId);
         Map<Long,String> terminalNameMap = new HashMap<>();
+        //
+        List<EisEventObjRelation> relations = reqEventObjRelationService.getByEventEntityIds(poolEntityIds);
+        Map<Long, List<EventObjRelation>> entityRelationMap = new HashMap<>();
+        for(EisEventObjRelation relation : relations){
+            if(entityRelationMap.containsKey(relation.getEventPoolEntityId())){
+                List<EventObjRelation> eventObjRelations = entityRelationMap.get(relation.getEventPoolEntityId());
+                Set<String> keySet = eventObjRelations.stream().map(vo -> vo.getTerminalId() + "|" + vo.getObjId()).collect(Collectors.toSet());
+                if(!keySet.contains(relation.getTerminalId() + "|" + relation.getObjId())){
+                    EventObjRelation eventObjRelation = new EventObjRelation();
+                    eventObjRelation.setObjId(relation.getObjId());
+                    eventObjRelation.setTerminalId(relation.getTerminalId());
+                    eventObjRelations.add(eventObjRelation);
+                    entityRelationMap.put(relation.getEventPoolEntityId(), eventObjRelations);
+                }
+            }else {
+                List<EventObjRelation> eventObjRelations = new ArrayList<>();
+                EventObjRelation eventObjRelation = new EventObjRelation();
+                eventObjRelation.setObjId(relation.getObjId());
+                eventObjRelation.setTerminalId(relation.getTerminalId());
+                eventObjRelations.add(eventObjRelation);
+                entityRelationMap.put(relation.getEventPoolEntityId(), eventObjRelations);
+            }
+        }
         for (TerminalSimpleDTO terminal : terminals) {
             terminalNameMap.put(terminal.getId(),terminal.getName());
         }
@@ -125,6 +154,7 @@ public class EventPoolFacade {
                 log.error("eventSimpleDTO不存在, eventId={}", eventId);
                 continue;
             }
+            vo.setApplicableObjTypes(eventSimpleDTO.getApplicableObjTypes());
             vo.setEventName(eventSimpleDTO.getName());
             vo.setEventCode(eventSimpleDTO.getCode());
             EisTaskProcess taskProcess = taskProcessByEventPointId.get(reqPoolEvent.getEventBuryPointId());
@@ -138,6 +168,8 @@ public class EventPoolFacade {
                 vo.setStatus(ProcessStatusEnum.UNASSIGN.getDesc());
             }
             vo.setTerminalName(terminalNameMap.get(terminalId));
+            List<EventObjRelation> eventObjRelations = entityRelationMap.get(reqPoolEvent.getId());
+            vo.setRelations(eventObjRelations);
             result.add(vo);
         }
         return result;
@@ -160,6 +192,7 @@ public class EventPoolFacade {
         Long eventBuryPointId = reqPoolEvent.getEventBuryPointId();
         reqEventPoolService.deleteById(reqPoolEventId);
         eventBuryPointService.deleteById(eventBuryPointId);
+        reqEventObjRelationService.deleteByEntityId(reqPoolEventId);
     }
 
     /**
@@ -183,7 +216,7 @@ public class EventPoolFacade {
         eventBuryPoint.setEventParamPackageId(eventParamPackageId);
         eventBuryPoint.setReqPoolId(reqPoolId);
         eventBuryPoint.setTerminalId(terminalId);
-        eventBuryPoint.setTerminalReleaseId(pubParamPackageId);
+//        eventBuryPoint.setTerminalReleaseId(pubParamPackageId);
         eventBuryPointService.insert(eventBuryPoint);
 
         // 2. 插入事件需求池信息
@@ -193,6 +226,24 @@ public class EventPoolFacade {
         reqPoolEvent.setTerminalId(eventBuryPoint.getTerminalId());
         reqPoolEvent.setEventBuryPointId(eventBuryPoint.getId());
         reqEventPoolService.insert(reqPoolEvent);
+
+        // 3. 插入事件埋点对象关联关系
+        List<EventObjRelation> eventObjRelations = param.getRelationList();
+        if(CollectionUtils.isEmpty(eventObjRelations)){
+            return;
+        }
+        List<EisEventObjRelation> relations = new ArrayList<>();
+        for(EventObjRelation entry : eventObjRelations){
+            if(entry.getTerminalId() == null || entry.getObjId() == null){
+                continue;
+            }
+            EisEventObjRelation eisEventObjRelation = new EisEventObjRelation();
+            eisEventObjRelation.setEventPoolEntityId(reqPoolEvent.getId());
+            eisEventObjRelation.setTerminalId(entry.getTerminalId());
+            eisEventObjRelation.setObjId(entry.getObjId());
+            relations.add(eisEventObjRelation);
+        }
+        reqEventObjRelationService.insertBatch(relations);
     }
 
     /**
@@ -215,6 +266,25 @@ public class EventPoolFacade {
         updateEntity.setEventParamPackageId(param.getEventParamPackageId());
         updateEntity.setTerminalParamPackageId(param.getPubParamPackageId());
         eventBuryPointService.update(updateEntity);
+
+        //更新事件埋点的映射对象
+        List<EventObjRelation> eventObjRelations = param.getRelationList();
+        if(CollectionUtils.isEmpty(eventObjRelations) || param.getReqPoolEventId() == null){
+            return;
+        }
+        reqEventObjRelationService.deleteByEntityId(param.getReqPoolEventId());
+        List<EisEventObjRelation> relations = new ArrayList<>();
+        for(EventObjRelation entry : eventObjRelations){
+            if(entry.getTerminalId() == null || entry.getObjId() == null){
+                continue;
+            }
+            EisEventObjRelation eisEventObjRelation = new EisEventObjRelation();
+            eisEventObjRelation.setEventPoolEntityId(param.getReqPoolEventId());
+            eisEventObjRelation.setTerminalId(entry.getTerminalId());
+            eisEventObjRelation.setObjId(entry.getObjId());
+            relations.add(eisEventObjRelation);
+        }
+        reqEventObjRelationService.insertBatch(relations);
     }
 
 
@@ -253,6 +323,8 @@ public class EventPoolFacade {
                     })
                     .collect(Collectors.toList());
         }
+
+        // 查询对象关联关系
 
         // 5. 埋点事件简略信息汇总
         List<EventBuryPointSimpleVO> eventBuryPointSimpleVOList = Lists.newArrayList();
