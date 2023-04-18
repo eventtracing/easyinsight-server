@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.netease.eis.adapters.CacheAdapter;
 import com.netease.eis.adapters.RealtimeConfigAdapter;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
+import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import com.netease.hz.bdms.easyinsight.service.service.*;
 import com.netease.hz.bdms.easyinsight.common.dto.obj.*;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamBindItemDTO;
@@ -50,6 +51,7 @@ import com.netease.hz.bdms.easyinsight.service.service.obj.AllTrackerReleaseServ
 import com.netease.hz.bdms.easyinsight.service.service.obj.ObjCidInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.ObjTerminalTrackerService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.UserBuryPointService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqEventObjRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
@@ -152,6 +154,12 @@ public class ObjectFacade implements InitializingBean {
 
     @Resource
     private CacheAdapter cacheAdapter;
+
+    @Autowired
+    ReqEventObjRelationService reqEventObjRelationService;
+
+    @Autowired
+    EventPoolFacade eventPoolFacade;
 
     /**
      * 是否一定要传图片 key: appId
@@ -739,12 +747,18 @@ public class ObjectFacade implements InitializingBean {
         List<ObjectTrackerInfoDTO> objectTrackerInfoList = objectHelper
                 .getObjTrackersInfo(objId, objHistoryId, false);
 
+        // 获取对象关联的事件埋点信息
+        List<EisEventObjRelation> eisEventObjRelations = reqEventObjRelationService.getByObjId(objId);
+        Set<Long> entityIds = eisEventObjRelations.stream().map(EisEventObjRelation::getEventPoolEntityId).collect(Collectors.toSet());
+        List<UnDevelopedEventVO> unDevelopedEventVOS = eventPoolFacade.getReqPoolEvents(entityIds);
+
         // 3. 组合信息
         ObjDetailsVO objDetailsVO = BeanConvertUtils.convert(objectBasicInfo, ObjDetailsVO.class);
         if(objDetailsVO == null){
             log.warn("对象信息转化有误，获取对象详情失败！");
             throw new ObjException("信息转化失败，无法获取对象详情！");
         }
+        objDetailsVO.setRelationInfos(unDevelopedEventVOS);
         objDetailsVO.setTrackers(objectTrackerInfoList);
         objDetailsVO.setBasicTag(new ObjBasicTagDTO());
         objDetailsVO.getBasicTag().setObjSubType(objectBasicInfo.getObjSubType());

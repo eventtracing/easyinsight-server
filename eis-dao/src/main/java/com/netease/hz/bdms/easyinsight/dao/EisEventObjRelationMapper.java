@@ -13,7 +13,7 @@ public interface EisEventObjRelationMapper extends Mapper<EisEventObjRelation> {
 
     List<EisEventObjRelation> selectByEventEntityIds(@Param("entityIds") Set<Long> entityIds);
 
-    List<EisEventObjRelation> selectByObjAndTerminal(@Param("objId") Long objId, @Param("terminalId") Long terminalId);
+    List<EisEventObjRelation> selectByObjId(@Param("objId") Long objId);
 
     void insertBatch(@Param("list") List<EisEventObjRelation> list);
 

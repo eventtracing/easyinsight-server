@@ -40,6 +40,10 @@ public class ReqEventObjRelationService {
         return Optional.ofNullable(eisEventObjRelationMapper.selectByEventEntityId(entityId)).orElse(new ArrayList<>());
     }
 
+    public List<EisEventObjRelation> getByObjId(Long objId){
+        return Optional.ofNullable(eisEventObjRelationMapper.selectByObjId(objId)).orElse(new ArrayList<>());
+    }
+
     public void insertBatch(List<EisEventObjRelation> entitys){
         // 公共信息
         UserDTO currUser = EtContext.get(ContextConstant.USER);

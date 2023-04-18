@@ -175,6 +175,79 @@ public class EventPoolFacade {
         return result;
     }
 
+
+    public List<UnDevelopedEventVO> getReqPoolEvents(Set<Long> entityIds){
+        List<EisReqPoolEvent> reqPoolEvents = reqEventPoolService.getBatchByIds(entityIds);
+        if(CollectionUtils.isEmpty(reqPoolEvents)){
+            return new ArrayList<>();
+        }
+        Set<Long> poolEntityIds = new HashSet<>();
+        Set<Long> eventBuryPointIds = new HashSet<>();
+        for (EisReqPoolEvent reqPoolEvent : reqPoolEvents) {
+            poolEntityIds.add(reqPoolEvent.getId());
+            eventBuryPointIds.add(reqPoolEvent.getEventBuryPointId());
+        }
+        Set<Long> eventIds = new HashSet<>();
+        List<EisEventBuryPoint> eventBuryPoints = eventBuryPointService.getByIds(eventBuryPointIds);
+        Map<Long,Long> eventBuryPointIdToEventIdMap = new HashMap<>();
+        for (EisEventBuryPoint buryPoint : eventBuryPoints) {
+            eventIds.add(buryPoint.getEventId());
+            eventBuryPointIdToEventIdMap.put(buryPoint.getId(),buryPoint.getEventId());
+        }
+        List<EventSimpleDTO> events = eventService.getEventByIds(eventIds);
+        Map<Long,EventSimpleDTO> eventIdMap = new HashMap<>();
+        for (EventSimpleDTO event : events) {
+            eventIdMap.put(event.getId(),event);
+        }
+        List<EisTaskProcess> taskProcesses = taskProcessService.getByReqPoolEntityIds(ReqPoolTypeEnum.EVENT, poolEntityIds);
+        Map<Long,EisTaskProcess> taskProcessByEventPointId = new HashMap<>();
+        Set<Long> taskIds = new HashSet<>();
+        for (EisTaskProcess taskProcess : taskProcesses) {
+            taskProcessByEventPointId.put(taskProcess.getReqPoolEntityId(),taskProcess);
+            taskIds.add(taskProcess.getTaskId());
+        }
+        List<EisReqTask> tasks = taskService.getByIds(taskIds);
+        Map<Long,EisReqTask> taskMap = new HashMap<>();
+        for (EisReqTask task : tasks) {
+            taskMap.put(task.getId(),task);
+        }
+        Long appId = EtContext.get(ContextConstant.APP_ID);
+        List<TerminalSimpleDTO> terminals = terminalService.getByAppId(appId);
+        Map<Long,String> terminalNameMap = new HashMap<>();
+        for (TerminalSimpleDTO terminal : terminals) {
+            terminalNameMap.put(terminal.getId(),terminal.getName());
+        }
+        List<UnDevelopedEventVO> result = new ArrayList<>();
+        for (EisReqPoolEvent reqPoolEvent : reqPoolEvents) {
+            UnDevelopedEventVO vo = new UnDevelopedEventVO();
+            Long eventId = eventBuryPointIdToEventIdMap.get(reqPoolEvent.getEventBuryPointId());
+            Long terminalId = reqPoolEvent.getTerminalId();
+            vo.setReqPoolEventId(reqPoolEvent.getId());
+            vo.setEventBuryPointId(reqPoolEvent.getEventBuryPointId());
+            EventSimpleDTO eventSimpleDTO = eventIdMap.get(eventId);
+            if (eventSimpleDTO == null) {
+                log.error("eventSimpleDTO不存在, eventId={}", eventId);
+                continue;
+            }
+            vo.setApplicableObjTypes(eventSimpleDTO.getApplicableObjTypes());
+            vo.setEventName(eventSimpleDTO.getName());
+            vo.setEventCode(eventSimpleDTO.getCode());
+            EisTaskProcess taskProcess = taskProcessByEventPointId.get(reqPoolEvent.getEventBuryPointId());
+            if(taskProcess != null){
+                EisReqTask task = taskMap.get(taskProcess.getTaskId());
+                vo.setTaskName(task.getTaskName());
+                vo.setTaskId(task.getId());
+                vo.setStatus(ProcessStatusEnum.fromState(taskProcess.getStatus()).getDesc());
+                vo.setReqName(task.getReqIssueKey());
+            }else{
+                vo.setStatus(ProcessStatusEnum.UNASSIGN.getDesc());
+            }
+            vo.setTerminalName(terminalNameMap.get(terminalId));
+            result.add(vo);
+        }
+        return result;
+    }
+
     /**
      * 需求管理模块——删除需求组下事件埋点池中的某事件埋点
      *
