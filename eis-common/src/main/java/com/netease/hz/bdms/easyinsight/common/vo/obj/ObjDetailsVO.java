@@ -1,6 +1,5 @@
 package com.netease.hz.bdms.easyinsight.common.vo.obj;
 
-import com.netease.hz.bdms.easyinsight.common.dto.obj.ObjectEventRelationDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.obj.ObjectTrackerInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.tag.TagSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.param.tag.CidTagInfo;
