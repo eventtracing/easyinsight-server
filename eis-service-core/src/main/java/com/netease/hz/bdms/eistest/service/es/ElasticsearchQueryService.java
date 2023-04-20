@@ -81,6 +81,7 @@ public class ElasticsearchQueryService {
                 eventDto.setHitSum(countTuple.v1());
                 eventDto.setReqSum(countTuple.v2());
             }
+            resultDTO.setDetails(resultItemDTOS);
         }
         buryPointStatisticsDto.setTreeModeStatistic(treeModeStatistic);
 
