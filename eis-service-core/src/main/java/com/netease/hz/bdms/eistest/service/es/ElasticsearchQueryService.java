@@ -74,13 +74,9 @@ public class ElasticsearchQueryService {
             List<RealTimeTestResourceDTO.Event> bindEventList = oidToEventMap.get(oid);
             List<String> eventCodes = CollectionUtils.isNotEmpty(bindEventList) ? bindEventList.stream().map(RealTimeTestResourceDTO.Event::getCode).collect(Collectors.toList()) : new ArrayList<>();
             List<TreeModeStatisticResultDTO.EventCheckResultItemDTO> resultItemDTOS = resultDTO.getDetails();
+            resultItemDTOS = resultItemDTOS.stream().filter(dto -> eventCodes.contains(dto.getEventCode())).collect(Collectors.toList());
             for(TreeModeStatisticResultDTO.EventCheckResultItemDTO eventDto : resultItemDTOS){
-                //过滤掉 不在规则中的事件
                 String eventCode = eventDto.getEventCode();
-                if(!eventCodes.contains(eventCode)){
-                    resultItemDTOS.remove(eventDto);
-                    continue;
-                }
                 Tuple<Integer, Integer> countTuple = esQueryOperation.paramModeCount("insight_esparam*", code, spm, eventCode);
                 eventDto.setHitSum(countTuple.v1());
                 eventDto.setReqSum(countTuple.v2());
