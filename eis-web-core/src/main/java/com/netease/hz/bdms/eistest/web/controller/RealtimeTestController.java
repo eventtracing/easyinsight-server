@@ -183,7 +183,7 @@ public class RealtimeTestController {
 //        RealTimeTestResourceDTO realTimeTestResourceDTO = buryPointMetaInfo.initBuryPointRule(taskId, terminalId, domainId, appId);
         Map<String, String> oidToNameMap = Optional.ofNullable(buryPointMetaInfo.getConversationObjectMap()).orElse(new HashMap<>());
         Map<String, String> evToNameMap = Optional.ofNullable(buryPointMetaInfo.getConversationEventCodeToNameMap()).orElse(new HashMap<>());
-        BuryPointStatisticsDto buryPointStatistics = elasticsearchQueryService.queryCountStatistic(indexName, code, oidToNameMap, evToNameMap);
+        BuryPointStatisticsDto buryPointStatistics = elasticsearchQueryService.queryCountStatistic(indexName, code, oidToNameMap, evToNameMap, buryPointMetaInfo.getOidBindEventMap());
 
         if(buryPointStatistics != null) {
             buryPointStatistics.setAppStatus(appSession != null && appSession.getStorage() != null && appSession.getStorage().getMetaInfo() != null);
