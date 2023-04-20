@@ -68,7 +68,7 @@
             <dependency>
                 <groupId>com.netease.hz.bdms</groupId>
                 <artifactId>eis-dao</artifactId>
-                <version>1.0.1.9</version>
+                <version>1.0.1.11</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
