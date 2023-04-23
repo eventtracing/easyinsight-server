@@ -2,8 +2,10 @@ package com.netease.hz.bdms.eistest.service.es;
 
 
 import com.netease.hz.bdms.easyinsight.common.dto.processor.realtime.statistic.*;
+import com.netease.hz.bdms.easyinsight.common.dto.realtimetest.RealTimeTestResourceDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.BuryPointLogTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.vo.logcheck.BranchCoverageDetailVO;
+import com.netease.hz.bdms.easyinsight.service.service.util.LogUtil;
 import com.netease.hz.bdms.eistest.entity.BuryPointStatisticsDto;
 import com.netease.hz.bdms.eistest.service.BuryPointAnaysisService;
 import com.netease.hz.bdms.eistest.service.BuryPointTestInfoCacheService;
@@ -13,10 +15,7 @@ import org.elasticsearch.common.collect.Tuple;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,8 +62,7 @@ public class ElasticsearchQueryService {
         return esQueryOperation.queryBranchCoverage(spm, code, eventCode);
     }
 
-
-    public BuryPointStatisticsDto queryCountStatistic(String indexName, String code, Map<String, String> oidToNameMap, Map<String, String> evToNameMap){
+    public BuryPointStatisticsDto queryCountStatistic(String indexName, String code, Map<String, String> oidToNameMap, Map<String, String> evToNameMap, Map<String, List<RealTimeTestResourceDTO.Event>> oidToEventMap){
 
         BuryPointStatisticsDto buryPointStatisticsDto = new BuryPointStatisticsDto();
 
@@ -72,13 +70,18 @@ public class ElasticsearchQueryService {
         //查询测试分支和覆盖分支
         for(TreeModeStatisticResultDTO resultDTO : treeModeStatistic){
             String spm = resultDTO.getSpm();
+            String oid = LogUtil.getFirstObjOid(spm);
+            List<RealTimeTestResourceDTO.Event> bindEventList = oidToEventMap.get(oid);
+            List<String> eventCodes = CollectionUtils.isNotEmpty(bindEventList) ? bindEventList.stream().map(RealTimeTestResourceDTO.Event::getCode).collect(Collectors.toList()) : new ArrayList<>();
             List<TreeModeStatisticResultDTO.EventCheckResultItemDTO> resultItemDTOS = resultDTO.getDetails();
+            resultItemDTOS = resultItemDTOS.stream().filter(dto -> eventCodes.contains(dto.getEventCode())).collect(Collectors.toList());
             for(TreeModeStatisticResultDTO.EventCheckResultItemDTO eventDto : resultItemDTOS){
                 String eventCode = eventDto.getEventCode();
                 Tuple<Integer, Integer> countTuple = esQueryOperation.paramModeCount("insight_esparam*", code, spm, eventCode);
                 eventDto.setHitSum(countTuple.v1());
                 eventDto.setReqSum(countTuple.v2());
             }
+            resultDTO.setDetails(resultItemDTOS);
         }
         buryPointStatisticsDto.setTreeModeStatistic(treeModeStatistic);
 

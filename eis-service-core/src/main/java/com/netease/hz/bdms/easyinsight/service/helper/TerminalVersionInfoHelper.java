@@ -45,7 +45,7 @@ public class TerminalVersionInfoHelper {
             terminalVersionInfo.setUpdateEmail(userEmail);
             terminalVersionInfo.setName(name);
             terminalVersionInfo.setCreateTime(new Date());
-            terminalVersionInfo.setUpdateTime(System.currentTimeMillis());
+            terminalVersionInfo.setUpdateTime(new Date());
 
             terminalVersionInfoService.create(terminalVersionInfo);
         }

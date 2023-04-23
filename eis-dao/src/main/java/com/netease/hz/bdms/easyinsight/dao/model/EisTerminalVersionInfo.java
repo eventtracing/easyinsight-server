@@ -60,5 +60,5 @@ public class EisTerminalVersionInfo {
     /**
      * 更新时间
      */
-    private Long updateTime;
+    private Date updateTime;
 }
