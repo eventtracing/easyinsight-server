@@ -327,7 +327,7 @@ public class ReleaseHelper {
         newEisTerminalVersionInfo.setUpdateEmail("SYSTEM");
         newEisTerminalVersionInfo.setUpdateName("SYSTEM");
         newEisTerminalVersionInfo.setCreateTime(new Date());
-        newEisTerminalVersionInfo.setUpdateTime(System.currentTimeMillis());
+        newEisTerminalVersionInfo.setUpdateTime(new Date());
         Long terminalVersionId = terminalVersionInfoService.create(newEisTerminalVersionInfo);
         EisTerminalReleaseHistory latestRelease = terminalReleaseService.getLatestRelease(terminalId);
         Long newTerminalReleaseId = terminalReleaseService.releaseAndUpdate(appId, terminalId, terminalVersionId);
