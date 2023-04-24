@@ -22,6 +22,10 @@ public class TemplateSimpleDTO {
    */
   private String description;
   /**
+   * 默认选中
+   */
+  private Boolean selectedByDefault;
+  /**
    * 模板创建人
    */
   private UserSimpleDTO creator;

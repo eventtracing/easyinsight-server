@@ -176,4 +176,18 @@ public class TemplateFacade {
     return appDTO;
   }
 
+  public TemplateDTO getDefaultTemplate(Long appId) {
+    // 验证参数
+    Preconditions.checkArgument(null != appId, "未指定产品信息");
+
+    // 获取数据
+    //TemplateSimpleDTO appSimpleDTO = templateService.getTemplateByAppId(appId);
+    //Preconditions.checkArgument(null != appSimpleDTO, "模板不存在");
+
+//    List<ParamBindItemDTO> paramBindItemDTOS = paramBindHelper
+//            .getParamBinds(appId, id, EntityTypeEnum.TEMPLATE.getType(), null);
+//    TemplateDTO appDTO = BeanConvertUtils.convert(appSimpleDTO, TemplateDTO.class);
+//    appDTO.setBinds(paramBindItemDTOS);
+    return null;
+  }
 }

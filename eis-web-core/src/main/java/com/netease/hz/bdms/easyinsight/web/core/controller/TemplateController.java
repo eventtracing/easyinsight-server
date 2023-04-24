@@ -1,5 +1,7 @@
 package com.netease.hz.bdms.easyinsight.web.core.controller;
 
+import com.netease.hz.bdms.easyinsight.common.constant.ContextConstant;
+import com.netease.hz.bdms.easyinsight.common.context.EtContext;
 import com.netease.hz.bdms.easyinsight.common.dto.common.PagingSortDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.PermissionEnum;
 import com.netease.hz.bdms.easyinsight.common.http.HttpResult;
@@ -55,7 +57,13 @@ public class TemplateController {
 
     @PermissionAction(requiredPermission = PermissionEnum.PARAM_TEMPLATE_COPY)
     @GetMapping("/get")
-    public HttpResult getTemplate(@RequestParam(name = "id") Long id) {
-        return HttpResult.success(templateFacade.getTemplate(id));
+    public HttpResult getTemplate(@RequestParam(name = "id", required = false) Long id) {
+        if(id != null && id > 0) {
+            return HttpResult.success(templateFacade.getTemplate(id));
+        }else {
+            //返回默认模版
+            Long appId = EtContext.get(ContextConstant.APP_ID);
+            return HttpResult.success(templateFacade.getDefaultTemplate(appId));
+        }
     }
 }
