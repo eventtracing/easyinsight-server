@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -89,7 +90,7 @@ public class TemplateServiceImpl implements TemplateService {
     if(CollectionUtils.isNotEmpty(templates)) {
       return templates.stream().map(this::do2Dto).collect(Collectors.toList());
     }
-    return null;
+    return new ArrayList<>();
   }
 
   @Override
