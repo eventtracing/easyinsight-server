@@ -80,6 +80,19 @@ public class TemplateServiceImpl implements TemplateService {
   }
 
   @Override
+  public List<TemplateSimpleDTO> getTemplateByDefault(Boolean selectedByDefault, Long appId) {
+    Preconditions.checkArgument(null != appId, "产品ID不能为空");
+    Preconditions.checkArgument(null != selectedByDefault, "不能为空");
+
+    // 同一个appId下模板名称不能重复
+    List<Template> templates  = templateMapper.selectByDefault(selectedByDefault, appId);
+    if(CollectionUtils.isNotEmpty(templates)) {
+      return templates.stream().map(this::do2Dto).collect(Collectors.toList());
+    }
+    return null;
+  }
+
+  @Override
   public Long createTemplate(TemplateSimpleDTO templateSimpleDTO) {
     Template template = dto2Do(templateSimpleDTO);
     Preconditions.checkArgument(null != template, "模板对象不能为空");

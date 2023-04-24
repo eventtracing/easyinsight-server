@@ -18,6 +18,15 @@ public interface TemplateMapper {
   List<Template> selectByName(@Param("name") String name, @Param("appId") Long appId);
 
   /**
+   * 获取默认选中模板对象
+   *
+   * @param selectedByDefault 必填参数
+   * @param appId 产品ID，必填参数
+   * @return 模板对象集合
+   */
+  List<Template> selectByDefault(@Param("selectedByDefault") Boolean selectedByDefault, @Param("appId") Long appId);
+
+  /**
    * 根据主键ID获取模板对象
    *
    * @param id 主键ID，必填参数

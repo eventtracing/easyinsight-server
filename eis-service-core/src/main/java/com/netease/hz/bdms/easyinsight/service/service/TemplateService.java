@@ -8,6 +8,8 @@ public interface TemplateService {
 
   TemplateSimpleDTO getTemplateByName(String name, Long appId);
 
+  List<TemplateSimpleDTO> getTemplateByDefault(Boolean selectedByDefault, Long appId);
+
   Long createTemplate(TemplateSimpleDTO templateSimpleDTO);
 
   Integer updateTemplate(TemplateSimpleDTO templateSimpleDTO);

@@ -25,6 +25,10 @@ public class Template {
    */
   private String description;
   /**
+   * 默认选中
+   */
+  private Boolean selectedByDefault;
+  /**
    * 创建人邮箱
    */
   private String createEmail;
