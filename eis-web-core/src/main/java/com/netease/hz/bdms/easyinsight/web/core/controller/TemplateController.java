@@ -55,7 +55,7 @@ public class TemplateController {
         return HttpResult.success(templateFacade.listTemplates(search, pagingSortDTO));
     }
 
-    @PermissionAction(requiredPermission = PermissionEnum.PARAM_TEMPLATE_COPY)
+    @PermissionAction(requiredPermission = PermissionEnum.PARAM_TEMPLATE_READ)
     @GetMapping("/get")
     public HttpResult getTemplate(@RequestParam(name = "id", required = false) Long id) {
         if(id != null && id > 0) {

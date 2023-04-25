@@ -185,7 +185,7 @@ public class TemplateFacade {
     TemplateDTO templateDTO = new TemplateDTO();
     List<ParamBindItemDTO> paramBindItemDTOS = new ArrayList<>();
     for(TemplateSimpleDTO simpleDTO : templateByDefault) {
-    List<ParamBindItemDTO> paramBinds = paramBindHelper.getParamBinds(appId, simpleDTO.getId(), EntityTypeEnum.TEMPLATE.getType(), null);
+      List<ParamBindItemDTO> paramBinds = paramBindHelper.getParamBinds(appId, simpleDTO.getId(), EntityTypeEnum.TEMPLATE.getType(), null);
       paramBindItemDTOS.addAll(paramBinds);
     }
     templateDTO.setBinds(paramBindItemDTOS);
