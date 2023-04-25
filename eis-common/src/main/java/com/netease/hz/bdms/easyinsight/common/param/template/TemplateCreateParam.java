@@ -20,6 +20,10 @@ public class TemplateCreateParam {
    */
   private String description;
   /**
+   * 默认选中
+   */
+  private Boolean selectedByDefault;
+  /**
    * 参数绑定
    */
   private List<ParamBindItermParam> binds;

@@ -13,6 +13,7 @@
     <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="selected_by_default" jdbcType="BOOLEAN" property="selectedByDefault"/>
   </resultMap>
 
   <sql id="tableName">
@@ -20,7 +21,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, name, app_id, description, create_email, create_name, update_email,
-    update_name, create_time, update_time
+    update_name, create_time, update_time, selected_by_default
   </sql>
 
   <insert id="insert" parameterType="com.netease.hz.bdms.easyinsight.dao.model.Template"
@@ -58,6 +59,9 @@
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="selectedByDefault != null">
+        selected_by_default,
+      </if>
     </trim>
     <trim prefix="values(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -90,6 +94,9 @@
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="selectedByDefault != null">
+        #{selectedByDefault, jdbcType=BOOLEAN},
+      </if>
     </trim>
   </insert>
 
@@ -116,10 +123,20 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="selectedByDefault != null">
+        selected_by_default = #{selectedByDefault, jdbcType=BOOLEAN},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+
+  <select id="selectByDefault" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from <include refid="tableName" />
+    where app_id = #{appId,jdbcType=BIGINT}
+    and selected_by_default = #{selectedByDefault, jdbcType=BOOLEAN}
+  </select>
 
   <select id="selectByName" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -176,4 +177,18 @@ public class TemplateFacade {
     return appDTO;
   }
 
+  public TemplateDTO getDefaultTemplate(Long appId) {
+    // 验证参数
+    Preconditions.checkArgument(null != appId, "未指定产品信息");
+    //获取数据
+    List<TemplateSimpleDTO> templateByDefault = templateService.getTemplateByDefault(true, appId);
+    TemplateDTO templateDTO = new TemplateDTO();
+    List<ParamBindItemDTO> paramBindItemDTOS = new ArrayList<>();
+    for(TemplateSimpleDTO simpleDTO : templateByDefault) {
+      List<ParamBindItemDTO> paramBinds = paramBindHelper.getParamBinds(appId, simpleDTO.getId(), EntityTypeEnum.TEMPLATE.getType(), null);
+      paramBindItemDTOS.addAll(paramBinds);
+    }
+    templateDTO.setBinds(paramBindItemDTOS);
+    return templateDTO;
+  }
 }

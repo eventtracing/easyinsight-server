@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,6 +78,19 @@ public class TemplateServiceImpl implements TemplateService {
       return do2Dto(templates.get(0));
     }
     return null;
+  }
+
+  @Override
+  public List<TemplateSimpleDTO> getTemplateByDefault(Boolean selectedByDefault, Long appId) {
+    Preconditions.checkArgument(null != appId, "产品ID不能为空");
+    Preconditions.checkArgument(null != selectedByDefault, "不能为空");
+
+    // 同一个appId下模板名称不能重复
+    List<Template> templates  = templateMapper.selectByDefault(selectedByDefault, appId);
+    if(CollectionUtils.isNotEmpty(templates)) {
+      return templates.stream().map(this::do2Dto).collect(Collectors.toList());
+    }
+    return new ArrayList<>();
   }
 
   @Override
