@@ -293,4 +293,8 @@
         </where>
     </delete>
 
+    <delete id="deleteAll">
+        delete from eis_spm_map_info
+    </delete>
+
 </mapper>

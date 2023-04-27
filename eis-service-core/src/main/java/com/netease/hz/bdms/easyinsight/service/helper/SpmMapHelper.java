@@ -81,14 +81,12 @@ public class SpmMapHelper {
     @Resource
     private CacheAdapter cacheAdapter;
 
-
     @Transactional(rollbackFor = Throwable.class)
     public void updateSpmMapRelationInfoTable(List<SpmMapInfoDTO> spmMapInfoDTOList) {
         // 参数检查
         if(CollectionUtils.isEmpty(spmMapInfoDTOList)) return;
-        // 删除表`eis_spm_map_relation_info`中在当前应用下的全部数据
-        SpmMapInfoDTO spmMapInfoDTOQuery = new SpmMapInfoDTO();
-        spmMapInfoService.delete(spmMapInfoDTOQuery);
+        // 删除表`eis_spm_map_relation_info`中全部数据
+        spmMapInfoService.deleteAll();
         // 批量写入
         spmMapInfoService.create(spmMapInfoDTOList);
     }
