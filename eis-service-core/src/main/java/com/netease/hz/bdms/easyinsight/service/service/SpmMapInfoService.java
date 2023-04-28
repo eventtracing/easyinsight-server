@@ -17,5 +17,6 @@ public interface SpmMapInfoService {
      */
     Integer delete(SpmMapInfoDTO spmMapInfoDTO);
 
+    void deleteAll();
 }
 

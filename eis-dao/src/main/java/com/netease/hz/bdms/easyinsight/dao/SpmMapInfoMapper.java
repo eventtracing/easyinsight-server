@@ -31,4 +31,6 @@ public interface SpmMapInfoMapper {
      * @return
      */
     Integer delete(SpmMapInfo spmMapInfo);
+
+    void deleteAll();
 }

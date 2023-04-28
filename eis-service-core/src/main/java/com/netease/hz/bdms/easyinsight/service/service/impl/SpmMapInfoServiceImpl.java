@@ -83,4 +83,9 @@ public class SpmMapInfoServiceImpl implements SpmMapInfoService {
         return result;
     }
 
+    @Override
+    public void deleteAll() {
+        spmMapMapper.deleteAll();
+    }
+
 }
