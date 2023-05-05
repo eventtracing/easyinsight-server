@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.common.param.event;
 
+import com.netease.hz.bdms.easyinsight.common.param.obj.server.ServerApiInfo;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -48,4 +49,9 @@ public class EventBuryPointEditParam {
      * 事件埋点对象关联关系（terminalId -> objId）
      */
     private List<EventObjRelation> relationList;
+
+    /**
+     * 事件埋点关联的api信息
+     */
+    private List<ServerApiInfo> apiInfos;
 }
