@@ -212,6 +212,10 @@ public class RealtimeTestController {
                 currTreeModeStaResult.setSpm(spm);
                 currTreeModeStaResult.setResult(RealTestResultEnum.NOT_PASS.getResult());
                 BuryPointRule rule = buryPointMetaInfo.getBuryPointRule(spm);
+                if(rule == null){
+                    log.error("code:" + code + " spm:" + spm + " taskId:" + taskId + "规则获取失败，请查看埋点设计");
+                    continue;
+                }
                 RealTimeTestResourceDTO.Linage linage = linageMap.get(spm);
                 String oid = linage.getOid();
                 LinkedHashMap<String, Map<String, BloodLink.Param>> pageListVerifiers = rule.getPageListVerifiers();
