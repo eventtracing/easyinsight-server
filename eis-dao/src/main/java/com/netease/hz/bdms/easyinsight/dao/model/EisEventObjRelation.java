@@ -9,19 +9,19 @@ public class EisEventObjRelation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "event_pool_entity_id")
+    @Column(name = "eventPoolEntityId")
     private Long eventPoolEntityId;
 
-    @Column(name = "terminal_id")
+    @Column(name = "terminalId")
     private Long terminalId;
 
-    @Column(name = "obj_id")
+    @Column(name = "objId")
     private Long objId;
 
-    @Column(name = "create_time")
+    @Column(name = "createTime")
     private Date createTime;
 
-    @Column(name = "update_time")
+    @Column(name = "updateTime")
     private Date updateTime;
 
     /**
