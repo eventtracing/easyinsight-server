@@ -18,18 +18,6 @@ public class EisEventObjRelation {
     @Column(name = "obj_id")
     private Long objId;
 
-    @Column(name = "create_email")
-    private String createEmail;
-
-    @Column(name = "create_name")
-    private String createName;
-
-    @Column(name = "update_email")
-    private String updateEmail;
-
-    @Column(name = "update_name")
-    private String updateName;
-
     @Column(name = "create_time")
     private Date createTime;
 
@@ -62,62 +50,6 @@ public class EisEventObjRelation {
      */
     public void setTerminalId(Long terminalId) {
         this.terminalId = terminalId;
-    }
-
-    /**
-     * @return create_email
-     */
-    public String getCreateEmail() {
-        return createEmail;
-    }
-
-    /**
-     * @param createEmail
-     */
-    public void setCreateEmail(String createEmail) {
-        this.createEmail = createEmail;
-    }
-
-    /**
-     * @return create_name
-     */
-    public String getCreateName() {
-        return createName;
-    }
-
-    /**
-     * @param createName
-     */
-    public void setCreateName(String createName) {
-        this.createName = createName;
-    }
-
-    /**
-     * @return update_email
-     */
-    public String getUpdateEmail() {
-        return updateEmail;
-    }
-
-    /**
-     * @param updateEmail
-     */
-    public void setUpdateEmail(String updateEmail) {
-        this.updateEmail = updateEmail;
-    }
-
-    /**
-     * @return update_name
-     */
-    public String getUpdateName() {
-        return updateName;
-    }
-
-    /**
-     * @param updateName
-     */
-    public void setUpdateName(String updateName) {
-        this.updateName = updateName;
     }
 
     /**

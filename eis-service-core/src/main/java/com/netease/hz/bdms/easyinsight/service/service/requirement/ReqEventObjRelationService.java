@@ -48,12 +48,6 @@ public class ReqEventObjRelationService {
         // 公共信息
         UserDTO currUser = EtContext.get(ContextConstant.USER);
         entitys.forEach(entity -> {
-            entity.setCreateName(currUser.getUserName());
-            entity.setCreateEmail(currUser.getEmail());
-            entity.setUpdateName(currUser.getUserName());
-            entity.setUpdateEmail(currUser.getEmail());
-            entity.setCreateTime(new Date());
-            entity.setUpdateTime(new Date());
             entity.setCreateTime(new Date());
             entity.setUpdateTime(new Date());
         });
