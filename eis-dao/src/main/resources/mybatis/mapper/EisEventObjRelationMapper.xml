@@ -14,7 +14,7 @@
     </resultMap>
 g
     <sql id="BASE_COLUMN_LIST" >
-        id, objId,eventPoolEntityId,terminalId,create_time,update_time
+        id, objId,eventPoolEntityId,terminalId,createTime,updateTime
     </sql>
 
     <select id="selectByEventEntityIds" resultMap="BaseResultMap">
