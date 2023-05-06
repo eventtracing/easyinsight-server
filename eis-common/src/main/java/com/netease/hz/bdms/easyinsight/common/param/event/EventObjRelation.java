@@ -15,6 +15,9 @@ public class EventObjRelation {
    * 对象id
    */
   private Long objId;
-
+  /**
+   * 对象oid
+   */
+  private String oid;
 
 }

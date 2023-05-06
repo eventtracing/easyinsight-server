@@ -137,6 +137,14 @@ public class EisEventBuryPoint {
         this.terminalParamPackageId = terminalParamPackageId;
     }
 
+    public String getExtInfo() {
+        return extInfo;
+    }
+
+    public void setExtInfo(String extInfo) {
+        this.extInfo = extInfo;
+    }
+
     /**
      * @return pre_id
      */

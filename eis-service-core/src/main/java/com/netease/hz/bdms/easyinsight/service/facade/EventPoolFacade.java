@@ -10,15 +10,18 @@ import com.netease.hz.bdms.easyinsight.common.dto.event.EventSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.terminal.TerminalSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.ProcessStatusEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.ReqPoolTypeEnum;
+import com.netease.hz.bdms.easyinsight.common.enums.TrackerContentTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventBuryPointCreateParam;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventBuryPointEditParam;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventObjRelation;
+import com.netease.hz.bdms.easyinsight.common.param.obj.server.ServerApiInfo;
 import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.vo.event.*;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
 import com.netease.hz.bdms.easyinsight.service.service.EventService;
+import com.netease.hz.bdms.easyinsight.service.service.ObjectBasicService;
 import com.netease.hz.bdms.easyinsight.service.service.TerminalService;
 import com.netease.hz.bdms.easyinsight.service.service.TerminalVersionInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.EventBuryPointService;
@@ -70,6 +73,9 @@ public class EventPoolFacade {
     @Autowired
     ReqEventObjRelationService reqEventObjRelationService;
 
+    @Autowired
+    ObjectBasicService objectBasicService;
+
     /**
      * 需求管理模块——获取需求组下的事件埋点池
      *
@@ -118,6 +124,9 @@ public class EventPoolFacade {
         Map<Long,String> terminalNameMap = new HashMap<>();
         //
         List<EisEventObjRelation> relations = reqEventObjRelationService.getByEventEntityIds(poolEntityIds);
+        List<Long> objIds = relations.stream().map(EisEventObjRelation::getObjId).collect(Collectors.toList());
+        List<ObjectBasic> objectBasics = objectBasicService.getByIds(objIds);
+        Map<Long, String> objInfoMap = objectBasics.stream().collect(Collectors.toMap(ObjectBasic::getId, ObjectBasic::getOid));
         Map<Long, List<EventObjRelation>> entityRelationMap = new HashMap<>();
         for(EisEventObjRelation relation : relations){
             if(entityRelationMap.containsKey(relation.getEventPoolEntityId())){
@@ -135,6 +144,7 @@ public class EventPoolFacade {
                 EventObjRelation eventObjRelation = new EventObjRelation();
                 eventObjRelation.setObjId(relation.getObjId());
                 eventObjRelation.setTerminalId(relation.getTerminalId());
+                eventObjRelation.setOid(objInfoMap.get(relation.getObjId()));
                 eventObjRelations.add(eventObjRelation);
                 entityRelationMap.put(relation.getEventPoolEntityId(), eventObjRelations);
             }
@@ -338,6 +348,7 @@ public class EventPoolFacade {
         updateEntity.setReqPoolId(eventBuryPoint.getReqPoolId());
         updateEntity.setEventParamPackageId(param.getEventParamPackageId());
         updateEntity.setTerminalParamPackageId(param.getPubParamPackageId());
+        updateEntity.setExtInfo(toTrackerContent(param.getApiInfos()));
         eventBuryPointService.update(updateEntity);
 
         //更新事件埋点的映射对象
@@ -358,6 +369,9 @@ public class EventPoolFacade {
             relations.add(eisEventObjRelation);
         }
         reqEventObjRelationService.insertBatch(relations);
+
+        //更新事件埋点的api信息
+
     }
 
 
@@ -736,6 +750,12 @@ public class EventPoolFacade {
         }
         eventAggregateInfoVO.setTerminals(terminals);
         return eventAggregateInfoVO;
+    }
+
+    private static String toTrackerContent(List<ServerApiInfo> serverAPIInfoDatas) {
+        Map<String, String> result = new HashMap<>();
+        result.put(TrackerContentTypeEnum.SERVER_API_INFO.getType(), JsonUtils.toJson(serverAPIInfoDatas));
+        return JsonUtils.toJson(result);
     }
 
     /**
