@@ -135,6 +135,7 @@ public class EventPoolFacade {
                 if(!keySet.contains(relation.getTerminalId() + "|" + relation.getObjId())){
                     EventObjRelation eventObjRelation = new EventObjRelation();
                     eventObjRelation.setObjId(relation.getObjId());
+                    eventObjRelation.setOid(objInfoMap.get(relation.getObjId()));
                     eventObjRelation.setTerminalId(relation.getTerminalId());
                     eventObjRelations.add(eventObjRelation);
                     entityRelationMap.put(relation.getEventPoolEntityId(), eventObjRelations);
