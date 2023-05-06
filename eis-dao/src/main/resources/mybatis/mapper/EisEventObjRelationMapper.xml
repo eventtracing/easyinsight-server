@@ -24,8 +24,8 @@
         <where>
             <if test="entityIds != null and entityIds.size() > 0">
                 eventPoolEntityId in
-                <foreach collection="entityIds" index="index" item="id" open="(" separator="," close=")">
-                    #{entityIds}
+                <foreach collection="entityIds" index="index" item="entityId" open="(" separator="," close=")">
+                    #{entityId}
                 </foreach>
             </if>
         </where>
