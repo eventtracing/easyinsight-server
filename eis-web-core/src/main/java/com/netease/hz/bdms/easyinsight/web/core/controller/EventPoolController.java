@@ -56,7 +56,7 @@ public class EventPoolController {
      * 需求管理模块——编辑某需求组中的某埋点事件
      *
      * @param eventBuryPointEditParam 更新信息
-     * @return
+     * @return {@link Boolean}
      */
     @PostMapping("/edit")
     public HttpResult edit(@RequestBody @Validated EventBuryPointEditParam eventBuryPointEditParam){
