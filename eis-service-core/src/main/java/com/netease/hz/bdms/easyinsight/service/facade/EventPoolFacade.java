@@ -349,7 +349,9 @@ public class EventPoolFacade {
         updateEntity.setReqPoolId(eventBuryPoint.getReqPoolId());
         updateEntity.setEventParamPackageId(param.getEventParamPackageId());
         updateEntity.setTerminalParamPackageId(param.getPubParamPackageId());
-        updateEntity.setExtInfo(toTrackerContent(param.getApiInfos()));
+        if(param.getApiInfos() != null) {
+            updateEntity.setExtInfo(toTrackerContent(param.getApiInfos()));
+        }
         eventBuryPointService.update(updateEntity);
 
         //更新事件埋点的映射对象

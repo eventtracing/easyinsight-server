@@ -65,7 +65,7 @@
                 <if test="entity.terminalId != null"> #{entity.terminalId}, </if>
                 <if test="entity.terminalReleaseId != null"> #{entity.terminalReleaseId}, </if>
                 <if test="entity.terminalParamPackageId != null"> #{entity.terminalParamPackageId}, </if>
-                <if test="entity.extInfo != null"> extInfo, </if>
+                <if test="entity.extInfo != null"> #{entity.extInfo}, </if>
                 <if test="entity.preId != null"> #{entity.preId}, </if>
                 <if test="entity.createEmail != null"> #{entity.createEmail}, </if>
                 <if test="entity.createName != null"> #{entity.createName}, </if>
