@@ -17,8 +17,7 @@
     </resultMap>
 
     <sql id="BASE_COLUMN_LIST">
-        id, req_pool_id, event_id, event_param_package_id, terminal_id, terminal_release_id, terminal_param_package_id, extInfo
-        pre_id, create_email, create_name, update_email, update_name, create_time, update_time
+        id, req_pool_id, event_id, event_param_package_id, terminal_id, terminal_release_id, terminal_param_package_id, extInfo, create_email, create_name, update_email, update_name, create_time, update_time
     </sql>
 
     <select id="selectBatchByIds" resultMap="BaseResultMap">
