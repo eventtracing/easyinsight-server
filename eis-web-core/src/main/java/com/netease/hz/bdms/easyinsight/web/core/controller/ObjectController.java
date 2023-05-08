@@ -226,7 +226,7 @@ public class ObjectController {
      *
      * @param objId 对象ID
      * @param historyId 历史变更ID
-     * @return
+     * @return {@link ObjDetailsVO}
      */
     @GetMapping(value="/get", params={"objId", "historyId","reqPoolId"})
     public HttpResult getObjectInfoByHistory(@RequestParam("objId") Long objId,

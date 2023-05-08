@@ -27,6 +27,9 @@ public class EisEventBuryPoint {
     @Column(name = "terminal_param_package_id")
     private Long terminalParamPackageId;
 
+    @Column(name = "extInfo")
+    private String extInfo;
+
     @Column(name = "pre_id")
     private Long preId;
 
@@ -132,6 +135,14 @@ public class EisEventBuryPoint {
      */
     public void setTerminalParamPackageId(Long terminalParamPackageId) {
         this.terminalParamPackageId = terminalParamPackageId;
+    }
+
+    public String getExtInfo() {
+        return extInfo;
+    }
+
+    public void setExtInfo(String extInfo) {
+        this.extInfo = extInfo;
     }
 
     /**

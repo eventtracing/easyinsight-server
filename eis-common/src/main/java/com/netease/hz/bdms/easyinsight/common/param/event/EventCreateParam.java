@@ -28,7 +28,7 @@ public class EventCreateParam {
 
 
   /**
-   * 适用的对象类型， 格式为[1,2]
+   * 适用的对象类型， 格式为[1,2,3,100,101]
    * 其中的objType
    * @see com.netease.hz.bdms.easyinsight.common.enums.ObjTypeEnum
    */

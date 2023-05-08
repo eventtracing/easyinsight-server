@@ -10,16 +10,22 @@ import com.netease.hz.bdms.easyinsight.common.dto.event.EventSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.terminal.TerminalSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.ProcessStatusEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.ReqPoolTypeEnum;
+import com.netease.hz.bdms.easyinsight.common.enums.TrackerContentTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventBuryPointCreateParam;
 import com.netease.hz.bdms.easyinsight.common.param.event.EventBuryPointEditParam;
+import com.netease.hz.bdms.easyinsight.common.param.event.EventObjRelation;
+import com.netease.hz.bdms.easyinsight.common.param.obj.server.ServerApiInfo;
+import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.vo.event.*;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
 import com.netease.hz.bdms.easyinsight.service.service.EventService;
+import com.netease.hz.bdms.easyinsight.service.service.ObjectBasicService;
 import com.netease.hz.bdms.easyinsight.service.service.TerminalService;
 import com.netease.hz.bdms.easyinsight.service.service.TerminalVersionInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.EventBuryPointService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqEventObjRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqEventPoolService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqTaskService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
@@ -64,6 +70,12 @@ public class EventPoolFacade {
     @Autowired
     TerminalVersionInfoService terminalVersionInfoService;
 
+    @Autowired
+    ReqEventObjRelationService reqEventObjRelationService;
+
+    @Autowired
+    ObjectBasicService objectBasicService;
+
     /**
      * 需求管理模块——获取需求组下的事件埋点池
      *
@@ -74,6 +86,109 @@ public class EventPoolFacade {
         EisReqPoolEvent query = new EisReqPoolEvent();
         query.setReqPoolId(reqPoolId);
         List<EisReqPoolEvent> reqPoolEvents = reqEventPoolService.search(query);
+        if(CollectionUtils.isEmpty(reqPoolEvents)){
+            return new ArrayList<>();
+        }
+        Set<Long> poolEntityIds = new HashSet<>();
+        Set<Long> eventBuryPointIds = new HashSet<>();
+        for (EisReqPoolEvent reqPoolEvent : reqPoolEvents) {
+            poolEntityIds.add(reqPoolEvent.getId());
+            eventBuryPointIds.add(reqPoolEvent.getEventBuryPointId());
+        }
+        Set<Long> eventIds = new HashSet<>();
+        List<EisEventBuryPoint> eventBuryPoints = eventBuryPointService.getByIds(eventBuryPointIds);
+        Map<Long,Long> eventBuryPointIdToEventIdMap = new HashMap<>();
+        for (EisEventBuryPoint buryPoint : eventBuryPoints) {
+            eventIds.add(buryPoint.getEventId());
+            eventBuryPointIdToEventIdMap.put(buryPoint.getId(),buryPoint.getEventId());
+        }
+        List<EventSimpleDTO> events = eventService.getEventByIds(eventIds);
+        Map<Long,EventSimpleDTO> eventIdMap = new HashMap<>();
+        for (EventSimpleDTO event : events) {
+            eventIdMap.put(event.getId(),event);
+        }
+        List<EisTaskProcess> taskProcesses = taskProcessService.getByReqPoolEntityIds(ReqPoolTypeEnum.EVENT, poolEntityIds);
+        Map<Long,EisTaskProcess> taskProcessByEventPointId = new HashMap<>();
+        Set<Long> taskIds = new HashSet<>();
+        for (EisTaskProcess taskProcess : taskProcesses) {
+            taskProcessByEventPointId.put(taskProcess.getReqPoolEntityId(),taskProcess);
+            taskIds.add(taskProcess.getTaskId());
+        }
+        List<EisReqTask> tasks = taskService.getByIds(taskIds);
+        Map<Long,EisReqTask> taskMap = new HashMap<>();
+        for (EisReqTask task : tasks) {
+            taskMap.put(task.getId(),task);
+        }
+        Long appId = EtContext.get(ContextConstant.APP_ID);
+        List<TerminalSimpleDTO> terminals = terminalService.getByAppId(appId);
+        Map<Long,String> terminalNameMap = new HashMap<>();
+        //
+        List<EisEventObjRelation> relations = reqEventObjRelationService.getByEventEntityIds(poolEntityIds);
+        List<Long> objIds = relations.stream().map(EisEventObjRelation::getObjId).collect(Collectors.toList());
+        List<ObjectBasic> objectBasics = objectBasicService.getByIds(objIds);
+        Map<Long, String> objInfoMap = objectBasics.stream().collect(Collectors.toMap(ObjectBasic::getId, ObjectBasic::getOid));
+        Map<Long, List<EventObjRelation>> entityRelationMap = new HashMap<>();
+        for(EisEventObjRelation relation : relations){
+            if(entityRelationMap.containsKey(relation.getEventPoolEntityId())){
+                List<EventObjRelation> eventObjRelations = entityRelationMap.get(relation.getEventPoolEntityId());
+                Set<String> keySet = eventObjRelations.stream().map(vo -> vo.getTerminalId() + "|" + vo.getObjId()).collect(Collectors.toSet());
+                if(!keySet.contains(relation.getTerminalId() + "|" + relation.getObjId())){
+                    EventObjRelation eventObjRelation = new EventObjRelation();
+                    eventObjRelation.setObjId(relation.getObjId());
+                    eventObjRelation.setOid(objInfoMap.get(relation.getObjId()));
+                    eventObjRelation.setTerminalId(relation.getTerminalId());
+                    eventObjRelations.add(eventObjRelation);
+                    entityRelationMap.put(relation.getEventPoolEntityId(), eventObjRelations);
+                }
+            }else {
+                List<EventObjRelation> eventObjRelations = new ArrayList<>();
+                EventObjRelation eventObjRelation = new EventObjRelation();
+                eventObjRelation.setObjId(relation.getObjId());
+                eventObjRelation.setTerminalId(relation.getTerminalId());
+                eventObjRelation.setOid(objInfoMap.get(relation.getObjId()));
+                eventObjRelations.add(eventObjRelation);
+                entityRelationMap.put(relation.getEventPoolEntityId(), eventObjRelations);
+            }
+        }
+        for (TerminalSimpleDTO terminal : terminals) {
+            terminalNameMap.put(terminal.getId(),terminal.getName());
+        }
+        List<UnDevelopedEventVO> result = new ArrayList<>();
+        for (EisReqPoolEvent reqPoolEvent : reqPoolEvents) {
+            UnDevelopedEventVO vo = new UnDevelopedEventVO();
+            Long eventId = eventBuryPointIdToEventIdMap.get(reqPoolEvent.getEventBuryPointId());
+            Long terminalId = reqPoolEvent.getTerminalId();
+            vo.setReqPoolEventId(reqPoolEvent.getId());
+            vo.setEventBuryPointId(reqPoolEvent.getEventBuryPointId());
+            EventSimpleDTO eventSimpleDTO = eventIdMap.get(eventId);
+            if (eventSimpleDTO == null) {
+                log.error("eventSimpleDTO不存在, eventId={}", eventId);
+                continue;
+            }
+            vo.setApplicableObjTypes(eventSimpleDTO.getApplicableObjTypes());
+            vo.setEventName(eventSimpleDTO.getName());
+            vo.setEventCode(eventSimpleDTO.getCode());
+            EisTaskProcess taskProcess = taskProcessByEventPointId.get(reqPoolEvent.getEventBuryPointId());
+            if(taskProcess != null){
+                EisReqTask task = taskMap.get(taskProcess.getTaskId());
+                vo.setTaskName(task.getTaskName());
+                vo.setTaskId(task.getId());
+                vo.setStatus(ProcessStatusEnum.fromState(taskProcess.getStatus()).getDesc());
+                vo.setReqName(task.getReqIssueKey());
+            }else{
+                vo.setStatus(ProcessStatusEnum.UNASSIGN.getDesc());
+            }
+            vo.setTerminalName(terminalNameMap.get(terminalId));
+            List<EventObjRelation> eventObjRelations = entityRelationMap.get(reqPoolEvent.getId());
+            vo.setRelations(eventObjRelations);
+            result.add(vo);
+        }
+        return result;
+    }
+
+
+    public List<UnDevelopedEventVO> getReqPoolEvents(Set<Long> entityIds){
+        List<EisReqPoolEvent> reqPoolEvents = reqEventPoolService.getBatchByIds(entityIds);
         if(CollectionUtils.isEmpty(reqPoolEvents)){
             return new ArrayList<>();
         }
@@ -125,6 +240,7 @@ public class EventPoolFacade {
                 log.error("eventSimpleDTO不存在, eventId={}", eventId);
                 continue;
             }
+            vo.setApplicableObjTypes(eventSimpleDTO.getApplicableObjTypes());
             vo.setEventName(eventSimpleDTO.getName());
             vo.setEventCode(eventSimpleDTO.getCode());
             EisTaskProcess taskProcess = taskProcessByEventPointId.get(reqPoolEvent.getEventBuryPointId());
@@ -160,6 +276,7 @@ public class EventPoolFacade {
         Long eventBuryPointId = reqPoolEvent.getEventBuryPointId();
         reqEventPoolService.deleteById(reqPoolEventId);
         eventBuryPointService.deleteById(eventBuryPointId);
+        reqEventObjRelationService.deleteByEntityId(reqPoolEventId);
     }
 
     /**
@@ -183,7 +300,7 @@ public class EventPoolFacade {
         eventBuryPoint.setEventParamPackageId(eventParamPackageId);
         eventBuryPoint.setReqPoolId(reqPoolId);
         eventBuryPoint.setTerminalId(terminalId);
-        eventBuryPoint.setTerminalReleaseId(pubParamPackageId);
+//        eventBuryPoint.setTerminalReleaseId(pubParamPackageId);
         eventBuryPointService.insert(eventBuryPoint);
 
         // 2. 插入事件需求池信息
@@ -193,6 +310,24 @@ public class EventPoolFacade {
         reqPoolEvent.setTerminalId(eventBuryPoint.getTerminalId());
         reqPoolEvent.setEventBuryPointId(eventBuryPoint.getId());
         reqEventPoolService.insert(reqPoolEvent);
+
+        // 3. 插入事件埋点对象关联关系
+        List<EventObjRelation> eventObjRelations = param.getRelationList();
+        if(CollectionUtils.isEmpty(eventObjRelations)){
+            return;
+        }
+        List<EisEventObjRelation> relations = new ArrayList<>();
+        for(EventObjRelation entry : eventObjRelations){
+            if(entry.getTerminalId() == null || entry.getObjId() == null){
+                continue;
+            }
+            EisEventObjRelation eisEventObjRelation = new EisEventObjRelation();
+            eisEventObjRelation.setEventPoolEntityId(reqPoolEvent.getId());
+            eisEventObjRelation.setTerminalId(entry.getTerminalId());
+            eisEventObjRelation.setObjId(entry.getObjId());
+            relations.add(eisEventObjRelation);
+        }
+        reqEventObjRelationService.insertBatch(relations);
     }
 
     /**
@@ -214,7 +349,32 @@ public class EventPoolFacade {
         updateEntity.setReqPoolId(eventBuryPoint.getReqPoolId());
         updateEntity.setEventParamPackageId(param.getEventParamPackageId());
         updateEntity.setTerminalParamPackageId(param.getPubParamPackageId());
+        if(param.getApiInfos() != null) {
+            updateEntity.setExtInfo(toTrackerContent(param.getApiInfos()));
+        }
         eventBuryPointService.update(updateEntity);
+
+        //更新事件埋点的映射对象
+        List<EventObjRelation> eventObjRelations = param.getRelationList();
+        if(CollectionUtils.isEmpty(eventObjRelations) || param.getReqPoolEventId() == null){
+            return;
+        }
+        reqEventObjRelationService.deleteByEntityId(param.getReqPoolEventId());
+        List<EisEventObjRelation> relations = new ArrayList<>();
+        for(EventObjRelation entry : eventObjRelations){
+            if(entry.getTerminalId() == null || entry.getObjId() == null){
+                continue;
+            }
+            EisEventObjRelation eisEventObjRelation = new EisEventObjRelation();
+            eisEventObjRelation.setEventPoolEntityId(param.getReqPoolEventId());
+            eisEventObjRelation.setTerminalId(entry.getTerminalId());
+            eisEventObjRelation.setObjId(entry.getObjId());
+            relations.add(eisEventObjRelation);
+        }
+        reqEventObjRelationService.insertBatch(relations);
+
+        //更新事件埋点的api信息
+
     }
 
 
@@ -253,6 +413,8 @@ public class EventPoolFacade {
                     })
                     .collect(Collectors.toList());
         }
+
+        // 查询对象关联关系
 
         // 5. 埋点事件简略信息汇总
         List<EventBuryPointSimpleVO> eventBuryPointSimpleVOList = Lists.newArrayList();
@@ -493,6 +655,8 @@ public class EventPoolFacade {
             throw new CommonException("appId未指定");
         }
         List<TerminalSimpleDTO> appTerminalVersions = terminalService.getByAppId(appId);
+        List<Long> severTerminalId = appTerminalVersions == null ? new ArrayList<>() :appTerminalVersions.stream().filter(dto -> dto.getName().equals("Server")).map(TerminalSimpleDTO::getId).collect(Collectors.toList());
+
         Set<Long> appTerminalIds = appTerminalVersions == null ? new HashSet<>() : appTerminalVersions.stream().map(TerminalSimpleDTO::getId).collect(Collectors.toSet());
 
         // 1. 查询全部事件埋点
@@ -565,7 +729,18 @@ public class EventPoolFacade {
             simple.getReleases().add(releaseInfo);
         }
         ReleasedEventAggregationVO result = new ReleasedEventAggregationVO();
-        result.setList(new ArrayList<>(resultMap.values()));
+        //插入服务端埋点
+        ReleasedEventAggregationSimpleVO serverSimpleVO = new ReleasedEventAggregationSimpleVO();
+        CommonAggregateDTO commonAggregateDTO = new CommonAggregateDTO();
+        if(CollectionUtils.isNotEmpty(severTerminalId)){
+            commonAggregateDTO.setKey(String.valueOf(severTerminalId.get(0)));
+        }
+        commonAggregateDTO.setValue("Server");
+        serverSimpleVO.setTerminal(commonAggregateDTO);
+
+        List<ReleasedEventAggregationSimpleVO> thisList = new ArrayList<>(resultMap.values());
+        thisList.add(serverSimpleVO);
+        result.setList(thisList);
         return result;
     }
 
@@ -591,6 +766,12 @@ public class EventPoolFacade {
         }
         eventAggregateInfoVO.setTerminals(terminals);
         return eventAggregateInfoVO;
+    }
+
+    private static String toTrackerContent(List<ServerApiInfo> serverAPIInfoDatas) {
+        Map<String, String> result = new HashMap<>();
+        result.put(TrackerContentTypeEnum.SERVER_API_INFO.getType(), JsonUtils.toJson(serverAPIInfoDatas));
+        return JsonUtils.toJson(result);
     }
 
     /**

@@ -12,12 +12,12 @@
         <result column="terminal_id" jdbcType="BIGINT" property="terminalId"/>
         <result column="terminal_release_id" jdbcType="BIGINT" property="terminalReleaseId"/>
         <result column="terminal_param_package_id" jdbcType="BIGINT" property="terminalParamPackageId"/>
+        <result column="extInfo" jdbcType="VARCHAR" property="extInfo"/>
         <result column="pre_id" jdbcType="BIGINT" property="preId"/>
     </resultMap>
 
     <sql id="BASE_COLUMN_LIST">
-        id, req_pool_id, event_id, event_param_package_id, terminal_id, terminal_release_id, terminal_param_package_id,
-        pre_id, create_email, create_name, update_email, update_name, create_time, update_time
+        id, req_pool_id, event_id, event_param_package_id, terminal_id, terminal_release_id, terminal_param_package_id, extInfo, create_email, create_name, update_email, update_name, create_time, update_time
     </sql>
 
     <select id="selectBatchByIds" resultMap="BaseResultMap">
@@ -45,6 +45,7 @@
             <if test="entity.terminalId != null"> terminal_id, </if>
             <if test="entity.terminalReleaseId != null"> terminal_released_id, </if>
             <if test="entity.terminalParamPackageId != null"> terminal_param_package_id, </if>
+            <if test="entity.extInfo != null"> extInfo, </if>
             <if test="entity.preId != null"> pre_id, </if>
             <if test="entity.createEmail != null"> create_email, </if>
             <if test="entity.createName != null"> create_name, </if>
@@ -63,6 +64,7 @@
                 <if test="entity.terminalId != null"> #{entity.terminalId}, </if>
                 <if test="entity.terminalReleaseId != null"> #{entity.terminalReleaseId}, </if>
                 <if test="entity.terminalParamPackageId != null"> #{entity.terminalParamPackageId}, </if>
+                <if test="entity.extInfo != null"> #{entity.extInfo}, </if>
                 <if test="entity.preId != null"> #{entity.preId}, </if>
                 <if test="entity.createEmail != null"> #{entity.createEmail}, </if>
                 <if test="entity.createName != null"> #{entity.createName}, </if>

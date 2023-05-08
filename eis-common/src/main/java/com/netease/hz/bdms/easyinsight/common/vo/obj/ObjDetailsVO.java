@@ -4,6 +4,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.obj.ObjectTrackerInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.tag.TagSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.param.tag.CidTagInfo;
 import com.netease.hz.bdms.easyinsight.common.param.tag.ObjBasicTagDTO;
+import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -106,4 +107,9 @@ public class ObjDetailsVO {
      * 是否解析CID信息
      */
     private boolean analyseCid;
+
+    /**
+     * 服务端事件信息
+     */
+    private List<UnDevelopedEventVO> relationInfos;
 }

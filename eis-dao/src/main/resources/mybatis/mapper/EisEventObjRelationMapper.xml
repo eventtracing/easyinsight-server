@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisEventObjRelationMapper">
+    <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisEventObjRelation">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="objId" jdbcType="BIGINT" property="objId" />
+        <result column="eventPoolEntityId" jdbcType="BIGINT" property="eventPoolEntityId" />
+        <result column="terminalId" jdbcType="BIGINT" property="terminalId" />
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN_LIST" >
+        id, objId,eventPoolEntityId,terminalId,createTime,updateTime
+    </sql>
+
+    <select id="selectByEventEntityIds" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST" />
+        from eis_event_obj_relation
+        <where>
+            <if test="entityIds != null and entityIds.size() > 0">
+                eventPoolEntityId in
+                <foreach collection="entityIds" index="index" item="entityId" open="(" separator="," close=")">
+                    #{entityId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByEventEntityId" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST" />
+        from eis_event_obj_relation
+        <where>
+            eventPoolEntityId = #{eventPoolEntityId}
+        </where>
+    </select>
+
+    <select id="selectByObjId" resultMap="BaseResultMap">
+        select
+        <include refid="BASE_COLUMN_LIST" />
+        from eis_event_obj_relation
+        <where>
+            objId = #{objId}
+        </where>
+    </select>
+
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into eis_event_obj_relation
+        (<include refid="BASE_COLUMN_LIST"/>)
+        values
+        <foreach collection="list" item="entity" separator=",">
+            (#{entity.id}, #{entity.objId}, #{entity.eventPoolEntityId}, #{entity.terminalId}, #{entity.createTime}, #{entity.updateTime})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByEntityId">
+        delete from eis_req_obj_relation
+        where eventPoolEntityId = #{eventPoolEntityId}
+    </delete>
+
+</mapper>

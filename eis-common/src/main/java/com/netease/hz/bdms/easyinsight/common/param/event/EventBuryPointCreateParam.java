@@ -1,9 +1,11 @@
 package com.netease.hz.bdms.easyinsight.common.param.event;
 
+import javafx.util.Pair;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,4 +44,9 @@ public class EventBuryPointCreateParam {
      */
     @NotNull(message = "全局公参参数包ID不能为空")
     private Long pubParamPackageId;
+
+    /**
+     * 事件埋点对象关联关系（terminalId -> objId）
+     */
+    private List<EventObjRelation> relationList;
 }
