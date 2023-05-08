@@ -655,6 +655,8 @@ public class EventPoolFacade {
             throw new CommonException("appId未指定");
         }
         List<TerminalSimpleDTO> appTerminalVersions = terminalService.getByAppId(appId);
+        List<Long> severTerminalId = appTerminalVersions == null ? new ArrayList<>() :appTerminalVersions.stream().filter(dto -> dto.getName().equals("Server")).map(TerminalSimpleDTO::getId).collect(Collectors.toList());
+
         Set<Long> appTerminalIds = appTerminalVersions == null ? new HashSet<>() : appTerminalVersions.stream().map(TerminalSimpleDTO::getId).collect(Collectors.toSet());
 
         // 1. 查询全部事件埋点
@@ -727,7 +729,18 @@ public class EventPoolFacade {
             simple.getReleases().add(releaseInfo);
         }
         ReleasedEventAggregationVO result = new ReleasedEventAggregationVO();
-        result.setList(new ArrayList<>(resultMap.values()));
+        //插入服务端埋点
+        ReleasedEventAggregationSimpleVO serverSimpleVO = new ReleasedEventAggregationSimpleVO();
+        CommonAggregateDTO commonAggregateDTO = new CommonAggregateDTO();
+        if(CollectionUtils.isNotEmpty(severTerminalId)){
+            commonAggregateDTO.setKey(String.valueOf(severTerminalId.get(0)));
+        }
+        commonAggregateDTO.setValue("Server");
+        serverSimpleVO.setTerminal(commonAggregateDTO);
+
+        List<ReleasedEventAggregationSimpleVO> thisList = new ArrayList<>(resultMap.values());
+        thisList.add(serverSimpleVO);
+        result.setList(thisList);
         return result;
     }
 
