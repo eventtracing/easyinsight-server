@@ -158,8 +158,9 @@ CREATE TABLE `eis_event_bury_point` (
   `update_name` varchar(64) DEFAULT '',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `extInfo` varchar(512) NOT NULL DEFAULT '' COMMENT '扩展信息',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '事件埋点表';
+) ENGINE = InnoDB AUTO_INCREMENT = 446 DEFAULT CHARSET = utf8mb4 COMMENT = '事件埋点表'
 
 CREATE TABLE `eis_obj_all_relation_release` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -758,9 +759,10 @@ CREATE TABLE `eis_template` (
   `update_name` varchar(64) NOT NULL DEFAULT '' COMMENT '最近更新人的名称',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `selected_by_default` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否默认选中，0表示未选中，1表示选中',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_appid_name` (`app_id`, `name`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '模板信息';
+) ENGINE = InnoDB AUTO_INCREMENT = 49 DEFAULT CHARSET = utf8mb4 COMMENT = '模板信息'
 
 CREATE TABLE `eis_terminal` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
@@ -846,3 +848,26 @@ CREATE TABLE `eis_version` (
   KEY `idx_appid_entityid` (`app_id`, `entity_id`),
   KEY `idx_name` (`name`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '元数据的版本信息';
+
+CREATE TABLE `eis_user_point_info` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '埋点 id',
+  `line` varchar(64) NOT NULL COMMENT '业务线',
+  `terminal` int(32) NOT NULL COMMENT '终端类型',
+  `page` varchar(64) NOT NULL COMMENT '页面',
+  `subPage` varchar(64) NOT NULL COMMENT '子页面',
+  `module` varchar(64) NOT NULL COMMENT '模块',
+  `location` varchar(64) NOT NULL COMMENT '坑位',
+  `eventId` bigint(20) NOT NULL COMMENT '事件id',
+  `image` varchar(256) DEFAULT NULL COMMENT '图片',
+  `reqId` bigint(20) NOT NULL COMMENT '关联需求id',
+  `designed` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已设计(0-否,1-是)',
+  `invalid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否无效需求(0-否,1-是)',
+  `consistency` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否多端一致',
+  `creator` varchar(64) DEFAULT NULL COMMENT '录入用户',
+  `developer` varchar(64) DEFAULT NULL COMMENT '开发用户',
+  `extInfo` varchar(512) DEFAULT NULL COMMENT '备注',
+  `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updateTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_req` (`reqId`, `terminal`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '用户录入埋点';
