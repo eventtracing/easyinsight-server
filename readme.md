@@ -132,7 +132,7 @@
 
 * A. MySQL
   * 方式1：
-    * 直接向数据库导入建表语句+数据：执行demo中的init-with-demo-data.sql,再执行update.sql
+    * 直接向数据库导入建表语句+数据：执行demo中的init-with-demo-data.sql, 再执行update.sql
   * 方式2：
     * 初始化数据库，执行DEMO中的建表语句：执行demo中的init-tables-only.sql
     * 初始化域、产品、权限等配置，并增加SYSTEM账号，用于快速体验功能：访问${后台域名}/api/init
