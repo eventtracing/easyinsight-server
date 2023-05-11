@@ -155,6 +155,9 @@ public class BuryPointTestFacade {
                     if (baseRelease != null) {
                         terminalVersionId = baseRelease.getTerminalVersionId();
                     }
+                }else {
+                    log.error("该任务无基线，无法测试，taslId={}, terminalId={}", taskId, terminalId);
+                    return null;
                 }
             }
 

@@ -33,6 +33,8 @@ public class ReqObjVO {
 
     Date updateTime;
 
+    String updateName;
+
     /**
      * 是否有合并基线冲突
      */
