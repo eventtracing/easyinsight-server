@@ -493,12 +493,14 @@ public class ReqDesignFacade {
         Map<Long,Long> objIdToChangeHistoryIdMap = new HashMap<>();
         Map<Long,Date> objIdToCreateTimeMap = new HashMap<>();
         Map<Long,Date> objIdToUpdateTimeMap = new HashMap<>();
+        Map<Long,String> objIdToUpdateUserMap = new HashMap<>();
         Map<Long,Integer> objIdToChangeTypeMap = new HashMap<>();
         Map<Long,ConflictStatusEnum> mergeConflictsMap = new HashMap<>();
         for (EisObjChangeHistory changeHistory : changeHistories) {
             objIdToChangeTypeMap.put(changeHistory.getObjId(),changeHistory.getType());
             objIdToCreateTimeMap.put(changeHistory.getObjId(),changeHistory.getCreateTime());
             objIdToUpdateTimeMap.put(changeHistory.getObjId(),changeHistory.getUpdateTime());
+            objIdToUpdateUserMap.put(changeHistory.getObjId(),changeHistory.getUpdateName());
             mergeConflictsMap.put(changeHistory.getObjId(), ConflictStatusEnum.fromStatus(changeHistory.getConflictStatus()));
         }
         for (EisObjChangeHistory changeHistory : changeHistories) {
@@ -574,6 +576,7 @@ public class ReqDesignFacade {
             vo.setTerminals(objIdToTerminalNameMap.get(objId));
             vo.setCreateTime(objIdToCreateTimeMap.get(objId));
             vo.setUpdateTime(objIdToUpdateTimeMap.get(objId));
+            vo.setUpdateName(objIdToUpdateUserMap.get(objId));
             vo.setEditable(!objIdsOfRelease.contains(objId));
             resultList.add(vo);
         }
