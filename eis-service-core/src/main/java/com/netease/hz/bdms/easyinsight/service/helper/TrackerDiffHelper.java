@@ -157,7 +157,7 @@ public class TrackerDiffHelper {
 
         // 参数变化情况
         List<ParamBindItemDTO> deleteParamBindItems = new ArrayList<>();
-        List<ParamDiff> paramDiffs = diffHelper.getParamDiffs(preTrackerId, trackerId);
+        List<ParamDiff> paramDiffs = diffHelper.getParamDiffs(objId, preTrackerId, trackerId);
         if (CollectionUtils.isNotEmpty(paramDiffs)) {
             Map<Long, List<ParamDiff>> paramIdDiffMap = paramDiffs.stream().collect(Collectors.groupingBy(ParamDiff::getParamId));
             paramIdDiffMap.forEach((paramId, paramDiffsOfParamId) -> {

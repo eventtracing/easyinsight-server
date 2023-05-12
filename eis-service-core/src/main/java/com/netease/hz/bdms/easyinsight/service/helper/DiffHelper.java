@@ -204,7 +204,7 @@ public class DiffHelper {
         return trackerIds;
     }
 
-    public List<ParamDiff> getParamDiffs(Long oldTrackerId,Long newTrackerId){
+    public List<ParamDiff> getParamDiffs(Long objId, Long oldTrackerId,Long newTrackerId){
         if(oldTrackerId == null && newTrackerId == null) {
             return Lists.newArrayList();
         }
@@ -277,6 +277,7 @@ public class DiffHelper {
                     }else {
                         ParamDiff oldParamDiff = new ParamDiff();
                         oldParamDiff.setOldTrackerId(oldTrackerId)
+                                .setObjId(objId)
                                 .setNewTrackerId(newTrackerId)
                                 .setChangeType(ChangeTypeEnum.DELETE.getChangeType())
                                 .setParamId(paramId)
@@ -287,6 +288,7 @@ public class DiffHelper {
 
                         ParamDiff newParamDiff = new ParamDiff();
                         newParamDiff.setOldTrackerId(oldTrackerId)
+                                .setObjId(objId)
                                 .setNewTrackerId(newTrackerId)
                                 .setChangeType(ChangeTypeEnum.CREATE.getChangeType())
                                 .setParamId(paramId)
@@ -299,6 +301,7 @@ public class DiffHelper {
                     // 删除
                     ParamDiff paramDiff = new ParamDiff();
                     paramDiff.setOldTrackerId(oldTrackerId)
+                            .setObjId(objId)
                             .setNewTrackerId(newTrackerId)
                             .setChangeType(ChangeTypeEnum.DELETE.getChangeType())
                             .setParamId(paramId)
@@ -310,6 +313,7 @@ public class DiffHelper {
                     // 新增
                     ParamDiff paramDiff = new ParamDiff();
                     paramDiff.setOldTrackerId(oldTrackerId)
+                            .setObjId(objId)
                             .setNewTrackerId(newTrackerId)
                             .setChangeType(ChangeTypeEnum.CREATE.getChangeType())
                             .setParamId(paramId)
@@ -468,7 +472,7 @@ public class DiffHelper {
     public TrackerDiffDTO getReleaseTrackerDiff(Long objId, Long baseLineReleaseId, Long baseLineTrackerId, Long newReleaseId, Long newTrackerId) {
         boolean isSameTracker = Objects.equals(baseLineTrackerId, newTrackerId);
         Pair<Boolean, Long> pubParamPackageDiff = isSameTracker ? new Pair<>(false, null) : getPubParamPackageDiff(baseLineTrackerId, newTrackerId);
-        List<ParamDiff> paramDiffs = isSameTracker ? new ArrayList<>(0) : getParamDiffs(baseLineTrackerId, newTrackerId);
+        List<ParamDiff> paramDiffs = isSameTracker ? new ArrayList<>(0) : getParamDiffs(objId, baseLineTrackerId, newTrackerId);
         List<EventDiff> eventDiffs = isSameTracker ? new ArrayList<>(0) : getEventDiffs(baseLineTrackerId, newTrackerId);
         RelationDiff relationDiff = getRelationDiffsBetweenReleases(objId, baseLineReleaseId, newReleaseId);
         return new TrackerDiffDTO()
@@ -493,7 +497,7 @@ public class DiffHelper {
     public TrackerDiffDTO getReqPoolTrackerDiff(Long objId, Long baseLineReleaseId, Long baseLineTrackerId, Long newTrackerId, Long newReqPoolId, Long newTerminalId) {
         boolean isSameTracker = Objects.equals(baseLineTrackerId, newTrackerId);
         Pair<Boolean, Long> pubParamPackageDiff = isSameTracker ? new Pair<>(false, null) : getPubParamPackageDiff(baseLineTrackerId, newTrackerId);
-        List<ParamDiff> paramDiffs =  isSameTracker ? new ArrayList<>(0) : getParamDiffs(baseLineTrackerId, newTrackerId);
+        List<ParamDiff> paramDiffs =  isSameTracker ? new ArrayList<>(0) : getParamDiffs(objId, baseLineTrackerId, newTrackerId);
         List<EventDiff> eventDiffs =  isSameTracker ? new ArrayList<>(0) : getEventDiffs(baseLineTrackerId, newTrackerId);
         RelationDiff relationDiff = getRelationDiffsBetweenReleaseAndReqPool(objId, baseLineReleaseId, newReqPoolId, newTerminalId);
         return new TrackerDiffDTO()

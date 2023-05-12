@@ -13,6 +13,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ParamDiff {
     /**
+     * 变更对象
+     */
+    private Long objId;
+    /**
      * 旧的埋点ID
      */
     private Long oldTrackerId;

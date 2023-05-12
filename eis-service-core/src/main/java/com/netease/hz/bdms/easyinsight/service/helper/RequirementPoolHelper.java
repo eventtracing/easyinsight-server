@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -823,7 +824,7 @@ public class RequirementPoolHelper {
         spmsOfCurrentObjInReqLineage = lineageHelper.updateBridgeParent(spmsOfCurrentObjInReqLineage, bridgeUpTerminalIdMapping, parentTerminalLinageGraphMap);
         RelationDiff relationDiff = diffHelper.getRelationDiffs(tracker);
         Boolean isPubParamPackageChanged = diffHelper.isPubParamPackageChanged(tracker.getPreTrackerId(),tracker.getId());
-        List<ParamDiff> prvParamsDiff = diffHelper.getParamDiffs(tracker.getPreTrackerId(),tracker.getId());
+        List<ParamDiff> prvParamsDiff = diffHelper.getParamDiffs(tracker.getObjId(), tracker.getPreTrackerId(),tracker.getId());
         List<EventDiff> eventsDiff = diffHelper.getEventDiffs(tracker.getPreTrackerId(),tracker.getId());
         List<List<Long>> newSpms = getNewSpms(spmsOfCurrentObjInReqLineage,relationDiff);
         List<List<Long>> deletedSpms = getDeletedSpms(spmsOfCurrentObjInBaseLineage,relationDiff);
@@ -1014,13 +1015,9 @@ public class RequirementPoolHelper {
      * @return 若合并失败，返回null；若合并成功，返回合并的结果
      */
     private TrackerDiffDTO mergeDiff(TrackerDiffDTO baseLineDiff, TrackerDiffDTO reqPoolDiff) {
-        if (!DiffHelper.isAnyChange(baseLineDiff)) {
+        if (!DiffHelper.isAnyChange(baseLineDiff) && !DiffHelper.isAnyChange(reqPoolDiff)) {
             reqPoolDiff.setAcceptReqPool(true);
             return reqPoolDiff;
-        }
-        if (!DiffHelper.isAnyChange(reqPoolDiff)) {
-            reqPoolDiff.setAcceptBase(true);
-            return baseLineDiff;
         }
         try {
             TrackerDiffDTO result = new TrackerDiffDTO();
@@ -1054,57 +1051,106 @@ public class RequirementPoolHelper {
                 }
             });
         }
-        // 仅有一者改变，则以另一者为准
-        if (CollectionUtils.isEmpty(paramDiffsA)) {
-            result.setParamDiffs(paramDiffsB);
-            return;
-        }
-        // 仅有一者改变，则以另一者为准
-        if (CollectionUtils.isEmpty(paramDiffsB)) {
-            result.setParamDiffs(paramDiffsA);
-            return;
-        }
-        // 两者都变，则需要合并
-        Map<Long, List<ParamDiff>> diffsGroupById = new HashMap<>();
-        paramDiffsA.forEach(paramDiff -> {
-            List<ParamDiff> paramDiffsOfEventId = diffsGroupById.computeIfAbsent(paramDiff.getParamId(), k -> new ArrayList<>());
-            paramDiffsOfEventId.add(paramDiff);
-        });
-        paramDiffsB.forEach(paramDiff -> {
-            List<ParamDiff> paramDiffsOfEventId = diffsGroupById.computeIfAbsent(paramDiff.getParamId(), k -> new ArrayList<>());
-            paramDiffsOfEventId.add(paramDiff);
-        });
-        // 逐个paramId合并
-        List<ParamDiff> mergedParamDiffs = new ArrayList<>();
-        diffsGroupById.forEach((paramId, paramIdDiffsOfParamId) -> {
-            // 处理删除：删100次和删1次没有区别，所以只需要第一个删除操作
-            List<ParamDiff> deleteActions = paramIdDiffsOfParamId.stream().filter(o -> ChangeTypeEnum.DELETE.getChangeType().equals(o.getChangeType())).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(deleteActions)) {
-                mergedParamDiffs.add(deleteActions.get(0));
-            }
+//        // 仅有一者改变，则以另一者为准
+//        if (CollectionUtils.isEmpty(paramDiffsA)) {
+//            result.setParamDiffs(paramDiffsB);
+//            return;
+//        }
+//        // 仅有一者改变，则以另一者为准
+//        if (CollectionUtils.isEmpty(paramDiffsB)) {
+//            result.setParamDiffs(paramDiffsA);
+//            return;
+//        }
 
-            // 处理新增
-            List<ParamDiff> addActions = paramIdDiffsOfParamId.stream().filter(o -> ChangeTypeEnum.CREATE.getChangeType().equals(o.getChangeType())).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(addActions)) {
-                return;
-            }
-            // 如果有2个删除，1个新增，这种情况是一个删，一个改，这种属于冲突情况
-            if (deleteActions.size() > 1 && addActions.size() == 1) {
-                throw new CommonException("合并DIFF失败，参数" + paramId + "同时存在删除和修改，需要人工确认");
-            }
-            // 都修改了该参数
-            ParamDiff mergedAddAction = null;
-            for (ParamDiff addAction : addActions) {
-                if (mergedAddAction == null) {
-                    mergedAddAction = addAction;
-                    continue;
-                }
-                // 合并
-                mergeSingleParamAddAction(mergedAddAction, addAction);
-            }
-            mergedParamDiffs.add(mergedAddAction);
+        // 两者都变，则需要合并
+        Map<Long, List<ParamDiff>> diffsAGroupByObjId = new HashMap<>();
+        paramDiffsA.forEach(paramDiff -> {
+            List<ParamDiff> paramDiffsOfObjId = diffsAGroupByObjId.computeIfAbsent(paramDiff.getObjId(), k -> new ArrayList<>());
+            paramDiffsOfObjId.add(paramDiff);
         });
-        result.setParamDiffs(mergedParamDiffs);
+        Map<Long, List<ParamDiff>> diffsBGroupByObjId = new HashMap<>();
+        paramDiffsB.forEach(paramDiff -> {
+            List<ParamDiff> paramDiffsOfEventId = diffsBGroupByObjId.computeIfAbsent(paramDiff.getObjId(), k -> new ArrayList<>());
+            paramDiffsOfEventId.add(paramDiff);
+        });
+        for(Long objId : diffsAGroupByObjId.keySet()){
+            if(!diffsBGroupByObjId.containsKey(objId)){
+                continue;
+            }
+            // 同一对象,参数变更数量不一致，报冲突
+            if(diffsAGroupByObjId.get(objId).size() != diffsBGroupByObjId.get(objId).size()){
+                throw new CommonException("自动合并失败，param变更冲突. paramA=" + JsonUtils.toJson(paramDiffsA) + "paramB=" + JsonUtils.toJson(paramDiffsB));
+            }
+            // 同一对象，参数变更结果不一致，报冲突
+            List<ParamDiff> paramADiffs = diffsAGroupByObjId.get(objId);
+            List<ParamDiff> paramBDiffs = diffsBGroupByObjId.get(objId);
+            Set<Long> diffAIds = paramADiffs.stream().map(ParamDiff::getParamId).collect(Collectors.toSet());
+            Set<Long> diffBIds = paramBDiffs.stream().map(ParamDiff::getParamId).collect(Collectors.toSet());
+            if(!diffAIds.containsAll(diffBIds)){
+                throw new CommonException("自动合并失败，param变更冲突. paramA=" + JsonUtils.toJson(paramDiffsA) + "paramB=" + JsonUtils.toJson(paramDiffsB));
+            }
+            Map<Long, ParamDiff> paramDiffAMap = paramADiffs.stream().collect(Collectors.toMap(ParamDiff::getParamId, Function.identity()));
+            for(ParamDiff paramDiff : paramBDiffs){
+                ParamDiff paramDiffA = paramDiffAMap.get(paramDiff.getParamId());
+                //参数变更不是同一个参数，报冲突
+                if(!paramDiffAMap.containsKey(paramDiff.getParamId())){
+                    throw new CommonException("自动合并失败，param变更冲突. paramA=" + JsonUtils.toJson(paramDiffsA) + "paramB=" + JsonUtils.toJson(paramDiffsB));
+                }
+                //参数变更类型不一样，报冲突
+                if(!paramDiffA.getChangeType().equals(paramDiff.getChangeType())){
+                    throw new CommonException("自动合并失败，param变更类型冲突. param=" + JsonUtils.toJson(paramDiff));
+                }
+                //参数变更值不一样，报冲突
+                if(paramDiffA.getNewParamValueIds().size() != paramDiff.getNewParamValueIds().size()){
+                    throw new CommonException("自动合并失败，param变更内容冲突. param=" + JsonUtils.toJson(paramDiff));
+                }
+                if(!paramDiffA.getNewParamValueIds().containsAll(paramDiff.getNewParamValueIds())){
+                    throw new CommonException("自动合并失败，param变更内容冲突. param=" + JsonUtils.toJson(paramDiff));
+                }
+            }
+        }
+
+//        // 两者都变，则需要合并
+//        Map<Long, List<ParamDiff>> diffsGroupById = new HashMap<>();
+//        paramDiffsA.forEach(paramDiff -> {
+//            List<ParamDiff> paramDiffsOfEventId = diffsGroupById.computeIfAbsent(paramDiff.getParamId(), k -> new ArrayList<>());
+//            paramDiffsOfEventId.add(paramDiff);
+//        });
+//        paramDiffsB.forEach(paramDiff -> {
+//            List<ParamDiff> paramDiffsOfEventId = diffsGroupById.computeIfAbsent(paramDiff.getParamId(), k -> new ArrayList<>());
+//            paramDiffsOfEventId.add(paramDiff);
+//        });
+//        // 逐个paramId合并
+//        List<ParamDiff> mergedParamDiffs = new ArrayList<>();
+//        diffsGroupById.forEach((paramId, paramIdDiffsOfParamId) -> {
+//            // 处理删除：删100次和删1次没有区别，所以只需要第一个删除操作
+//            List<ParamDiff> deleteActions = paramIdDiffsOfParamId.stream().filter(o -> ChangeTypeEnum.DELETE.getChangeType().equals(o.getChangeType())).collect(Collectors.toList());
+//            if (CollectionUtils.isNotEmpty(deleteActions)) {
+//                mergedParamDiffs.add(deleteActions.get(0));
+//            }
+//
+//            // 处理新增
+//            List<ParamDiff> addActions = paramIdDiffsOfParamId.stream().filter(o -> ChangeTypeEnum.CREATE.getChangeType().equals(o.getChangeType())).collect(Collectors.toList());
+//            if (CollectionUtils.isEmpty(addActions)) {
+//                return;
+//            }
+//            // 如果有2个删除，1个新增，这种情况是一个删，一个改，这种属于冲突情况
+//            if (deleteActions.size() > 1 && addActions.size() == 1) {
+//                throw new CommonException("合并DIFF失败，参数" + paramId + "同时存在删除和修改，需要人工确认");
+//            }
+//            // 都修改了该参数
+//            ParamDiff mergedAddAction = null;
+//            for (ParamDiff addAction : addActions) {
+//                if (mergedAddAction == null) {
+//                    mergedAddAction = addAction;
+//                    continue;
+//                }
+//                // 合并
+//                mergeSingleParamAddAction(mergedAddAction, addAction);
+//            }
+//            mergedParamDiffs.add(mergedAddAction);
+//        });
+//        result.setParamDiffs(mergedParamDiffs);
     }
 
     private void mergeSingleParamAddAction(ParamDiff to, ParamDiff from) {
