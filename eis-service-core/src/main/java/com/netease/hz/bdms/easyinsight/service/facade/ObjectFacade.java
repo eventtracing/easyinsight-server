@@ -3,7 +3,9 @@ package com.netease.hz.bdms.easyinsight.service.facade;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.netease.eis.adapters.CacheAdapter;
 import com.netease.eis.adapters.RealtimeConfigAdapter;
+import com.netease.hz.bdms.easyinsight.common.bo.diff.ParamDiff;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
+import com.netease.hz.bdms.easyinsight.common.query.TaskPageQuery;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import com.netease.hz.bdms.easyinsight.service.service.*;
 import com.netease.hz.bdms.easyinsight.common.dto.obj.*;
@@ -53,6 +55,7 @@ import com.netease.hz.bdms.easyinsight.service.service.obj.ObjTerminalTrackerSer
 import com.netease.hz.bdms.easyinsight.service.service.obj.UserBuryPointService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqEventObjRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqTaskService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
 import javafx.util.Pair;
@@ -136,6 +139,9 @@ public class ObjectFacade implements InitializingBean {
 
     @Autowired
     TaskProcessService taskProcessService;
+
+    @Autowired
+    ReqTaskService reqTaskService;
 
     @Autowired
     SpmTagService spmTagService;
@@ -1829,6 +1835,14 @@ public class ObjectFacade implements InitializingBean {
         Map<Long, EisTerminalVersionInfo> terminalVersionInfoMap = terminalVersionInfoList.stream()
                 .collect(Collectors.toMap(EisTerminalVersionInfo::getId, Function.identity()));
 
+        //查询端版本对应需求
+        List<EisReqTask> eisReqTasks = reqTaskService.listAllByTerminalVersionId(trackerList.stream().map(EisObjTerminalTracker::getTerminalReleaseId).collect(Collectors.toSet()));
+        Map<Long, List<EisReqTask>> reqTaskMap = new HashMap<>();
+        eisReqTasks.forEach(eisReqTask -> {
+            List<EisReqTask> eisReqTaskList = reqTaskMap.computeIfAbsent(eisReqTask.getTerminalReleaseId(), k -> new ArrayList<>());
+            eisReqTaskList.add(eisReqTask);
+        });
+
         // 3. 构建结果集
         List<ObjReleaseVO> objReleaseVOList = Lists.newArrayList();
         for (EisObjTerminalTracker objTerminalTracker : trackerList) {
@@ -1850,6 +1864,10 @@ public class ObjectFacade implements InitializingBean {
                 objReleaseVO.setReleaseTime(currReleaseHistory.getCreateTime());
                 objReleaseVO.setReleaser(currReleaseHistory.getCreateName());
                 terminalVersionId = currReleaseHistory.getTerminalVersionId();
+            }
+            List<EisReqTask> tasks = reqTaskMap.get(currReleaseId);
+            if(CollectionUtils.isNotEmpty(tasks)){
+                objReleaseVO.setReqKeys(tasks.stream().filter(task -> task.getTerminalId().equals(terminalId)).map(EisReqTask::getReqIssueKey).collect(Collectors.toList()));
             }
             EisTerminalVersionInfo terminalVersionInfo = terminalVersionInfoMap.get(terminalVersionId);
             if(null != terminalVersionInfo){

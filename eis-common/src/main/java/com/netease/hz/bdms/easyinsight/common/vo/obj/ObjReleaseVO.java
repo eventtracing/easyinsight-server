@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: xumengqiang
@@ -31,6 +32,11 @@ public class ObjReleaseVO {
      * 发布版本ID
      */
     private Long releaseId;
+
+    /**
+     * 需求列表
+     */
+    private List<String> reqKeys;
 
     /**
      * 端版本名称
