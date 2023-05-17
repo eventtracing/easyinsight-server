@@ -19,10 +19,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.audit.BloodLink;
 import com.netease.hz.bdms.easyinsight.service.service.audit.BuryPointRule;
 import com.netease.hz.bdms.easyinsight.service.service.util.LogUtil;
 import com.netease.hz.bdms.eistest.cache.ConversationMetaCache;
-import com.netease.hz.bdms.eistest.entity.AppPushLogAction;
-import com.netease.hz.bdms.eistest.entity.BuryPointLogRuleCheckDto;
-import com.netease.hz.bdms.eistest.entity.BuryPointMetaInfoDto;
-import com.netease.hz.bdms.eistest.entity.BuryPointStatisticsDto;
+import com.netease.hz.bdms.eistest.entity.*;
 import com.netease.hz.bdms.eistest.service.es.ElasticsearchQueryService;
 import com.netease.hz.bdms.eistest.cache.BuryPointProcessorKey;
 import com.netease.hz.bdms.eistest.service.BloodLinkService;
@@ -132,8 +129,20 @@ public class RealtimeTestController {
             return HttpResult.success("会话ID不存在 " + conversation);
         }
         // TODO
+        BuryPointLog buryPointLog = new BuryPointLog();
+        buryPointLog.setAction(param.getAction());
+        buryPointLog.setContent(data);
+        buryPointLog.setEt(true);
+        buryPointLog.setIndex(-1L);
+        buryPointLog.setLogTime(System.currentTimeMillis());
+        buryPointLog.setLogtype("ua");
+        buryPointLog.setOs("server");
+        WsSession appSession = appSessionManager.getSessionByCode(conversation);
+        if(appSession == null){
+            log.error("会话不存在，请检查客户端连接状态。code={}", conversation);
+        }
         try {
-            buryPointAnaysisService.parseBuryPointResource(conversation, null, data, AppPushLogAction.LOG.getName());
+            buryPointAnaysisService.parseBuryPointResource(conversation, (AppSession) appSession, data, AppPushLogAction.LOG.getName());
         } catch (Exception e) {
             log.error("parseBuryPointResource failed! code {} data {}", conversation, data, e);
         }
