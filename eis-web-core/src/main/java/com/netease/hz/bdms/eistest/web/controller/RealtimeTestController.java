@@ -142,7 +142,7 @@ public class RealtimeTestController {
             log.error("会话不存在，请检查客户端连接状态。code={}", conversation);
         }
         try {
-            buryPointAnaysisService.parseBuryPointResource(conversation, (AppSession) appSession, data, AppPushLogAction.LOG.getName());
+            buryPointAnaysisService.parseBuryPointResource(conversation, (AppSession) appSession, JsonUtils.toJson(buryPointLog), AppPushLogAction.LOG.getName());
         } catch (Exception e) {
             log.error("parseBuryPointResource failed! code {} data {}", conversation, data, e);
         }
