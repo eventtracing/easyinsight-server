@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -23,7 +24,7 @@ public class ConversationMetaCache {
     @Autowired
     private BloodLinkService bloodLinkService;
 
-    private Map<String, BuryPointMetaInfo> localCache;
+    private Map<String, BuryPointMetaInfo> localCache = new HashMap<>();
 
     public void set(String conversation, Long taskId, Long terminalId, Long domainId, Long appId) {
         String cacheKey = CACHE_KEY + conversation;

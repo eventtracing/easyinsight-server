@@ -1105,6 +1105,10 @@ public class LineageHelper {
         Set<Long> allObjIds = new HashSet<>();
         for (List<Long> spmAsObjIdList : spmAsObjIdLists) {
             allObjIds.addAll(spmAsObjIdList);
+            if(spmAsObjIdList.size() == 1){
+                Set<Long> parents = parentsMap.computeIfAbsent(spmAsObjIdList.get(0),k->new HashSet<>());
+                parents.add(ObjectHelper.virtualRootNode);
+            }
             for (int i=0;i<spmAsObjIdList.size()-1;i++){
                 Set<Long> parents = parentsMap.computeIfAbsent(spmAsObjIdList.get(i),k->new HashSet<>());
                 parents.add(spmAsObjIdList.get(i+1));
@@ -1133,6 +1137,8 @@ public class LineageHelper {
         for (Long objId : allObjIds) {
             if(CollectionUtils.isEmpty(parentsMap.get(objId))){
                 rootObjIds.add(objId);
+            }else if(parentsMap.get(objId).contains(ObjectHelper.virtualRootNode)){
+                rootObjIds.add(objId);;
             }
         }
         List<NodeOfTestTree> roots = new ArrayList<>();

@@ -62,6 +62,20 @@
     </where>
   </select>
 
+  <select id="selectByTerminalVersionId" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      <if test="terminalVersionIds != null and terminalVersionIds.size() > 0">
+        terminal_release_id in
+        <foreach collection="terminalVersionIds" index="index" item="terminalVersionId" open="(" separator="," close=")">
+          #{terminalVersionId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
   <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
     insert into eis_req_task
     (<include refid="BASE_COLUMN_LIST"/>)
