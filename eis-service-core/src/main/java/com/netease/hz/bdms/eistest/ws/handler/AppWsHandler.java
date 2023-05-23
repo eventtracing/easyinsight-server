@@ -74,8 +74,9 @@ public class AppWsHandler extends AbstractWsHandler {
         if (scs != null) {
             log.info("send completion message to scancode session: {}", code);
             scs.sendData("completion");
-            cacheAdapter.setWithExpireTime(getAppScanSuccessCacheKey(code), "1", 3600);
         }
+
+        cacheAdapter.setWithExpireTime(getAppScanSuccessCacheKey(code), "1", 3600);
 
         //init metadata
         try {
