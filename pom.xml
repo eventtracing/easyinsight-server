@@ -63,12 +63,12 @@
             <dependency>
                 <groupId>com.netease.hz.bdms</groupId>
                 <artifactId>eis-common</artifactId>
-                <version>1.0.1.53</version>
+                <version>1.0.1.54</version>
             </dependency>
             <dependency>
                 <groupId>com.netease.hz.bdms</groupId>
                 <artifactId>eis-dao</artifactId>
-                <version>1.0.1.53</version>
+                <version>1.0.1.54</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
