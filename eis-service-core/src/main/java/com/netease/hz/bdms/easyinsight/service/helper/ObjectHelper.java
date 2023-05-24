@@ -35,6 +35,7 @@ import com.netease.hz.bdms.easyinsight.dao.model.*;
 import com.netease.hz.bdms.easyinsight.service.service.impl.AppRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.*;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqSpmPoolService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -126,6 +127,9 @@ public class ObjectHelper {
 
     @Resource
     private TrackerContentService trackerContentService;
+
+    @Resource
+    private ReqSpmPoolService reqSpmPoolService;
 
 
     public static final Long virtualRootNode = -12345L;
@@ -462,6 +466,15 @@ public class ObjectHelper {
             // 2.1 删除埋点信息
             if(!reservedTrackerIds.contains(trackerId)){
                 objTerminalTrackerService.deleteById(trackerId);
+                EisReqPoolSpm spmPoolQuery = new EisReqPoolSpm();
+                spmPoolQuery.setReqPoolId(reqPoolId);
+                spmPoolQuery.setObjId(objId);
+                spmPoolQuery.setObjHistoryId(objHistoryId);
+                spmPoolQuery.setTerminalId(terminalId);
+                List<EisReqPoolSpm> reqPoolSpms = reqSpmPoolService.search(spmPoolQuery);
+                if(CollectionUtils.isNotEmpty(reqPoolSpms)){
+                    reqSpmPoolService.deleteByIds(reqPoolSpms.stream().map(EisReqPoolSpm::getId).collect(Collectors.toSet()));
+                }
             }
             // 2.2 删除血缘关系信息
             reqObjRelationService.delete(objId, reqPoolId, terminalId);
