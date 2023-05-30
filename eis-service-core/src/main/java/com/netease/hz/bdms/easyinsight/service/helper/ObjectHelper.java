@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.netease.hz.bdms.easyinsight.dao.EisTaskProcessMapper;
 import com.netease.hz.bdms.easyinsight.service.service.*;
 import com.netease.hz.bdms.easyinsight.common.bo.lineage.LinageGraph;
 import com.netease.hz.bdms.easyinsight.common.constant.ContextConstant;
@@ -36,6 +37,7 @@ import com.netease.hz.bdms.easyinsight.service.service.impl.AppRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.*;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqSpmPoolService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -130,6 +132,9 @@ public class ObjectHelper {
 
     @Resource
     private ReqSpmPoolService reqSpmPoolService;
+
+    @Resource
+    private TaskProcessService taskProcessService;
 
 
     public static final Long virtualRootNode = -12345L;
@@ -474,6 +479,10 @@ public class ObjectHelper {
                 List<EisReqPoolSpm> reqPoolSpms = reqSpmPoolService.search(spmPoolQuery);
                 if(CollectionUtils.isNotEmpty(reqPoolSpms)){
                     reqSpmPoolService.deleteByIds(reqPoolSpms.stream().map(EisReqPoolSpm::getId).collect(Collectors.toSet()));
+                }
+                Set<Long> entityIds = reqPoolSpms.stream().map(EisReqPoolSpm::getId).collect(Collectors.toSet());
+                if(CollectionUtils.isNotEmpty(entityIds)) {
+                    taskProcessService.deleteUnReleasedProcessesByReqPoolEntityIds(ReqPoolTypeEnum.SPM_DEV, entityIds);
                 }
             }
             // 2.2 删除血缘关系信息

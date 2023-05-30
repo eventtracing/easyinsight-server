@@ -629,6 +629,11 @@ public class ObjectFacade implements InitializingBean {
         // 更新CID映射
         objCidInfoService.update(appId, objId, param.getCidTagInfos());
 
+        //判断是否更新任务spm状态
+        boolean update = !objectBasic.getName().equals(objectOriginBasic.getName()) || !objectBasic.getOid().equals(objectOriginBasic.getOid()) || !objectBasic.getType().equals(objectOriginBasic.getType());
+        ObjDetailsVO objDetails = getObjectByHistory(objId, objHistoryId, reqPoolId);
+        boolean change = checkEditChange(param, objDetails);
+
         // 2. 更新对象埋点信息
         Set<Long> trackerIdsBeforeEdit = new HashSet<>();
         if (param.getTrackers() != null) {
@@ -640,12 +645,6 @@ public class ObjectFacade implements InitializingBean {
         }
         List<Long> newTrackerIds = objectHelper.editObjectTrackerInfo(
                 objId, objHistoryId, param.getReqPoolId(), param.getTrackers());
-
-        //判断是否更新任务spm状态
-        boolean update = !objectBasic.getName().equals(objectOriginBasic.getName()) || !objectBasic.getOid().equals(objectOriginBasic.getOid()) || !objectBasic.getType().equals(objectOriginBasic.getType());
-
-        ObjDetailsVO objDetails = getObjectByHistory(objId, objHistoryId, reqPoolId);
-        boolean change = checkEditChange(param, objDetails);
 
         // 3. 更新对象 spm需求关联池 信息
         List<UpdateSpmPoolParam> updateSpmPoolParams = new ArrayList<>();

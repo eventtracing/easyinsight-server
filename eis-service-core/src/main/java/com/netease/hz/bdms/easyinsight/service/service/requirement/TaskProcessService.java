@@ -205,7 +205,7 @@ public class TaskProcessService {
             EisReqTask eisReqTask = reqTaskService.getById(eisTaskProcess.getTaskId());
 
             for(EisReqPoolSpm eisReqPoolSpm : insertList) {
-                if (eisReqTask.getTerminalId().equals(eisReqPoolSpm.getTerminalId()) && eisTaskProcess.getObjId().equals(eisReqPoolSpm.getObjId())) {
+                if (eisReqTask.getTerminalId().equals(eisReqPoolSpm.getTerminalId()) && eisTaskProcess.getSpmByObjId().equals(eisReqPoolSpm.getSpmByObjId())) {
                     eisTaskProcess.setId(null);
                     eisTaskProcess.setStatus(ProcessStatusEnum.START.getState());
                     eisTaskProcess.setReqPoolEntityId(eisReqPoolSpm.getId());
