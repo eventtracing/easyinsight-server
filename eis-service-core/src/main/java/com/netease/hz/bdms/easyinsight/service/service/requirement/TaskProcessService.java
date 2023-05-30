@@ -199,6 +199,7 @@ public class TaskProcessService {
         }
 
         List<EisTaskProcess> processes = eisTaskProcessMapper.getByReqPoolEntityIds(reqPoolTypeEnum.getReqPoolType(), reqPoolEntityIds);
+        List<EisTaskProcess> insertProcess = new ArrayList<>();
 
         for(EisTaskProcess eisTaskProcess : processes) {
 
@@ -209,16 +210,17 @@ public class TaskProcessService {
                     eisTaskProcess.setId(null);
                     eisTaskProcess.setStatus(ProcessStatusEnum.START.getState());
                     eisTaskProcess.setReqPoolEntityId(eisReqPoolSpm.getId());
+                    insertProcess.add(eisTaskProcess);
                 }
             }
         }
 
-        if (CollectionUtils.isEmpty(processes)) {
+        if (CollectionUtils.isEmpty(insertProcess)) {
             return new HashSet<>();
         }
 
-        eisTaskProcessMapper.insertBatch(processes);
-        for (EisTaskProcess eisTaskProcess : processes) {
+        eisTaskProcessMapper.insertBatch(insertProcess);
+        for (EisTaskProcess eisTaskProcess : insertProcess) {
             Integer taskStatus = getTaskNewStatusByProcesses(eisTaskProcess.getTaskId());
             EisReqTask taskUpdateQuery = new EisReqTask();
             taskUpdateQuery.setId(eisTaskProcess.getTaskId());
@@ -226,7 +228,7 @@ public class TaskProcessService {
             reqTaskService.updateById(taskUpdateQuery);
         }
 
-        return processes.stream().map(EisTaskProcess::getTaskId).collect(Collectors.toSet());
+        return insertProcess.stream().map(EisTaskProcess::getTaskId).collect(Collectors.toSet());
     }
 
     public Integer getTaskNewStatusByProcesses(Long taskId){
