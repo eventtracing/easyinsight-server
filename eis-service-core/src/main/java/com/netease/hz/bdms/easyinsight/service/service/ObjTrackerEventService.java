@@ -15,4 +15,6 @@ public interface ObjTrackerEventService {
 
   Integer deleteEventByTrackerId(Collection<Long> trackerIds);
 
+  Integer deleteByTrackerIdAndEventId(Long trackerId, Long eventId);
+
 }

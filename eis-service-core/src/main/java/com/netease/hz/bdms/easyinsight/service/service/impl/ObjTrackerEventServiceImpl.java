@@ -71,4 +71,9 @@ public class ObjTrackerEventServiceImpl implements ObjTrackerEventService {
     return 0;
   }
 
+  @Override
+  public Integer deleteByTrackerIdAndEventId(Long trackerId, Long eventId){
+    return objTrackerEventMapper.deleteByTrackerIdAndEventId(trackerId, eventId);
+  }
+
 }

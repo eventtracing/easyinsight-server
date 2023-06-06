@@ -580,13 +580,17 @@ public class ObjectHelper {
                         .setUpdateTime(new Timestamp(System.currentTimeMillis()))
                         .setEventParamVersionId(eventParamVersionId);
                 // 加入列表
+//                objTrackerEventService.deleteByTrackerIdAndEventId(trackerId, eventId);
                 eventSimpleDTOS.add(eventSimpleDTO);
             }
-            objTrackerEventService.createTrackerEvents(eventSimpleDTOS);
+            if(CollectionUtils.isNotEmpty(eventSimpleDTOS)) {
+                objTrackerEventService.createTrackerEvents(eventSimpleDTOS);
+            }
 
             // 3.5 处理埋点上的对象私参信息
             List<ParamBindItermParam> paramItems = Optional.ofNullable(
                     trackerEditInfo.getParamBinds()).orElse(Lists.newArrayList());
+//            paramBindService.deleteParamBind(trackerId, EntityTypeEnum.OBJTRACKER.getType(), 0L, appId);
             for (ParamBindItermParam paramItem : paramItems) {
                 ParamBindSimpleDTO paramBind = new ParamBindSimpleDTO();
                 paramBind.setEntityId(trackerId)
@@ -600,6 +604,7 @@ public class ObjectHelper {
                         .setSource(paramItem.getSource())
                         .setSourceDetail(paramItem.getSourceDetail());
                 Long bindId = paramBindService.createParamBind(paramBind);
+//                paramBindValueService.deleteByBindId(bindId);
 
                 List<ParamBindValueSimpleDTO> paramBindValueList = Lists.newArrayList();
                 for (Long valueId : paramItem.getValues()) {
