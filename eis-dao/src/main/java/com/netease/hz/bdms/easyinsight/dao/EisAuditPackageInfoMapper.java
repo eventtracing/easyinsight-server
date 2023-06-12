@@ -38,6 +38,8 @@ public interface EisAuditPackageInfoMapper {
 
   List<EisAuditPackageInfo> selectByReq(@Param("relatedReq") String relatedReq);
 
+  List<EisAuditPackageInfo> selectByVersion(@Param("versionId") String versionId);
+
   List<EisAuditPackageInfo> scan(@Param("offset") long offset);
 
   Integer delete(Long id);

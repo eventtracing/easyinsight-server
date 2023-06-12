@@ -992,7 +992,7 @@ public class RequirementPoolHelper {
                     reqPoolId, objId, reqPoolObjHistoryId,
                     JsonUtils.toJson(baseLineDiff), JsonUtils.toJson(reqPoolDiff), JsonUtils.toJson(mergedDiff),
                     JsonUtils.toJson(objectTrackerInfoListOfReqPool), JsonUtils.toJson(objectTrackerEditParams));
-            updateObject(appId, objectTrackerEditParams, objId, reqPoolObjHistoryId, reqPoolId);
+//            updateObject(appId, objectTrackerEditParams, objId, reqPoolObjHistoryId, reqPoolId);
         } catch (Exception e) {
             log.error("合并对象失败，转为手动合并", e);
             return false;

@@ -25,6 +25,9 @@ public interface EisTaskProcessMapper extends Mapper<EisTaskProcess> {
     void updateOwner(@Param("ids") List<Long> ids, @Param("ownerName") String ownerName, @Param("ownerEmail") String ownerEmail,
                      @Param("updateName") String updateName, @Param("updateEmail") String updateEmail);
 
+
+    void updateEntityId(@Param("id") Long id, @Param("entityId") Long entityId);
+
     void deleteByIds(@Param("ids") Set<Long> ids);
 
     void deleteByInfos(@Param("reqPoolId") Long reqPoolId, @Param("taskId") Long taskId, @Param("spmByObjId") String spmByObjId);

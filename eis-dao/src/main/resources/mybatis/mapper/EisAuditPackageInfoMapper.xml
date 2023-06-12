@@ -161,6 +161,16 @@
     </where>
   </select>
 
+  <select id="selectByVersion" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      versionId = #{versionId}
+    </where>
+  </select>
+
   <select id="scan" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>

@@ -30,6 +30,13 @@ public class RequirementInfoService {
         return requirementInfoMapper.selectBatchByIds(ids);
     }
 
+    public List<EisRequirementInfo> getByIssueKeys(Set<String> issueKeys){
+        if (CollectionUtils.isEmpty(issueKeys)) {
+            return new ArrayList<>(0);
+        }
+        return requirementInfoMapper.selectBatchByIssueKeys(issueKeys);
+    }
+
     public List<EisRequirementInfo> search(EisRequirementInfo query){
         return Optional.ofNullable(requirementInfoMapper.select(query)).orElse(new ArrayList<>());
     }

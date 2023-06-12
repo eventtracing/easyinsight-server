@@ -13,7 +13,7 @@
   <groupId>com.netease.hz.bdms</groupId>
   <artifactId>eis-common</artifactId>
   <name>${project.artifactId}</name>
-  <version>1.0.1.53</version>
+  <version>1.0.1.584</version>
 
   <dependencies>
     <dependency>

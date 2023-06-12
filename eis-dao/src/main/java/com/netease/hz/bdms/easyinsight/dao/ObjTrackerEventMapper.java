@@ -43,5 +43,7 @@ public interface ObjTrackerEventMapper {
 
   Integer deleteEventByTrackerId(@Param("trackerIds") Collection<Long> trackerIds);
 
+  Integer deleteByTrackerIdAndEventId(@Param("trackerId") Long trackerId, @Param("eventId") Long eventId);
+
   Integer selectSizeByEventId(@Param("eventIds") Collection<Long> eventIds);
 }

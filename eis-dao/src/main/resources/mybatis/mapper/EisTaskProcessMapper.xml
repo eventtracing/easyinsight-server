@@ -148,6 +148,17 @@
     </foreach>
   </update>
 
+
+  <update id="updateEntityId">
+    update eis_task_process
+    <set>
+      req_pool_entity_id = #{entityId}
+    </set>
+    <where>
+      id = #{id}
+    </where>
+  </update>
+
   <delete id="deleteByIds">
     delete from eis_task_process
     where id in

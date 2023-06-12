@@ -127,6 +127,11 @@
     </foreach>
   </delete>
 
+  <delete id="deleteByTrackerIdAndEventId">
+    delete from <include refid="tableName" />
+    where tracker_id = #{trackerId} and event_id = #{eventId, jdbcType=BIGINT}
+  </delete>
+
   <select id="selectSizeByEventId" resultType="java.lang.Integer">
     select count(*)
     from <include refid="tableName" />

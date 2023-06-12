@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.netease.hz.bdms.easyinsight.dao.EisTaskProcessMapper;
 import com.netease.hz.bdms.easyinsight.service.service.*;
 import com.netease.hz.bdms.easyinsight.common.bo.lineage.LinageGraph;
 import com.netease.hz.bdms.easyinsight.common.constant.ContextConstant;
@@ -35,6 +36,8 @@ import com.netease.hz.bdms.easyinsight.dao.model.*;
 import com.netease.hz.bdms.easyinsight.service.service.impl.AppRelationService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.*;
 import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqPoolRelBaseService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.ReqSpmPoolService;
+import com.netease.hz.bdms.easyinsight.service.service.requirement.TaskProcessService;
 import com.netease.hz.bdms.easyinsight.service.service.terminalrelease.TerminalReleaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -126,6 +129,12 @@ public class ObjectHelper {
 
     @Resource
     private TrackerContentService trackerContentService;
+
+    @Resource
+    private ReqSpmPoolService reqSpmPoolService;
+
+    @Resource
+    private TaskProcessService taskProcessService;
 
 
     public static final Long virtualRootNode = -12345L;
@@ -462,6 +471,19 @@ public class ObjectHelper {
             // 2.1 删除埋点信息
             if(!reservedTrackerIds.contains(trackerId)){
                 objTerminalTrackerService.deleteById(trackerId);
+                EisReqPoolSpm spmPoolQuery = new EisReqPoolSpm();
+                spmPoolQuery.setReqPoolId(reqPoolId);
+                spmPoolQuery.setObjId(objId);
+                spmPoolQuery.setObjHistoryId(objHistoryId);
+                spmPoolQuery.setTerminalId(terminalId);
+                List<EisReqPoolSpm> reqPoolSpms = reqSpmPoolService.search(spmPoolQuery);
+                if(CollectionUtils.isNotEmpty(reqPoolSpms)){
+                    reqSpmPoolService.deleteByIds(reqPoolSpms.stream().map(EisReqPoolSpm::getId).collect(Collectors.toSet()));
+                }
+                Set<Long> entityIds = reqPoolSpms.stream().map(EisReqPoolSpm::getId).collect(Collectors.toSet());
+                if(CollectionUtils.isNotEmpty(entityIds)) {
+                    taskProcessService.deleteUnReleasedProcessesByReqPoolEntityIds(ReqPoolTypeEnum.SPM_DEV, entityIds);
+                }
             }
             // 2.2 删除血缘关系信息
             reqObjRelationService.delete(objId, reqPoolId, terminalId);
@@ -558,13 +580,17 @@ public class ObjectHelper {
                         .setUpdateTime(new Timestamp(System.currentTimeMillis()))
                         .setEventParamVersionId(eventParamVersionId);
                 // 加入列表
+//                objTrackerEventService.deleteByTrackerIdAndEventId(trackerId, eventId);
                 eventSimpleDTOS.add(eventSimpleDTO);
             }
-            objTrackerEventService.createTrackerEvents(eventSimpleDTOS);
+            if(CollectionUtils.isNotEmpty(eventSimpleDTOS)) {
+                objTrackerEventService.createTrackerEvents(eventSimpleDTOS);
+            }
 
             // 3.5 处理埋点上的对象私参信息
             List<ParamBindItermParam> paramItems = Optional.ofNullable(
                     trackerEditInfo.getParamBinds()).orElse(Lists.newArrayList());
+//            paramBindService.deleteParamBind(trackerId, EntityTypeEnum.OBJTRACKER.getType(), 0L, appId);
             for (ParamBindItermParam paramItem : paramItems) {
                 ParamBindSimpleDTO paramBind = new ParamBindSimpleDTO();
                 paramBind.setEntityId(trackerId)
@@ -578,6 +604,7 @@ public class ObjectHelper {
                         .setSource(paramItem.getSource())
                         .setSourceDetail(paramItem.getSourceDetail());
                 Long bindId = paramBindService.createParamBind(paramBind);
+//                paramBindValueService.deleteByBindId(bindId);
 
                 List<ParamBindValueSimpleDTO> paramBindValueList = Lists.newArrayList();
                 for (Long valueId : paramItem.getValues()) {

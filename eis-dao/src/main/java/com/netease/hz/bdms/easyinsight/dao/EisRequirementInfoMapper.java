@@ -13,6 +13,8 @@ public interface EisRequirementInfoMapper extends Mapper<EisRequirementInfo> {
 
     List<EisRequirementInfo> selectBatchByIds(@Param("ids") Set<Long> ids);
 
+    List<EisRequirementInfo> selectBatchByIssueKeys(@Param("issueKeys") Set<String> issueKeys);
+
     void deleteByIds(@Param("ids") Set<Long> ids);
 
 //    List<EisRequirementInfo> selectByIds(@Param("ids")Set<Long> ids);
