@@ -46,6 +46,21 @@
     </where>
   </select>
 
+
+  <select id="selectBatchByIssueKeys" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_requirement_info
+    <where>
+      <if test="issueKeys != null and issueKeys.size() > 0">
+        req_issue_key in
+        <foreach collection="issueKeys" index="index" item="issueKey" open="(" separator="," close=")">
+          #{issueKey}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
 <!--  <select id="queryForPage" resultMap="BaseResultMap">-->
 <!--    select <include refid="BASE_COLUMN_LIST" /> from eis_requirement_info-->
 <!--    <where>-->
