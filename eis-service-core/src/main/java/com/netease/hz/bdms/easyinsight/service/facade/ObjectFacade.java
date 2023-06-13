@@ -632,7 +632,10 @@ public class ObjectFacade implements InitializingBean {
         //判断是否更新任务spm状态
         boolean update = !objectBasic.getName().equals(objectOriginBasic.getName()) || !objectBasic.getOid().equals(objectOriginBasic.getOid()) || !objectBasic.getType().equals(objectOriginBasic.getType());
         ObjDetailsVO objDetails = getObjectByHistory(objId, objHistoryId, reqPoolId);
-        boolean change = checkEditChange(param, objDetails);
+
+        //todo 检查更新内容 血缘 or 参数 or 端类型 or 事件
+        ObjChangeTypeEnum objChangeTypeEnum = checkEditChange(param, objDetails);
+        boolean change = !objChangeTypeEnum.equals(ObjChangeTypeEnum.NOCHANGE);
 
         // 2. 更新对象埋点信息
         Set<Long> trackerIdsBeforeEdit = new HashSet<>();
@@ -2172,12 +2175,12 @@ public class ObjectFacade implements InitializingBean {
         return true;
     }
 
-    public boolean checkEditChange(ObjectEditParam param, ObjDetailsVO objDetails){
+    public ObjChangeTypeEnum checkEditChange(ObjectEditParam param, ObjDetailsVO objDetails){
         //
         List<ObjectTrackerEditParam> paramTrackers= param.getTrackers();
         List<ObjectTrackerInfoDTO> objectTrackers = objDetails.getTrackers();
         if(paramTrackers.size() != objectTrackers.size()) {
-            return true;
+            return ObjChangeTypeEnum.TERMINALCHANGE;
         }
 
         for(int i=0; i<paramTrackers.size(); i++){
@@ -2186,7 +2189,7 @@ public class ObjectFacade implements InitializingBean {
             boolean isEventIdSame = CollectionUtils.isEqualCollection(trackerParam.getEventIds(), trackerInfoDTO.getEvents().stream().map(EventSimpleDTO::getId).collect(Collectors.toList()));
             if(!isEventIdSame) {
                 log.info("eventId有变化");
-                return true;
+                return ObjChangeTypeEnum.EVENTCHANGE;
             }
 
             if (MapUtils.isNotEmpty(trackerInfoDTO.getEventParamVersionIdMap())) {
@@ -2203,38 +2206,38 @@ public class ObjectFacade implements InitializingBean {
             boolean isSameEventParamVersionIdMap = isSameMap(trackerParam.getEventParamVersionIdMap(), trackerInfoDTO.getEventParamVersionIdMap());
             if(!isSameEventParamVersionIdMap) {
                 log.info("eventParamVersionIdMap有变化");
-                return true;
+                return ObjChangeTypeEnum.EVENTCHANGE;
             }
             if(!Objects.equals(trackerParam.getPubParamPackageId(), trackerInfoDTO.getPubParamPackageId())) {
                 log.info("PubParamPackageId有变化");
-                return true;
+                return ObjChangeTypeEnum.PUBPARAMCHANGE;
             }
             if(!CollectionUtils.isEqualCollection(trackerParam.getParentObjs(), trackerInfoDTO.getParentObjects().stream().map(ObjectBasicDTO::getId).collect(Collectors.toList()))) {
                 log.info("parentObjs 有变化");
-                return true;
+                return ObjChangeTypeEnum.LINAGECHANGE;
             }
             if(!Objects.equals(trackerParam.getTerminalId(), trackerInfoDTO.getTerminal().getId())) {
                 log.info("TerminalId有变化");
-                return true;
+                return ObjChangeTypeEnum.TERMINALCHANGE;
             }
 
             List<ParamBindItermParam> paramBindItermParams = trackerParam.getParamBinds();
             List<ParamBindItemDTO> paramBindItemDTOS = trackerInfoDTO.getPrivateParam();
             if(paramBindItermParams.size() != paramBindItemDTOS.size()) {
                 log.info("paramBindItermParams有变化");
-                return true;
+                return ObjChangeTypeEnum.PRIVATECHANGE;
             }
             for(int j=0; j<paramBindItermParams.size(); j++){
                 ParamBindItermParam paramBindItermParam = paramBindItermParams.get(j);
                 ParamBindItemDTO paramBindItemDTO = paramBindItemDTOS.get(j);
                 if(!Objects.equals(paramBindItermParam.getParamId(), paramBindItemDTO.getId())) {
                     log.info("paramId 有变化");
-                    return true;
+                    return ObjChangeTypeEnum.PRIVATECHANGE;
                 }
             }
         }
 
-        return false;
+        return ObjChangeTypeEnum.NOCHANGE;
     }
 
     /**
