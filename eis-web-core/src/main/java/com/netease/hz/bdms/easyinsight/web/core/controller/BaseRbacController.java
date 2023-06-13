@@ -5,13 +5,17 @@ import com.netease.eis.adapters.RealtimeConfigAdapter;
 import com.netease.hz.bdms.easyinsight.common.aop.PermissionAction;
 import com.netease.hz.bdms.easyinsight.common.dto.common.PagingResultDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.MenuNodeDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleApplyDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleDTO;
+import com.netease.hz.bdms.easyinsight.common.enums.ProcessStatusEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.PermissionEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.RoleTypeEnum;
 import com.netease.hz.bdms.easyinsight.common.http.HttpResult;
 import com.netease.hz.bdms.easyinsight.common.param.auth.*;
+import com.netease.hz.bdms.easyinsight.common.param.version.VersionSetParam;
 import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.vo.auth.UserVO;
+import com.netease.hz.bdms.easyinsight.common.vo.task.ReqTaskVO;
 import com.netease.hz.bdms.easyinsight.service.service.RbacService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -234,6 +238,44 @@ public class BaseRbacController implements InitializingBean {
     public HttpResult<List<MenuNodeDTO>> getAuthorizedMenu(@RequestParam(value = "appId", required = false) Long appId) {
         List<MenuNodeDTO> menuTreeOfUser = rbacService.getMenuTreeOfUser(appId);
         return HttpResult.success(menuTreeOfUser);
+    }
+
+
+    /**
+     * 权限申请
+     * @param appId 产品id
+     * @param roleId 角色id
+     * @param desc 申请理由
+     * @return
+     */
+    @RequestMapping("/permission/apply")
+    public HttpResult applyPermission(@RequestParam(value = "appId") Long appId, @RequestParam(value = "roleId") Long roleId, @RequestParam(value = "desc") Long desc) {
+
+        return HttpResult.success();
+    }
+
+    /**
+     * 权限申请列表
+     * @param appId 产品id
+     * @return {@link RoleApplyDTO}
+     */
+    @RequestMapping("/permission/list")
+    public HttpResult checkPermission(@RequestParam(value = "appId") Long appId) {
+
+        return HttpResult.success();
+    }
+
+    /**
+     * 权限审批
+     * @param applyId 申请id
+     * @param type 1-同意，0-拒绝
+     * @return
+     */
+    @PermissionAction(requiredPermission ={PermissionEnum.DOMAIN_MEMBER_CREATE, PermissionEnum.PRODUCT_MEMBER_CREATE, PermissionEnum.ROLE_MEMBER_CREATE})
+    @RequestMapping("/permission/audit")
+    public HttpResult auditPermission(@RequestParam(value = "applyId") Long applyId, @RequestParam(value = "type") Integer type) {
+
+        return HttpResult.success();
     }
 
     @Override
