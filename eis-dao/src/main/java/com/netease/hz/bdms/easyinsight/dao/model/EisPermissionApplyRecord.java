@@ -1,12 +1,15 @@
-package com.netease.hz.bdms.easyinsight.common.dto.rbac;
+package com.netease.hz.bdms.easyinsight.dao.model;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.util.Date;
 
 @Data
-public class RoleApplyDTO {
+@Accessors(chain = true)
+public class EisPermissionApplyRecord {
     /**
-     * id
+     * 角色ID
      */
     private Long id;
     /*
@@ -45,4 +48,5 @@ public class RoleApplyDTO {
      * 更新时间
      */
     private Long updateTime;
+
 }

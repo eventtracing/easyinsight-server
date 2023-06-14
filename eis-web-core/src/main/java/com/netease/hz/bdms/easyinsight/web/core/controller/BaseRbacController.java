@@ -7,6 +7,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.common.PagingResultDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.MenuNodeDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleApplyDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleDTO;
+import com.netease.hz.bdms.easyinsight.common.enums.PermissionAuditEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.ProcessStatusEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.PermissionEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.RoleTypeEnum;
@@ -249,33 +250,33 @@ public class BaseRbacController implements InitializingBean {
      * @return
      */
     @RequestMapping("/permission/apply")
-    public HttpResult applyPermission(@RequestParam(value = "appId") Long appId, @RequestParam(value = "roleId") Long roleId, @RequestParam(value = "desc") Long desc) {
-
-        return HttpResult.success();
+    public HttpResult applyPermission(@RequestParam(value = "appId") Long appId, @RequestParam(value = "roleId") Long roleId, @RequestParam(value = "desc") String desc) {
+        return HttpResult.success(rbacService.applyRolePermission(appId, roleId, desc));
     }
 
     /**
      * 权限申请列表
      * @param appId 产品id
-     * @return {@link RoleApplyDTO}
+     * @return {@link List<RoleApplyDTO>}
      */
     @RequestMapping("/permission/list")
-    public HttpResult checkPermission(@RequestParam(value = "appId") Long appId) {
-
-        return HttpResult.success();
+    public HttpResult checkPermission(@RequestParam(value = "appId") Long appId, @RequestParam(value = "status", required = false) Integer status) {
+        if(status == null){
+            status = PermissionAuditEnum.INIT.getChangeType();
+        }
+        return HttpResult.success(rbacService.getApplyList(appId, status));
     }
 
     /**
      * 权限审批
      * @param applyId 申请id
-     * @param type 1-同意，0-拒绝
+     * @param type 1-同意，-1-拒绝
      * @return
      */
     @PermissionAction(requiredPermission ={PermissionEnum.DOMAIN_MEMBER_CREATE, PermissionEnum.PRODUCT_MEMBER_CREATE, PermissionEnum.ROLE_MEMBER_CREATE})
     @RequestMapping("/permission/audit")
     public HttpResult auditPermission(@RequestParam(value = "applyId") Long applyId, @RequestParam(value = "type") Integer type) {
-
-        return HttpResult.success();
+        return HttpResult.success(rbacService.auditRolePermission(applyId, type));
     }
 
     @Override

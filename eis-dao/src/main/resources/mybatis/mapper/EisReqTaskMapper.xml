@@ -76,6 +76,15 @@
     </where>
   </select>
 
+  <select id="selectByUserAndStatus" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      owner_email = #{ownerEmail} and status = #{status}
+    </where>
+  </select>
+
   <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
     insert into eis_req_task
     (<include refid="BASE_COLUMN_LIST"/>)

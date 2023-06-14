@@ -13,10 +13,13 @@ import com.netease.hz.bdms.easyinsight.common.dto.common.PagingResultDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.UserSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.MenuNodeDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleApplyDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleDTO;
+import com.netease.hz.bdms.easyinsight.common.enums.PermissionAuditEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.AuthType;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.RoleLevelEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.RoleTypeEnum;
+import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
 import com.netease.hz.bdms.easyinsight.common.exception.UserManagementException;
 import com.netease.hz.bdms.easyinsight.common.param.auth.MemberListPageableParam;
 import com.netease.hz.bdms.easyinsight.common.param.auth.MemberListParam;
@@ -28,11 +31,14 @@ import com.netease.hz.bdms.easyinsight.common.param.auth.UserRoleRelationCreateP
 import com.netease.hz.bdms.easyinsight.common.param.auth.UserRoleRelationDeleteParam;
 import com.netease.hz.bdms.easyinsight.common.param.auth.UserRoleRelationUpdateParam;
 import com.netease.hz.bdms.easyinsight.common.util.BeanConvertUtils;
+import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.util.TreeUtil;
 import com.netease.hz.bdms.easyinsight.common.vo.auth.RoleVO;
 import com.netease.hz.bdms.easyinsight.common.vo.auth.UserVO;
 import com.netease.hz.bdms.easyinsight.dao.AppMapper;
+import com.netease.hz.bdms.easyinsight.dao.EisPermissionApplyRecordMapper;
 import com.netease.hz.bdms.easyinsight.dao.model.App;
+import com.netease.hz.bdms.easyinsight.dao.model.EisPermissionApplyRecord;
 import com.netease.hz.bdms.easyinsight.dao.model.rbac.Auth;
 import com.netease.hz.bdms.easyinsight.dao.model.rbac.Role;
 import com.netease.hz.bdms.easyinsight.dao.model.rbac.RoleAuth;
@@ -89,6 +95,9 @@ public class RbacServiceImpl implements RbacService {
 
     @Autowired
     private AuthMapper authMapper;
+
+    @Autowired
+    private EisPermissionApplyRecordMapper eisPermissionApplyRecordMapper;
 
     @Override
     public PagingResultDTO<UserVO> getUserByPage(MemberListPageableParam pageableParam) {
@@ -790,6 +799,65 @@ public class RbacServiceImpl implements RbacService {
         // 用户在当前域或产品下的权限树
         List<MenuNodeDTO> menuTreeOfUser = TreeUtil.build(menuNodeDTOList);
         return menuTreeOfUser;
+    }
+
+    @Override
+    public boolean applyRolePermission(Long appId, Long roleId, String desc) {
+        UserDTO currentUserDTO = EtContext.get(ContextConstant.USER);
+        if(currentUserDTO == null){
+            throw new CommonException("用户信息不能为空");
+        }
+        //查询申请角色信息
+        Role role = roleMapper.selectByPrimaryKey(roleId);
+        if(role == null){
+            throw new CommonException("申请的角色不存在");
+        }
+        EisPermissionApplyRecord eisPermissionApplyRecord = new EisPermissionApplyRecord();
+        eisPermissionApplyRecord.setAppId(appId);
+        eisPermissionApplyRecord.setApplyUser(currentUserDTO.getEmail());
+        eisPermissionApplyRecord.setAuditUser("");
+        eisPermissionApplyRecord.setDescription(desc);
+        eisPermissionApplyRecord.setRoleId(roleId);
+        eisPermissionApplyRecord.setRoleName(role.getRoleName());
+        eisPermissionApplyRecord.setCreateTime(System.currentTimeMillis());
+        eisPermissionApplyRecord.setUpdateTime(System.currentTimeMillis());
+        int ret = eisPermissionApplyRecordMapper.insert(eisPermissionApplyRecord);
+        return ret > 0;
+    }
+
+    @Override
+    public boolean auditRolePermission(Long applyId, Integer type) {
+        UserDTO currentUserDTO = EtContext.get(ContextConstant.USER);
+        if(currentUserDTO == null){
+            throw new CommonException("用户信息不能为空");
+        }
+        EisPermissionApplyRecord record = eisPermissionApplyRecordMapper.getById(applyId);
+        if(record == null){
+            throw new CommonException("未发现申请记录");
+        }
+        if(type.equals(PermissionAuditEnum.PASS.getChangeType())){
+            //审核通过，开通权限
+            UserRoleRelationCreateParam createParam = new UserRoleRelationCreateParam();
+            createParam.setRoleIds(Collections.singletonList(record.getRoleId()));
+            UserSimpleDTO userSimpleDTO = new UserSimpleDTO();
+            userSimpleDTO.setEmail(currentUserDTO.getEmail());
+            createParam.setUsers(Collections.singletonList(userSimpleDTO));
+            createParam.setRange(RoleTypeEnum.APP.getCode());
+            addUser(createParam);
+        }
+        eisPermissionApplyRecordMapper.updateRecordStatus(applyId, type, currentUserDTO.getEmail());
+        return true;
+    }
+
+    @Override
+    public List<RoleApplyDTO> getApplyList(Long appId, Integer status) {
+        List<EisPermissionApplyRecord> records = eisPermissionApplyRecordMapper.listApplyRecords(appId, status);
+        List<RoleApplyDTO> roleApplyDTOS = new ArrayList<>();
+        records.forEach(record -> {
+            RoleApplyDTO roleApplyDTO = BeanConvertUtils.convert(record, RoleApplyDTO.class);
+            roleApplyDTOS.add(roleApplyDTO);
+        });
+        return roleApplyDTOS;
     }
 
     @Override

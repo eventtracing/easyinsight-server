@@ -3,6 +3,7 @@ package com.netease.hz.bdms.easyinsight.service.service;
 import com.netease.hz.bdms.easyinsight.common.dto.common.BaseUserListHolderDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.common.PagingResultDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.MenuNodeDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleApplyDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.rbac.RoleDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.RoleLevelEnum;
 import com.netease.hz.bdms.easyinsight.common.enums.rbac.RoleTypeEnum;
@@ -18,6 +19,7 @@ import com.netease.hz.bdms.easyinsight.common.vo.auth.UserVO;
 import com.netease.hz.bdms.easyinsight.dao.model.rbac.Auth;
 import com.netease.hz.bdms.easyinsight.dao.model.rbac.Role;
 import com.netease.hz.bdms.easyinsight.dao.model.rbac.UserRole;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -129,6 +131,30 @@ public interface RbacService {
      * @return
      */
     List<MenuNodeDTO> getMenuTreeOfUser(Long appId);
+
+    /**
+     * 用户申请产品角色权限
+     * @param appId    产品ID
+     * @param roleId   角色ID
+     * @param desc     原因说明
+     * @return
+     */
+    boolean applyRolePermission(Long appId, Long roleId, String desc);
+
+    /**
+     * 审批产品角色权限申请
+     * @param applyId   申请ID
+     * @param type      操作类型
+     * @return
+     */
+    boolean auditRolePermission(Long applyId, Integer type);
+
+    /**
+     * 获取产品权限申请列表
+     * @param appId    产品ID
+     * @return
+     */
+    List<RoleApplyDTO> getApplyList(Long appId, Integer status);
 
     /**
      * 判断用户在当前域或产品下是否有指定的权限
