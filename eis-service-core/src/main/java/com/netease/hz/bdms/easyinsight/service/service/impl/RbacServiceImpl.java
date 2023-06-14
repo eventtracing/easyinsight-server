@@ -841,7 +841,7 @@ public class RbacServiceImpl implements RbacService {
             UserRoleRelationCreateParam createParam = new UserRoleRelationCreateParam();
             createParam.setRoleIds(Collections.singletonList(record.getRoleId()));
             UserSimpleDTO userSimpleDTO = new UserSimpleDTO();
-            userSimpleDTO.setEmail(currentUserDTO.getEmail());
+            userSimpleDTO.setEmail(record.getApplyUser());
             createParam.setUsers(Collections.singletonList(userSimpleDTO));
             createParam.setRange(RoleTypeEnum.APP.getCode());
             addUser(createParam);
