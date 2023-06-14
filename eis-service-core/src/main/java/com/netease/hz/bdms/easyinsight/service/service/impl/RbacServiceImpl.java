@@ -815,11 +815,13 @@ public class RbacServiceImpl implements RbacService {
         }
         EisPermissionApplyRecord eisPermissionApplyRecord = new EisPermissionApplyRecord();
         eisPermissionApplyRecord.setAppId(appId);
+        eisPermissionApplyRecord.setApplyUserName(currentUserDTO.getUserName());
         eisPermissionApplyRecord.setApplyUser(currentUserDTO.getEmail());
         eisPermissionApplyRecord.setAuditUser("");
         eisPermissionApplyRecord.setDescription(desc);
         eisPermissionApplyRecord.setRoleId(roleId);
         eisPermissionApplyRecord.setRoleName(role.getRoleName());
+        eisPermissionApplyRecord.setStatus(PermissionAuditEnum.INIT.getChangeType());
         eisPermissionApplyRecord.setCreateTime(new Timestamp(System.currentTimeMillis()));
         eisPermissionApplyRecord.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         int ret = eisPermissionApplyRecordMapper.insert(eisPermissionApplyRecord);

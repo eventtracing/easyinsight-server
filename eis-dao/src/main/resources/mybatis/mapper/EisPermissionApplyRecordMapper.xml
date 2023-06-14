@@ -7,6 +7,7 @@
     <result column="appId" jdbcType="BIGINT" property="appId" />
     <result column="roleId" jdbcType="BIGINT" property="roleId" />
     <result column="roleName" jdbcType="VARCHAR" property="roleName" />
+    <result column="applyUserName" jdbcType="VARCHAR" property="applyUser" />
     <result column="applyUser" jdbcType="VARCHAR" property="applyUser" />
     <result column="auditUser" jdbcType="VARCHAR" property="auditUser" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -19,13 +20,22 @@
     `eis_permission_apply_record`
   </sql>
   <sql id="Base_Column_List">
-    id, appId, roleId, roleName, applyUser, auditUser, description, status, createTime, updateTime
+    id, appId, roleId, roleName, applyUserName, applyUser, auditUser, description, status, createTime, updateTime
   </sql>
 
+  <select id="getById" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST"/>
+    from eis_permission_apply_record
+    <where>
+      id = #{id}
+    </where>
+  </select>
+
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord" useGeneratedKeys="true">
-    insert into eis_permission_apply_record (appId, roleId, roleName, applyUser, auditUser, description, status, createTime, updateTime)
-    values (#{appId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}, #{roleName,jdbcType=VARCHAR}, #{applyUser,jdbcType=VARCHAR}, #{auditUser,jdbcType=VARCHAR},
-    #{description,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    insert into eis_permission_apply_record (appId, roleId, roleName, applyUserName, applyUser, auditUser, description, status, createTime, updateTime)
+    values (#{appId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}, #{roleName,jdbcType=VARCHAR}, #{applyUserName,jdbcType=VARCHAR}, #{applyUser,jdbcType=VARCHAR},
+    #{auditUser,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
 
   <update id="updateRecordStatus">

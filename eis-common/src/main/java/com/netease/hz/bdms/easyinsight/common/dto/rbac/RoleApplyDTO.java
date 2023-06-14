@@ -22,6 +22,10 @@ public class RoleApplyDTO {
      */
     private Long roleId;
     /**
+     * 申请人名字
+     */
+    private String applyUserName;
+    /**
      * 申请人
      */
     private String applyUser;

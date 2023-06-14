@@ -26,7 +26,11 @@ public class EisPermissionApplyRecord {
      */
     private Long roleId;
     /**
-     * 申请人
+     * 申请人名字
+     */
+    private String applyUserName;
+    /**
+     * 申请人邮箱
      */
     private String applyUser;
     /**
