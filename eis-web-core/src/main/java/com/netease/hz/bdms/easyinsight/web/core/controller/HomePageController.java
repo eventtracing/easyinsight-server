@@ -25,7 +25,7 @@ public class HomePageController {
    * @return {@link List<ReqTaskVO>}
    */
   @PermissionAction(requiredPermission = {PermissionEnum.REQUIREMENT_READ})
-  @GetMapping("relatedReq/list")
+  @GetMapping("/relatedReq/list")
   public HttpResult listVersions(@RequestParam(name = "status") Integer status) {
     List<ReqTaskVO> reqTaskVOS = homePageFacade.queryRelatedReqList(status);
     return HttpResult.success(reqTaskVOS);
