@@ -58,6 +58,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -819,8 +820,8 @@ public class RbacServiceImpl implements RbacService {
         eisPermissionApplyRecord.setDescription(desc);
         eisPermissionApplyRecord.setRoleId(roleId);
         eisPermissionApplyRecord.setRoleName(role.getRoleName());
-        eisPermissionApplyRecord.setCreateTime(System.currentTimeMillis());
-        eisPermissionApplyRecord.setUpdateTime(System.currentTimeMillis());
+        eisPermissionApplyRecord.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        eisPermissionApplyRecord.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         int ret = eisPermissionApplyRecordMapper.insert(eisPermissionApplyRecord);
         return ret > 0;
     }

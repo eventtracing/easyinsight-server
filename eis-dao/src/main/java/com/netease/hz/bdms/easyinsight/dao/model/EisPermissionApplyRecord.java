@@ -3,6 +3,7 @@ package com.netease.hz.bdms.easyinsight.dao.model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -43,10 +44,10 @@ public class EisPermissionApplyRecord {
     /**
      * 创建时间
      */
-    private Long createTime;
+    private Timestamp createTime;
     /**
      * 更新时间
      */
-    private Long updateTime;
+    private Timestamp updateTime;
 
 }
