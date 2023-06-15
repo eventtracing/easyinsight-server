@@ -259,6 +259,7 @@ public class BaseRbacController implements InitializingBean {
      * @param appId 产品id
      * @return {@link List<RoleApplyDTO>}
      */
+    @PermissionAction(requiredPermission ={PermissionEnum.DOMAIN_MEMBER_READ, PermissionEnum.PRODUCT_MEMBER_READ, PermissionEnum.ROLE_READ})
     @RequestMapping("/permission/list")
     public HttpResult checkPermission(@RequestParam(value = "appId") Long appId, @RequestParam(value = "status", required = false) Integer status) {
         if(status == null){
