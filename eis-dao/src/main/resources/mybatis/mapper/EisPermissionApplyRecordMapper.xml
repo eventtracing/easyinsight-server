@@ -39,6 +39,7 @@
     <where>
       applyUser = #{applyUser} and roleId = #{roleId}
     </where>
+      order by createTime desc limit 1
   </select>
 
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord" useGeneratedKeys="true">
