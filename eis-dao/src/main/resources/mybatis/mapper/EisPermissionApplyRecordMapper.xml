@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisPermissionApplyRecordMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisPermissionApplyRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="appId" jdbcType="BIGINT" property="appId" />
+    <result column="roleId" jdbcType="BIGINT" property="roleId" />
+    <result column="roleName" jdbcType="VARCHAR" property="roleName" />
+    <result column="applyUserName" jdbcType="VARCHAR" property="applyUserName" />
+    <result column="applyUser" jdbcType="VARCHAR" property="applyUser" />
+    <result column="auditUser" jdbcType="VARCHAR" property="auditUser" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="tableName">
+    `eis_permission_apply_record`
+  </sql>
+  <sql id="Base_Column_List">
+    id, appId, roleId, roleName, applyUserName, applyUser, auditUser, description, status, createTime, updateTime
+  </sql>
+
+  <select id="getById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from eis_permission_apply_record
+    <where>
+      id = #{id}
+    </where>
+  </select>
+
+  <select id="getByUserAndRoleId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from eis_permission_apply_record
+    <where>
+      applyUser = #{applyUser} and roleId = #{roleId}
+    </where>
+  </select>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.netease.hz.bdms.easyinsight.dao.model.TestHistoryRecord" useGeneratedKeys="true">
+    insert into eis_permission_apply_record (appId, roleId, roleName, applyUserName, applyUser, auditUser, description, status, createTime, updateTime)
+    values (#{appId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}, #{roleName,jdbcType=VARCHAR}, #{applyUserName,jdbcType=VARCHAR}, #{applyUser,jdbcType=VARCHAR},
+    #{auditUser,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <update id="updateRecordStatus">
+    update
+    <include refid="tableName"/>
+    <set>
+      status = #{status}, auditUser = #{auditUser}
+    </set>
+    where id = #{id, jdbcType=BIGINT}
+  </update>
+
+  <select id="listApplyRecords" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    <include refid="tableName"/>
+    <where>
+      appId = #{appId}
+      <if test="status != null">
+        and status = #{status}
+      </if>
+    </where>
+      order by createTime desc limit 500
+  </select>
+
+  <delete id="delete">
+    delete from
+    <include refid="tableName"/>
+    where id = #{id, jdbcType=BIGINT}
+  </delete>
+
+</mapper>
