@@ -813,6 +813,11 @@ public class RbacServiceImpl implements RbacService {
         if(role == null){
             throw new CommonException("申请的角色不存在");
         }
+        //已有未处理的申请
+        EisPermissionApplyRecord applyRecord = eisPermissionApplyRecordMapper.getByUserAndRoleId(currentUserDTO.getEmail(), roleId);
+        if(applyRecord != null && applyRecord.getStatus().equals(PermissionAuditEnum.INIT.getChangeType())){
+            throw new CommonException("已申请该角色，请勿重复申请");
+        }
         EisPermissionApplyRecord eisPermissionApplyRecord = new EisPermissionApplyRecord();
         eisPermissionApplyRecord.setAppId(appId);
         eisPermissionApplyRecord.setApplyUserName(currentUserDTO.getUserName());

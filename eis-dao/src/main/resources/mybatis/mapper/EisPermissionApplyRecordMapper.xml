@@ -7,7 +7,7 @@
     <result column="appId" jdbcType="BIGINT" property="appId" />
     <result column="roleId" jdbcType="BIGINT" property="roleId" />
     <result column="roleName" jdbcType="VARCHAR" property="roleName" />
-    <result column="applyUserName" jdbcType="VARCHAR" property="applyUser" />
+    <result column="applyUserName" jdbcType="VARCHAR" property="applyUserName" />
     <result column="applyUser" jdbcType="VARCHAR" property="applyUser" />
     <result column="auditUser" jdbcType="VARCHAR" property="auditUser" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -25,10 +25,19 @@
 
   <select id="getById" resultMap="BaseResultMap">
     select
-    <include refid="BASE_COLUMN_LIST"/>
+    <include refid="Base_Column_List"/>
     from eis_permission_apply_record
     <where>
       id = #{id}
+    </where>
+  </select>
+
+  <select id="getByUserAndRoleId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from eis_permission_apply_record
+    <where>
+      applyUser = #{applyUser} and roleId = #{roleId}
     </where>
   </select>
 
