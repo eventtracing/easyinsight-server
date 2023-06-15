@@ -12,6 +12,7 @@ import com.netease.hz.bdms.easyinsight.dao.EisReqTaskMapper;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,13 @@ public class ReqTaskService {
     public List<EisReqTask> getByIds(Set<Long> ids){
         if(CollectionUtils.isNotEmpty(ids)){
             return reqTaskMapper.selectBatchByIds(ids);
+        }
+        return Lists.newArrayList();
+    }
+
+    public List<EisReqTask> getByUserAndStatus(String userEmail, Integer status){
+        if(StringUtils.isNotBlank(userEmail)){
+            return reqTaskMapper.selectByUserAndStatus(userEmail, status);
         }
         return Lists.newArrayList();
     }
