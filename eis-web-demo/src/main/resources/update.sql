@@ -33,6 +33,22 @@ CREATE TABLE `eis_event_obj_relation` (
   KEY `idx_objId` (`objId`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT = '事件埋点对象关联表';
 
+CREATE TABLE `eis_permission_apply_record` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `appId` int(11) NOT NULL COMMENT 'app类型',
+  `applyUser` varchar(60) DEFAULT NULL COMMENT '申请人',
+  `auditUser` varchar(60) DEFAULT NULL COMMENT '处理人',
+  `roleId` bigint(20) NOT NULL COMMENT '角色id',
+  `roleName` varchar(60) NOT NULL COMMENT '角色名称',
+  `status` int(11) NOT NULL COMMENT '状态 0-开始/1-已完成/-1-已拒绝',
+  `description` varchar(1024) DEFAULT '' COMMENT '申请理由',
+  `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updateTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `applyUserName` varchar(60) DEFAULT NULL COMMENT '申请人名称',
+  PRIMARY KEY (`id`),
+  KEY `idx_appId_status` (`appId`, `status`)
+) ENGINE = InnoDB AUTO_INCREMENT = 25649 DEFAULT CHARSET = utf8mb4 COMMENT = '权限申请记录表';
+
 alter table eis_event_bury_point
 add column `extInfo` varchar(512) NOT NULL DEFAULT '' COMMENT '扩展信息';
 
