@@ -12,19 +12,19 @@
   <groupId>com.netease.hz.bdms</groupId>
   <artifactId>eis-service-core</artifactId>
   <name>${project.artifactId}</name>
-  <version>1.0.1.592</version>
+  <version>1.0.1.593</version>
 
   <dependencies>
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-dao</artifactId>
-      <version>1.0.1.592</version>
+      <version>1.0.1.593</version>
     </dependency>
 
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-common</artifactId>
-      <version>1.0.1.592</version>
+      <version>1.0.1.593</version>
     </dependency>
 
     <dependency>
