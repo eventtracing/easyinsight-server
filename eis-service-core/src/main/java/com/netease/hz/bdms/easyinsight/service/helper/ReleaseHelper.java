@@ -417,7 +417,7 @@ public class ReleaseHelper {
                 notExistObjects.removeIf(o -> outerSpaceObjIds.contains(o.getId()));
             }
             if (CollectionUtils.isNotEmpty(notExistParents)) {
-                throw new CommonException("以下父对象未上线，无法继续发布：" + JsonUtils.toJson(notExistObjects.stream().map(ObjectBasic::getOid).collect(Collectors.toList())));
+                throw new CommonException("以下父对象未上线，无法继续发布：" + JsonUtils.toJson(notExistObjects.stream().map(ObjectBasic::getOid).collect(Collectors.toList())) +  "父对象："  + JsonUtils.toJson(notExistParents));
             }
         }
     }
