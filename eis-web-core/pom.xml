@@ -12,7 +12,7 @@
   <groupId>com.netease.hz.bdms</groupId>
   <artifactId>eis-web-core</artifactId>
   <name>${project.artifactId}</name>
-  <version>1.0.1.593</version>
+  <version>1.0.1.597</version>
 
   <dependencies>
     <!-- web框架 -->
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-dao</artifactId>
-      <version>1.0.1.593</version>
+      <version>1.0.1.597</version>
     </dependency>
 
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-common</artifactId>
-      <version>1.0.1.593</version>
+      <version>1.0.1.597</version>
     </dependency>
 
     <dependency>
@@ -73,7 +73,7 @@
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-service-core</artifactId>
-      <version>1.0.1.593</version>
+      <version>1.0.1.597</version>
     </dependency>
 
   </dependencies>
