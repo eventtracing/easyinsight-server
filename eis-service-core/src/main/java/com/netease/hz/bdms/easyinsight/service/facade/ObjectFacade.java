@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.netease.eis.adapters.CacheAdapter;
 import com.netease.eis.adapters.RealtimeConfigAdapter;
 import com.netease.hz.bdms.easyinsight.common.bo.diff.ParamDiff;
+import com.netease.hz.bdms.easyinsight.common.bo.diff.RelationDiff;
+import com.netease.hz.bdms.easyinsight.common.dto.diff.TrackerDiffDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.diff.TrackerTerminalDiffDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
 import com.netease.hz.bdms.easyinsight.common.query.TaskPageQuery;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
+import com.netease.hz.bdms.easyinsight.service.helper.*;
 import com.netease.hz.bdms.easyinsight.service.service.*;
 import com.netease.hz.bdms.easyinsight.common.dto.obj.*;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamBindItemDTO;
@@ -45,10 +49,6 @@ import com.netease.hz.bdms.easyinsight.common.util.*;
 import com.netease.hz.bdms.easyinsight.common.vo.obj.*;
 import com.netease.hz.bdms.easyinsight.common.vo.release.BaseReleaseVO;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
-import com.netease.hz.bdms.easyinsight.service.helper.LineageHelper;
-import com.netease.hz.bdms.easyinsight.service.helper.ObjectHelper;
-import com.netease.hz.bdms.easyinsight.service.helper.RequirementPoolHelper;
-import com.netease.hz.bdms.easyinsight.service.helper.TrackerDiffHelper;
 import com.netease.hz.bdms.easyinsight.service.service.obj.AllTrackerReleaseService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.ObjCidInfoService;
 import com.netease.hz.bdms.easyinsight.service.service.obj.ObjTerminalTrackerService;
@@ -87,73 +87,76 @@ public class ObjectFacade implements InitializingBean {
     private RealtimeConfigAdapter realtimeConfigAdapter;
 
     @Autowired
-    ObjectHelper objectHelper;
+    private ObjectHelper objectHelper;
 
     @Autowired
-    ObjectBasicService objectBasicService;
+    private ObjectBasicService objectBasicService;
 
     @Autowired
-    ImageRelationService imageRelationService;
+    private ImageRelationService imageRelationService;
 
     @Autowired
-    ObjTagService objTagService;
+    private ObjTagService objTagService;
 
     @Autowired
-    ObjChangeHistoryService objChangeHistoryService;
+    private ObjChangeHistoryService objChangeHistoryService;
 
     @Autowired
-    RequirementPoolHelper requirementPoolHelper;
+    private RequirementPoolHelper requirementPoolHelper;
 
     @Autowired
-    ObjTerminalTrackerService objTerminalTrackerService;
+    private ObjTerminalTrackerService objTerminalTrackerService;
 
     @Autowired
-    ObjTrackerEventService objTrackerEventService;
+    private ObjTrackerEventService objTrackerEventService;
 
     @Autowired
-    EventService eventService;
+    private EventService eventService;
 
     @Autowired
-    SpmCheckHistoryService spmCheckHistoryService;
+    private SpmCheckHistoryService spmCheckHistoryService;
 
     @Autowired
-    LineageHelper lineageHelper;
+    private LineageHelper lineageHelper;
 
     @Autowired
-    AllTrackerReleaseService trackerReleaseService;
+    private AllTrackerReleaseService trackerReleaseService;
 
     @Autowired
-    ReqPoolRelBaseService reqPoolRelBaseService;
+    private ReqPoolRelBaseService reqPoolRelBaseService;
 
     @Autowired
-    TerminalService terminalService;
+    private TerminalService terminalService;
 
     @Autowired
-    TerminalReleaseService terminalReleaseService;
+    private TerminalReleaseService terminalReleaseService;
 
     @Autowired
-    TagService tagService;
+    private TagService tagService;
 
     @Autowired
-    TerminalVersionInfoService terminalVersionInfoService;
+    private TerminalVersionInfoService terminalVersionInfoService;
 
     @Autowired
-    TaskProcessService taskProcessService;
+    private TaskProcessService taskProcessService;
 
     @Autowired
-    ReqTaskService reqTaskService;
+    private ReqTaskService reqTaskService;
 
     @Autowired
-    SpmTagService spmTagService;
+    private SpmTagService spmTagService;
 
     @Autowired
-    SpmInfoService spmInfoService;
+    private SpmInfoService spmInfoService;
 
     @Autowired
-    UserBuryPointService userBuryPointService;
+    private UserBuryPointService userBuryPointService;
 
     @Resource
     private TrackerDiffHelper trackerDiffHelper;
+
+    @Autowired
+    private ReqObjChangeHistoryService reqObjChangeHistoryService;
 
     @Resource
     private ObjCidInfoService objCidInfoService;
@@ -162,10 +165,10 @@ public class ObjectFacade implements InitializingBean {
     private CacheAdapter cacheAdapter;
 
     @Autowired
-    ReqEventObjRelationService reqEventObjRelationService;
+    private ReqEventObjRelationService reqEventObjRelationService;
 
     @Autowired
-    EventPoolFacade eventPoolFacade;
+    private EventPoolFacade eventPoolFacade;
 
     /**
      * 是否一定要传图片 key: appId
@@ -250,6 +253,7 @@ public class ObjectFacade implements InitializingBean {
                     });
                     extMap.put("objName", objectBasic.getName());
                     extMap.put("oid", objectBasic.getOid());
+                    extMap.put("objId", String.valueOf(objId));
                     userBuryPointService.updateExtById(userPointInfo.getId(), JsonUtils.toJson(extMap));
                 }
             }
@@ -633,10 +637,6 @@ public class ObjectFacade implements InitializingBean {
         boolean update = !objectBasic.getName().equals(objectOriginBasic.getName()) || !objectBasic.getOid().equals(objectOriginBasic.getOid()) || !objectBasic.getType().equals(objectOriginBasic.getType());
         ObjDetailsVO objDetails = getObjectByHistory(objId, objHistoryId, reqPoolId);
 
-        //todo 检查更新内容 血缘 or 参数 or 端类型 or 事件
-        ObjChangeTypeEnum objChangeTypeEnum = checkEditChange(param, objDetails);
-        boolean change = !objChangeTypeEnum.equals(ObjChangeTypeEnum.NOCHANGE);
-
         // 2. 更新对象埋点信息
         Set<Long> trackerIdsBeforeEdit = new HashSet<>();
         if (param.getTrackers() != null) {
@@ -648,6 +648,11 @@ public class ObjectFacade implements InitializingBean {
         }
         List<Long> newTrackerIds = objectHelper.editObjectTrackerInfo(
                 objId, objHistoryId, param.getReqPoolId(), param.getTrackers());
+
+        //todo 检查更新内容 血缘 or 参数 or 端类型 or 事件
+        List<TrackerTerminalDiffDTO> editTrackerDiffs = new ArrayList<>();
+        Set<ObjChangeTypeEnum> objChangeTypeEnums = checkEditChange(param, objDetails, editTrackerDiffs);
+        boolean change = CollectionUtils.isNotEmpty(objChangeTypeEnums);
 
         // 3. 更新对象 spm需求关联池 信息
         List<UpdateSpmPoolParam> updateSpmPoolParams = new ArrayList<>();
@@ -666,6 +671,29 @@ public class ObjectFacade implements InitializingBean {
             updateSpmPoolParams.add(p);
         });
         requirementPoolHelper.updateSpmPoolNew(reqPoolId, updateSpmPoolParams, update || change);
+
+        //todo 记录变更流水并发通知
+        if(CollectionUtils.isNotEmpty(editTrackerDiffs)) {
+            List<EisReqObjChangeHistory> eisReqObjChangeHistories = new ArrayList<>();
+            for(TrackerTerminalDiffDTO diffDTO : editTrackerDiffs) {
+                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+                objReqChangeHistory.setReqPoolId(reqPoolId);
+                objReqChangeHistory.setObjId(objId);
+                objReqChangeHistory.setExtInfo(JsonUtils.toJson(diffDTO));
+                if(diffDTO.getChangeTypeEnums().contains(ObjChangeTypeEnum.TERMINALCHANGE)){
+                    objReqChangeHistory.setChangeType(ObjChangeTypeEnum.TERMINALCHANGE.getChangeType());
+                }else {
+                    if(CollectionUtils.isNotEmpty(diffDTO.getChangeTypeEnums())) {
+                        objReqChangeHistory.setChangeType(diffDTO.getChangeTypeEnums().get(0).getChangeType());
+                    }
+                }
+                eisReqObjChangeHistories.add(objReqChangeHistory);
+            }
+            reqObjChangeHistoryService.insertBatch(eisReqObjChangeHistories);
+        }
+
+
+
         // 冲突情况下编辑后，冲突解决
         if (isInMergeConflict) {
             objChangeHistoryService.updateConflictStatus(reqPoolId, Collections.singleton(objId), ConflictStatusEnum.RESOLVED.getStatus());
@@ -2175,21 +2203,52 @@ public class ObjectFacade implements InitializingBean {
         return true;
     }
 
-    public ObjChangeTypeEnum checkEditChange(ObjectEditParam param, ObjDetailsVO objDetails){
+    public Set<ObjChangeTypeEnum> checkEditChange(ObjectEditParam param, ObjDetailsVO objDetails, List<TrackerTerminalDiffDTO> editTrackerDiffs){
+        Set<ObjChangeTypeEnum> objChangeTypeEnums = new HashSet<>();
         //
         List<ObjectTrackerEditParam> paramTrackers= param.getTrackers();
         List<ObjectTrackerInfoDTO> objectTrackers = objDetails.getTrackers();
-        if(paramTrackers.size() != objectTrackers.size()) {
-            return ObjChangeTypeEnum.TERMINALCHANGE;
+        Map<Long, ObjectTrackerEditParam> objectTrackerEditParamMap = paramTrackers.stream().collect(Collectors.toMap(ObjectTrackerEditParam::getTerminalId, Function.identity()));
+        Map<Long, ObjectTrackerInfoDTO> objectTrackerInfoDTOMap = objectTrackers.stream().collect(Collectors.toMap(dto -> dto.getTerminal().getId(), Function.identity()));
+
+        for(ObjectTrackerInfoDTO objectTrackerInfoDTO : objectTrackers) {
+            TrackerTerminalDiffDTO editTrackerDiff = new TrackerTerminalDiffDTO();
+            TerminalSimpleDTO terminalSimpleDTO = objectTrackerInfoDTO.getTerminal();
+            if(terminalSimpleDTO == null){
+                continue;
+            }
+            // 删除终端
+            if (!objectTrackerEditParamMap.containsKey(objectTrackerInfoDTO.getTerminal().getId())) {
+                Pair<String, String> terminalDiffs = new Pair<>(terminalSimpleDTO.getId().toString(), null);
+                editTrackerDiff.setTerminalId(terminalSimpleDTO.getId());
+                editTrackerDiff.setTerminalDiffs(terminalDiffs);
+                editTrackerDiff.setChangeTypeEnums(Collections.singletonList(ObjChangeTypeEnum.TERMINALCHANGE));
+                editTrackerDiffs.add(editTrackerDiff);
+                objChangeTypeEnums.add(ObjChangeTypeEnum.TERMINALCHANGE);
+            }
         }
 
-        for(int i=0; i<paramTrackers.size(); i++){
-            ObjectTrackerEditParam trackerParam = paramTrackers.get(i);
-            ObjectTrackerInfoDTO trackerInfoDTO = objectTrackers.get(i);
+        for(ObjectTrackerEditParam trackerParam : paramTrackers){
+            TrackerTerminalDiffDTO editTrackerDiff = new TrackerTerminalDiffDTO();
+            // 新增终端
+            if(!objectTrackerInfoDTOMap.containsKey(trackerParam.getTerminalId())){
+                Pair<String, String> terminalDiffs = new Pair<>(null, trackerParam.getTerminalId().toString());
+                editTrackerDiff.setTerminalId(trackerParam.getTerminalId());
+                editTrackerDiff.setTerminalDiffs(terminalDiffs);
+                editTrackerDiff.setChangeTypeEnums(Collections.singletonList(ObjChangeTypeEnum.TERMINALCHANGE));
+                editTrackerDiffs.add(editTrackerDiff);
+                objChangeTypeEnums.add(ObjChangeTypeEnum.TERMINALCHANGE);
+                continue;
+            }
+            ObjectTrackerInfoDTO trackerInfoDTO = objectTrackerInfoDTOMap.get(trackerParam.getTerminalId());
+            editTrackerDiff.setNewTrackerId(trackerParam.getId());
+            editTrackerDiff.setPreTrackerId(trackerInfoDTO.getId());
+            editTrackerDiff.setTerminalId(trackerParam.getTerminalId());
             boolean isEventIdSame = CollectionUtils.isEqualCollection(trackerParam.getEventIds(), trackerInfoDTO.getEvents().stream().map(EventSimpleDTO::getId).collect(Collectors.toList()));
             if(!isEventIdSame) {
                 log.info("eventId有变化");
-                return ObjChangeTypeEnum.EVENTCHANGE;
+                editTrackerDiff.setEventDiffs(new Pair<>(trackerInfoDTO.getEvents().stream().map(EventSimpleDTO::getId).collect(Collectors.toList()).toString(), trackerParam.getEventIds().toString()));
+                objChangeTypeEnums.add(ObjChangeTypeEnum.EVENTCHANGE);
             }
 
             if (MapUtils.isNotEmpty(trackerInfoDTO.getEventParamVersionIdMap())) {
@@ -2206,38 +2265,42 @@ public class ObjectFacade implements InitializingBean {
             boolean isSameEventParamVersionIdMap = isSameMap(trackerParam.getEventParamVersionIdMap(), trackerInfoDTO.getEventParamVersionIdMap());
             if(!isSameEventParamVersionIdMap) {
                 log.info("eventParamVersionIdMap有变化");
-                return ObjChangeTypeEnum.EVENTCHANGE;
+                editTrackerDiff.setEventDiffs(new Pair<>(trackerInfoDTO.getEventParamVersionIdMap().toString(), trackerParam.getEventParamVersionIdMap().toString()));
+                objChangeTypeEnums.add(ObjChangeTypeEnum.EVENTCHANGE);
             }
             if(!Objects.equals(trackerParam.getPubParamPackageId(), trackerInfoDTO.getPubParamPackageId())) {
                 log.info("PubParamPackageId有变化");
-                return ObjChangeTypeEnum.PUBPARAMCHANGE;
+                Pair<Long, Long> pubParamDiffPair = new Pair<>(trackerInfoDTO.getPubParamPackageId(), trackerParam.getPubParamPackageId());
+                editTrackerDiff.setPubParamDiffs(pubParamDiffPair);
+                objChangeTypeEnums.add(ObjChangeTypeEnum.PUBPARAMCHANGE);
             }
             if(!CollectionUtils.isEqualCollection(trackerParam.getParentObjs(), trackerInfoDTO.getParentObjects().stream().map(ObjectBasicDTO::getId).collect(Collectors.toList()))) {
                 log.info("parentObjs 有变化");
-                return ObjChangeTypeEnum.LINAGECHANGE;
-            }
-            if(!Objects.equals(trackerParam.getTerminalId(), trackerInfoDTO.getTerminal().getId())) {
-                log.info("TerminalId有变化");
-                return ObjChangeTypeEnum.TERMINALCHANGE;
+                RelationDiff relationDiff = new RelationDiff();
+                relationDiff.setDeletedParents(new HashSet<>(trackerInfoDTO.getParentObjects().stream().map(ObjectBasicDTO::getId).collect(Collectors.toList())));
+                relationDiff.setNewParents(new HashSet<>(trackerParam.getParentObjs()));
+                editTrackerDiff.setRelationDiff(relationDiff);
+                objChangeTypeEnums.add(ObjChangeTypeEnum.LINAGECHANGE);
             }
 
             List<ParamBindItermParam> paramBindItermParams = trackerParam.getParamBinds();
             List<ParamBindItemDTO> paramBindItemDTOS = trackerInfoDTO.getPrivateParam();
             if(paramBindItermParams.size() != paramBindItemDTOS.size()) {
                 log.info("paramBindItermParams有变化");
-                return ObjChangeTypeEnum.PRIVATECHANGE;
+                objChangeTypeEnums.add(ObjChangeTypeEnum.PRIVATECHANGE);
             }
             for(int j=0; j<paramBindItermParams.size(); j++){
                 ParamBindItermParam paramBindItermParam = paramBindItermParams.get(j);
                 ParamBindItemDTO paramBindItemDTO = paramBindItemDTOS.get(j);
                 if(!Objects.equals(paramBindItermParam.getParamId(), paramBindItemDTO.getId())) {
                     log.info("paramId 有变化");
-                    return ObjChangeTypeEnum.PRIVATECHANGE;
+                    objChangeTypeEnums.add(ObjChangeTypeEnum.PRIVATECHANGE);
                 }
             }
+            editTrackerDiffs.add(editTrackerDiff);
         }
 
-        return ObjChangeTypeEnum.NOCHANGE;
+        return objChangeTypeEnums;
     }
 
     /**
