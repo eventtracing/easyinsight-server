@@ -20,7 +20,6 @@ public class TrackerDiffDTO {
     private List<ParamDiff> paramDiffs;
     private List<EventDiff> eventDiffs;
     private RelationDiff relationDiff;
-
     // 合并diff后用的字段
     private boolean acceptBase = false;     // 直接使用baseLine的
     private boolean acceptReqPool = false;  // 直接使用需求池的

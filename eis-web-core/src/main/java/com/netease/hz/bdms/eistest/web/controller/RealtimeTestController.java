@@ -213,6 +213,7 @@ public class RealtimeTestController {
             Map<String, List<RealTimeTestResourceDTO.Event>> oidPath2EventMap = buryPointMetaInfo.getOidBindEventMap();
             Map<String, Integer> paramMap = new HashMap<>();
             List<TreeModeStatisticResultDTO> treeModeStatisticResultDTOS = buryPointStatistics.getTreeModeStatistic();
+            treeModeStatisticResultDTOS = treeModeStatisticResultDTOS.stream().filter(dto -> CollectionUtils.isNotEmpty(dto.getDetails())).collect(Collectors.toList());
             List<String> nowSpms = treeModeStatisticResultDTOS.stream().map(TreeModeStatisticResultDTO::getSpm).collect(Collectors.toList());
             Set<String> eventCodeSet = new HashSet<>();
             for(String spm : buryPointMetaInfo.getUpdateSpmInfo()) {
@@ -274,6 +275,7 @@ public class RealtimeTestController {
                     }
                 }
             }
+            buryPointStatistics.setTreeModeStatistic(treeModeStatisticResultDTOS);
 
             reqTestInfoStatistic.setSpmNum(buryPointMetaInfo.getUpdateSpmInfo().size());
             reqTestInfoStatistic.setActionNum(eventCodeSet.size());
