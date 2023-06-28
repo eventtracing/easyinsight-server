@@ -158,7 +158,6 @@ public class BaseRbacController implements InitializingBean {
      * @param range
      * @return
      */
-    @PermissionAction(requiredPermission = PermissionEnum.ROLE_READ)
     @GetMapping("/role/list")
     public HttpResult<List<RoleDTO>> listRoles(@RequestParam("range") Integer range) {
         List<RoleDTO> roles = rbacService.getRoleList(range);
