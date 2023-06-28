@@ -3,12 +3,6 @@ package com.netease.hz.bdms.easyinsight.service.facade;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.netease.eis.adapters.CacheAdapter;
 import com.netease.eis.adapters.RealtimeConfigAdapter;
-import com.netease.hz.bdms.easyinsight.common.bo.diff.ParamDiff;
-import com.netease.hz.bdms.easyinsight.common.bo.diff.RelationDiff;
-import com.netease.hz.bdms.easyinsight.common.dto.diff.TrackerDiffDTO;
-import com.netease.hz.bdms.easyinsight.common.dto.diff.TrackerTerminalDiffDTO;
-import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
-import com.netease.hz.bdms.easyinsight.common.query.TaskPageQuery;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.UnDevelopedEventVO;
 import com.netease.hz.bdms.easyinsight.service.helper.*;
 import com.netease.hz.bdms.easyinsight.service.service.*;
@@ -154,9 +148,6 @@ public class ObjectFacade implements InitializingBean {
 
     @Resource
     private TrackerDiffHelper trackerDiffHelper;
-
-    @Autowired
-    private ReqObjChangeHistoryService reqObjChangeHistoryService;
 
     @Resource
     private ObjCidInfoService objCidInfoService;
@@ -650,8 +641,7 @@ public class ObjectFacade implements InitializingBean {
                 objId, objHistoryId, param.getReqPoolId(), param.getTrackers());
 
         //todo 检查更新内容 血缘 or 参数 or 端类型 or 事件
-        List<TrackerTerminalDiffDTO> editTrackerDiffs = new ArrayList<>();
-        Set<ObjChangeTypeEnum> objChangeTypeEnums = checkEditChange(param, objDetails, editTrackerDiffs);
+        Set<ObjChangeTypeEnum> objChangeTypeEnums = checkEditChange(param, objDetails);
         boolean change = CollectionUtils.isNotEmpty(objChangeTypeEnums);
 
         // 3. 更新对象 spm需求关联池 信息
@@ -673,24 +663,24 @@ public class ObjectFacade implements InitializingBean {
         requirementPoolHelper.updateSpmPoolNew(reqPoolId, updateSpmPoolParams, update || change);
 
         //todo 记录变更流水并发通知
-        if(CollectionUtils.isNotEmpty(editTrackerDiffs)) {
-            List<EisReqObjChangeHistory> eisReqObjChangeHistories = new ArrayList<>();
-            for(TrackerTerminalDiffDTO diffDTO : editTrackerDiffs) {
-                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
-                objReqChangeHistory.setReqPoolId(reqPoolId);
-                objReqChangeHistory.setObjId(objId);
-                objReqChangeHistory.setExtInfo(JsonUtils.toJson(diffDTO));
-                if(diffDTO.getChangeTypeEnums().contains(ObjChangeTypeEnum.TERMINALCHANGE)){
-                    objReqChangeHistory.setChangeType(ObjChangeTypeEnum.TERMINALCHANGE.getChangeType());
-                }else {
-                    if(CollectionUtils.isNotEmpty(diffDTO.getChangeTypeEnums())) {
-                        objReqChangeHistory.setChangeType(diffDTO.getChangeTypeEnums().get(0).getChangeType());
-                    }
-                }
-                eisReqObjChangeHistories.add(objReqChangeHistory);
-            }
-            reqObjChangeHistoryService.insertBatch(eisReqObjChangeHistories);
-        }
+//        if(CollectionUtils.isNotEmpty(editTrackerDiffs)) {
+//            List<EisReqObjChangeHistory> eisReqObjChangeHistories = new ArrayList<>();
+//            for(TrackerTerminalDiffDTO diffDTO : editTrackerDiffs) {
+//                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+//                objReqChangeHistory.setReqPoolId(reqPoolId);
+//                objReqChangeHistory.setObjId(objId);
+//                objReqChangeHistory.setExtInfo(JsonUtils.toJson(diffDTO));
+//                if(diffDTO.getChangeTypeEnums().contains(ObjChangeTypeEnum.TERMINALCHANGE)){
+//                    objReqChangeHistory.setChangeType(ObjChangeTypeEnum.TERMINALCHANGE.getChangeType());
+//                }else {
+//                    if(CollectionUtils.isNotEmpty(diffDTO.getChangeTypeEnums())) {
+//                        objReqChangeHistory.setChangeType(diffDTO.getChangeTypeEnums().get(0).getChangeType());
+//                    }
+//                }
+//                eisReqObjChangeHistories.add(objReqChangeHistory);
+//            }
+//            reqObjChangeHistoryService.insertBatch(eisReqObjChangeHistories);
+//        }
 
 
 
@@ -2203,7 +2193,7 @@ public class ObjectFacade implements InitializingBean {
         return true;
     }
 
-    public Set<ObjChangeTypeEnum> checkEditChange(ObjectEditParam param, ObjDetailsVO objDetails, List<TrackerTerminalDiffDTO> editTrackerDiffs){
+    public Set<ObjChangeTypeEnum> checkEditChange(ObjectEditParam param, ObjDetailsVO objDetails){
         Set<ObjChangeTypeEnum> objChangeTypeEnums = new HashSet<>();
         //
         List<ObjectTrackerEditParam> paramTrackers= param.getTrackers();
@@ -2212,42 +2202,26 @@ public class ObjectFacade implements InitializingBean {
         Map<Long, ObjectTrackerInfoDTO> objectTrackerInfoDTOMap = objectTrackers.stream().collect(Collectors.toMap(dto -> dto.getTerminal().getId(), Function.identity()));
 
         for(ObjectTrackerInfoDTO objectTrackerInfoDTO : objectTrackers) {
-            TrackerTerminalDiffDTO editTrackerDiff = new TrackerTerminalDiffDTO();
             TerminalSimpleDTO terminalSimpleDTO = objectTrackerInfoDTO.getTerminal();
             if(terminalSimpleDTO == null){
                 continue;
             }
             // 删除终端
             if (!objectTrackerEditParamMap.containsKey(objectTrackerInfoDTO.getTerminal().getId())) {
-                Pair<String, String> terminalDiffs = new Pair<>(terminalSimpleDTO.getId().toString(), null);
-                editTrackerDiff.setTerminalId(terminalSimpleDTO.getId());
-                editTrackerDiff.setTerminalDiffs(terminalDiffs);
-                editTrackerDiff.setChangeTypeEnums(Collections.singletonList(ObjChangeTypeEnum.TERMINALCHANGE));
-                editTrackerDiffs.add(editTrackerDiff);
                 objChangeTypeEnums.add(ObjChangeTypeEnum.TERMINALCHANGE);
             }
         }
 
         for(ObjectTrackerEditParam trackerParam : paramTrackers){
-            TrackerTerminalDiffDTO editTrackerDiff = new TrackerTerminalDiffDTO();
             // 新增终端
             if(!objectTrackerInfoDTOMap.containsKey(trackerParam.getTerminalId())){
-                Pair<String, String> terminalDiffs = new Pair<>(null, trackerParam.getTerminalId().toString());
-                editTrackerDiff.setTerminalId(trackerParam.getTerminalId());
-                editTrackerDiff.setTerminalDiffs(terminalDiffs);
-                editTrackerDiff.setChangeTypeEnums(Collections.singletonList(ObjChangeTypeEnum.TERMINALCHANGE));
-                editTrackerDiffs.add(editTrackerDiff);
                 objChangeTypeEnums.add(ObjChangeTypeEnum.TERMINALCHANGE);
                 continue;
             }
             ObjectTrackerInfoDTO trackerInfoDTO = objectTrackerInfoDTOMap.get(trackerParam.getTerminalId());
-            editTrackerDiff.setNewTrackerId(trackerParam.getId());
-            editTrackerDiff.setPreTrackerId(trackerInfoDTO.getId());
-            editTrackerDiff.setTerminalId(trackerParam.getTerminalId());
             boolean isEventIdSame = CollectionUtils.isEqualCollection(trackerParam.getEventIds(), trackerInfoDTO.getEvents().stream().map(EventSimpleDTO::getId).collect(Collectors.toList()));
             if(!isEventIdSame) {
                 log.info("eventId有变化");
-                editTrackerDiff.setEventDiffs(new Pair<>(trackerInfoDTO.getEvents().stream().map(EventSimpleDTO::getId).collect(Collectors.toList()).toString(), trackerParam.getEventIds().toString()));
                 objChangeTypeEnums.add(ObjChangeTypeEnum.EVENTCHANGE);
             }
 
@@ -2265,21 +2239,15 @@ public class ObjectFacade implements InitializingBean {
             boolean isSameEventParamVersionIdMap = isSameMap(trackerParam.getEventParamVersionIdMap(), trackerInfoDTO.getEventParamVersionIdMap());
             if(!isSameEventParamVersionIdMap) {
                 log.info("eventParamVersionIdMap有变化");
-                editTrackerDiff.setEventDiffs(new Pair<>(trackerInfoDTO.getEventParamVersionIdMap().toString(), trackerParam.getEventParamVersionIdMap().toString()));
                 objChangeTypeEnums.add(ObjChangeTypeEnum.EVENTCHANGE);
             }
             if(!Objects.equals(trackerParam.getPubParamPackageId(), trackerInfoDTO.getPubParamPackageId())) {
                 log.info("PubParamPackageId有变化");
                 Pair<Long, Long> pubParamDiffPair = new Pair<>(trackerInfoDTO.getPubParamPackageId(), trackerParam.getPubParamPackageId());
-                editTrackerDiff.setPubParamDiffs(pubParamDiffPair);
                 objChangeTypeEnums.add(ObjChangeTypeEnum.PUBPARAMCHANGE);
             }
             if(!CollectionUtils.isEqualCollection(trackerParam.getParentObjs(), trackerInfoDTO.getParentObjects().stream().map(ObjectBasicDTO::getId).collect(Collectors.toList()))) {
                 log.info("parentObjs 有变化");
-                RelationDiff relationDiff = new RelationDiff();
-                relationDiff.setDeletedParents(new HashSet<>(trackerInfoDTO.getParentObjects().stream().map(ObjectBasicDTO::getId).collect(Collectors.toList())));
-                relationDiff.setNewParents(new HashSet<>(trackerParam.getParentObjs()));
-                editTrackerDiff.setRelationDiff(relationDiff);
                 objChangeTypeEnums.add(ObjChangeTypeEnum.LINAGECHANGE);
             }
 
@@ -2297,7 +2265,6 @@ public class ObjectFacade implements InitializingBean {
                     objChangeTypeEnums.add(ObjChangeTypeEnum.PRIVATECHANGE);
                 }
             }
-            editTrackerDiffs.add(editTrackerDiff);
         }
 
         return objChangeTypeEnums;

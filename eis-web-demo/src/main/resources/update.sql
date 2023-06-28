@@ -49,8 +49,23 @@ CREATE TABLE `eis_permission_apply_record` (
   KEY `idx_appId_status` (`appId`, `status`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 25649 DEFAULT CHARSET = utf8mb4 COMMENT = '权限申请记录表';
 
+CREATE TABLE `eis_tracker_content` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tracker_id` bigint(20) DEFAULT NULL COMMENT 'trackerId',
+  `type` varchar(20) DEFAULT '' COMMENT '数据类型',
+  `content` varchar(1024) NOT NULL COMMENT '内容',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tracker_id_type` (`tracker_id`, `type`)
+) ENGINE = InnoDB AUTO_INCREMENT = 21858 DEFAULT CHARSET = utf8mb4 COMMENT = '对象端tracker关联内容表'
+
 alter table eis_event_bury_point
 add column `extInfo` varchar(512) NOT NULL DEFAULT '' COMMENT '扩展信息';
 
 alter table eis_template
 add column `selected_by_default` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否默认选中，0表示未选中，1表示选中';
+
+alter table eis_param_bind
+add column source varchar(256) NOT NULL DEFAULT '' COMMENT '参数来源' ,
+add column sourceDetail varchar(1024) NOT NULL DEFAULT '' COMMENT '参数来源详情' ;
