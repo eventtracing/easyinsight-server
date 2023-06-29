@@ -2256,13 +2256,14 @@ public class ObjectFacade implements InitializingBean {
             if(paramBindItermParams.size() != paramBindItemDTOS.size()) {
                 log.info("paramBindItermParams有变化");
                 objChangeTypeEnums.add(ObjChangeTypeEnum.PRIVATECHANGE);
-            }
-            for(int j=0; j<paramBindItermParams.size(); j++){
-                ParamBindItermParam paramBindItermParam = paramBindItermParams.get(j);
-                ParamBindItemDTO paramBindItemDTO = paramBindItemDTOS.get(j);
-                if(!Objects.equals(paramBindItermParam.getParamId(), paramBindItemDTO.getId())) {
-                    log.info("paramId 有变化");
-                    objChangeTypeEnums.add(ObjChangeTypeEnum.PRIVATECHANGE);
+            }else {
+                for (int j = 0; j < paramBindItermParams.size(); j++) {
+                    ParamBindItermParam paramBindItermParam = paramBindItermParams.get(j);
+                    ParamBindItemDTO paramBindItemDTO = paramBindItemDTOS.get(j);
+                    if (!Objects.equals(paramBindItermParam.getParamId(), paramBindItemDTO.getId())) {
+                        log.info("paramId 有变化");
+                        objChangeTypeEnums.add(ObjChangeTypeEnum.PRIVATECHANGE);
+                    }
                 }
             }
         }

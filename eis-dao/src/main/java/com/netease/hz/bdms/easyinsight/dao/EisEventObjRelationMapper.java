@@ -17,6 +17,6 @@ public interface EisEventObjRelationMapper extends Mapper<EisEventObjRelation> {
 
     void insertBatch(@Param("list") List<EisEventObjRelation> list);
 
-    Integer deleteByEntityId(@Param("entityId") Long entityId);
+    Integer deleteByEntityId(@Param("eventPoolEntityId") Long eventPoolEntityId);
 
 }

@@ -29,6 +29,11 @@ public class SyncObjVO {
     private String objName;
 
     /**
+     * 图片
+     */
+    private List<String> images;
+
+    /**
      * 对象描述，可空
      */
     private String description = "";

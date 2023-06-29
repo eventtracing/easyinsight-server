@@ -59,7 +59,7 @@
     </insert>
 
     <delete id="deleteByEntityId">
-        delete from eis_req_obj_relation
+        delete from eis_event_obj_relation
         where eventPoolEntityId = #{eventPoolEntityId}
     </delete>
 
