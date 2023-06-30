@@ -20,26 +20,13 @@ public interface ReqObjChangeHistoryService {
     Long insert(EisReqObjChangeHistory objChangeHistory);
 
     /**
-     * 批量插入
-     * @param list
-     */
-    void insertBatch(List<EisReqObjChangeHistory> list);
-
-    /**
-     * 根据需求id查询关联新建/变更记录
-     * @param reqPoolId
-     * @return
-     */
-    List<EisReqObjChangeHistory> getByReqPoolId(Long reqPoolId);
-
-    /**
      * 依据对象ID和需求ID 查询对象新建/变更记录
      *
      * @param objId 对象ID
      * @param reqId 需求ID
      * @return
      */
-    List<EisReqObjChangeHistory> getByObjAndReqPoolId(Long objId, Long reqId);
+    List<EisReqObjChangeHistory> getByReqIdAndObjId(Long reqId, Long objId);
 
     /**
      * 按主键批量删除

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.hz.bdms.easyinsight.dao.EisReqObjChangeHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.netease.hz.bdms.easyinsight.dao.model.EisReqObjChangeHistory">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="objId" jdbcType="BIGINT" property="objId" />
+    <result column="reqPoolId" jdbcType="BIGINT" property="reqPoolId"/>
+    <result column="changeType" jdbcType="VARCHAR" property="changeType" />
+    <result column="newTrackerInfo" jdbcType="VARCHAR" property="newTrackerInfo" />
+    <result column="createEmail" jdbcType="VARCHAR" property="createEmail" />
+    <result column="createName" jdbcType="VARCHAR" property="createName" />
+    <result column="updateEmail" jdbcType="VARCHAR" property="updateEmail" />
+    <result column="updateName" jdbcType="VARCHAR" property="updateName" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="extInfo" jdbcType="VARCHAR" property="extInfo"/>
+  </resultMap>
+
+  <sql id="BASIC_COLUMN_LIST">
+    id, objId, reqPoolId, changeType, newTrackerInfo, createEmail,
+    createName, updateEmail, updateName, createTime, updateTime, extInfo
+  </sql>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+          parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisReqObjChangeHistory">
+    insert into eis_req_obj_change_history (objId, reqPoolId, changeType, newTrackerInfo, createEmail, createName, updateEmail, updateName, createTime, updateTime, extInfo)
+    values (#{objId,jdbcType=BIGINT}, #{reqPoolId,jdbcType=BIGINT}, #{changeType,jdbcType=VARCHAR}, #{newTrackerInfo,jdbcType=VARCHAR}, #{createEmail,jdbcType=VARCHAR},
+    #{createName,jdbcType=VARCHAR}, #{updateEmail,jdbcType=VARCHAR}, #{updateName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP, #{extInfo,jdbcType=VARCHAR})
+  </insert>
+
+  <select id="selectByReqIdAndObjId" resultMap="BaseResultMap">
+    select
+    <include refid="BASIC_COLUMN_LIST"/>
+    from eis_req_obj_change_history
+    where reqPoolId = #{reqPoolId} and objId = #{objId}
+  </select>
+
+  <delete id="deleteByIds" >
+    delete from eis_req_obj_change_history
+    where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id, jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
+</mapper>

@@ -21,6 +21,7 @@ import com.netease.hz.bdms.easyinsight.common.param.param.paramBind.ParamBindIte
 import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
 import com.netease.hz.bdms.easyinsight.common.vo.obj.*;
 import com.netease.hz.bdms.easyinsight.common.vo.release.BaseReleaseVO;
+import com.netease.hz.bdms.easyinsight.dao.model.EisReqObjChangeHistory;
 import com.netease.hz.bdms.easyinsight.dao.model.ObjectBasic;
 import com.netease.hz.bdms.easyinsight.service.facade.ObjectFacade;
 import com.netease.hz.bdms.easyinsight.service.facade.ReqDesignFacade;
@@ -219,6 +220,20 @@ public class ObjectController {
             reqDesignFacade.rebaseReqPoolToLatest(objectEditParam.getReqPoolId(), null);
         }
         return HttpResult.success();
+    }
+
+    /**
+     * 查询对象在此需求下的变更记录
+     *
+     * @param objId 对象ID
+     * @param reqPoolId 需求组ID
+     * @return
+     */
+    @GetMapping("/change/records")
+    public HttpResult changeRecords(@RequestParam("objId") Long objId,
+                                  @RequestParam("reqPoolId") Long reqPoolId){
+        List<EisReqObjChangeHistory> records = objectFacade.queryReqObjChangeHistory(reqPoolId, objId);
+        return HttpResult.success(records);
     }
 
     /**

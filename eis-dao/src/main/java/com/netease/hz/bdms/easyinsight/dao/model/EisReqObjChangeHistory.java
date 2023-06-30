@@ -16,10 +16,7 @@ public class EisReqObjChangeHistory {
     private Long reqPoolId;
 
     @Column(name = "changeType")
-    private Integer changeType;
-
-    @Column(name = "preChangeId")
-    private String preChangeId;
+    private String changeType;
 
     @Column(name = "newTrackerInfo")
     private String newTrackerInfo;
@@ -166,11 +163,11 @@ public class EisReqObjChangeHistory {
         this.reqPoolId = reqPoolId;
     }
 
-    public Integer getChangeType() {
+    public String getChangeType() {
         return changeType;
     }
 
-    public void setChangeType(Integer changeType) {
+    public void setChangeType(String changeType) {
         this.changeType = changeType;
     }
 
@@ -180,14 +177,6 @@ public class EisReqObjChangeHistory {
 
     public void setExtInfo(String extInfo) {
         this.extInfo = extInfo;
-    }
-
-    public String getPreChangeId() {
-        return preChangeId;
-    }
-
-    public void setPreChangeId(String preChangeId) {
-        this.preChangeId = preChangeId;
     }
 
     public String getNewTrackerInfo() {
