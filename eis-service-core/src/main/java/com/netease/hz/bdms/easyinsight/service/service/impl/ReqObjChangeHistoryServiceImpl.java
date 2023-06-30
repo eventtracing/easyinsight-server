@@ -45,8 +45,6 @@ public class ReqObjChangeHistoryServiceImpl implements ReqObjChangeHistoryServic
 
     @Override
     public List<EisReqObjChangeHistory> getByReqIdAndObjId(Long reqPoolId, Long objId){
-        EisReqObjChangeHistory query = new EisReqObjChangeHistory();
-        query.setReqPoolId(reqPoolId);
         List<EisReqObjChangeHistory> objChangeHistoryList= eisReqObjChangeHistoryMapper.selectByReqIdAndObjId(reqPoolId, objId);
         return Optional.ofNullable(objChangeHistoryList).orElse(Lists.newArrayList());
     }

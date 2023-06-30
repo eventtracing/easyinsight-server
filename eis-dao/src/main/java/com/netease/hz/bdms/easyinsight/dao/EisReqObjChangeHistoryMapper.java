@@ -17,15 +17,15 @@ public interface EisReqObjChangeHistoryMapper {
 
     /**
      * 插入
-     * @param list
+     * @param eisReqObjChangeHistory
      * @return
      */
-    Integer insert(@Param("record") EisReqObjChangeHistory record);
+    Integer insert(EisReqObjChangeHistory eisReqObjChangeHistory);
 
     /**
      * 查询对象变更记录
      *
-     * @param reqId
+     * @param reqPoolId
      * @param objId
      * @return
      */

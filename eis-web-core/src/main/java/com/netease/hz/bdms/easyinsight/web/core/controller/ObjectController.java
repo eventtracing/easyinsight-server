@@ -227,7 +227,7 @@ public class ObjectController {
      *
      * @param objId 对象ID
      * @param reqPoolId 需求组ID
-     * @return
+     * @return {@link List<EisReqObjChangeHistory>}
      */
     @GetMapping("/change/records")
     public HttpResult changeRecords(@RequestParam("objId") Long objId,

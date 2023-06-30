@@ -299,6 +299,14 @@ public class ObjectFacade implements InitializingBean {
             requirementPoolHelper.updateSpmPool(
                     param.getReqPoolId(), Sets.newHashSet(trackerIds), OperationTypeEnum.CREATE, false);
             result.put(objectBasicInfo.getOid(), objId);
+            // 2.4 记录变更记录
+            ObjDetailsVO objDetailsByUpdate = getObjectByHistory(objId, objChangeHistoryId, param.getReqPoolId());
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(param.getReqPoolId());
+            objReqChangeHistory.setObjId(objId);
+            objReqChangeHistory.setNewTrackerInfo(JsonUtils.toJson(objDetailsByUpdate));
+            objReqChangeHistory.setChangeType(ObjChangeTypeEnum.CREATEOBJ.getName());
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
         }
         return result;
     }
@@ -676,7 +684,7 @@ public class ObjectFacade implements InitializingBean {
             objReqChangeHistory.setReqPoolId(reqPoolId);
             objReqChangeHistory.setObjId(objId);
             objReqChangeHistory.setNewTrackerInfo(JsonUtils.toJson(objDetailsByUpdate));
-            objReqChangeHistory.setChangeType(JsonUtils.toJson(objChangeTypeEnums.stream().map(ObjChangeTypeEnum::getName)));
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(objChangeTypeEnums.stream().map(ObjChangeTypeEnum::getName).collect(Collectors.toList())));
             reqObjChangeHistoryService.insert(objReqChangeHistory);
         }
 

@@ -28,7 +28,7 @@
           parameterType="com.netease.hz.bdms.easyinsight.dao.model.EisReqObjChangeHistory">
     insert into eis_req_obj_change_history (objId, reqPoolId, changeType, newTrackerInfo, createEmail, createName, updateEmail, updateName, createTime, updateTime, extInfo)
     values (#{objId,jdbcType=BIGINT}, #{reqPoolId,jdbcType=BIGINT}, #{changeType,jdbcType=VARCHAR}, #{newTrackerInfo,jdbcType=VARCHAR}, #{createEmail,jdbcType=VARCHAR},
-    #{createName,jdbcType=VARCHAR}, #{updateEmail,jdbcType=VARCHAR}, #{updateName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP, #{extInfo,jdbcType=VARCHAR})
+    #{createName,jdbcType=VARCHAR}, #{updateEmail,jdbcType=VARCHAR}, #{updateName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{extInfo,jdbcType=VARCHAR})
   </insert>
 
   <select id="selectByReqIdAndObjId" resultMap="BaseResultMap">
@@ -36,6 +36,7 @@
     <include refid="BASIC_COLUMN_LIST"/>
     from eis_req_obj_change_history
     where reqPoolId = #{reqPoolId} and objId = #{objId}
+    order by createTime desc
   </select>
 
   <delete id="deleteByIds" >

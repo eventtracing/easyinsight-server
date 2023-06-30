@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public enum ObjChangeTypeEnum {
   /**
-   * 无变更
+   * 对象新建
    */
-  NOCHANGE(0, "无变更"),
+  CREATEOBJ(0, "对象新建"),
   /**
    * 端类型变更
    */
