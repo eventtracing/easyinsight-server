@@ -58,7 +58,24 @@ CREATE TABLE `eis_tracker_content` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_tracker_id_type` (`tracker_id`, `type`)
-) ENGINE = InnoDB AUTO_INCREMENT = 21858 DEFAULT CHARSET = utf8mb4 COMMENT = '对象端tracker关联内容表'
+) ENGINE = InnoDB AUTO_INCREMENT = 21858 DEFAULT CHARSET = utf8mb4 COMMENT = '对象端tracker关联内容表';
+
+CREATE TABLE `eis_req_obj_change_history` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `objId` bigint(20) NOT NULL COMMENT '对象id',
+  `reqPoolId` bigint(20) NOT NULL COMMENT '需求组ID',
+  `changeType` varchar(256) DEFAULT NULL COMMENT '变更类型',
+  `newTrackerInfo` text COMMENT '变更详情',
+  `extInfo` varchar(20) DEFAULT NULL COMMENT 'extInfo',
+  `createEmail` varchar(64) DEFAULT '',
+  `createName` varchar(64) DEFAULT '',
+  `updateEmail` varchar(64) DEFAULT '',
+  `updateName` varchar(64) DEFAULT '',
+  `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_reqId_objId` (`reqPoolId`, `objId`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COMMENT = '需求池对象变更历史记录';
 
 alter table eis_event_bury_point
 add column `extInfo` varchar(512) NOT NULL DEFAULT '' COMMENT '扩展信息';

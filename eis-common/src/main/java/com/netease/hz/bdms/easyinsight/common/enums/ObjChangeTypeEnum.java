@@ -30,7 +30,11 @@ public enum ObjChangeTypeEnum {
   /**
    * 公参包变更
    */
-  PUBPARAMCHANGE(4, "公参包变更")
+  PUBPARAMCHANGE(5, "公参包变更"),
+  /**
+   * 基础属性变更
+   */
+  BASICCHANGE(6, "基础属性变更")
   ;
   private Integer changeType;
   private String name;

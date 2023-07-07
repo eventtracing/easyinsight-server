@@ -305,7 +305,7 @@ public class ObjectFacade implements InitializingBean {
             objReqChangeHistory.setReqPoolId(param.getReqPoolId());
             objReqChangeHistory.setObjId(objId);
             objReqChangeHistory.setNewTrackerInfo(JsonUtils.toJson(objDetailsByUpdate));
-            objReqChangeHistory.setChangeType(ObjChangeTypeEnum.CREATEOBJ.getName());
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.CREATEOBJ.getName())));
             reqObjChangeHistoryService.insert(objReqChangeHistory);
         }
         return result;
@@ -644,6 +644,9 @@ public class ObjectFacade implements InitializingBean {
         ObjDetailsVO objDetails = getObjectByHistory(objId, objHistoryId, reqPoolId);
         //检查更新内容 血缘 or 参数 or 端类型 or 事件
         Set<ObjChangeTypeEnum> objChangeTypeEnums = checkEditChange(param, objDetails);
+        if(update){
+            objChangeTypeEnums.add(ObjChangeTypeEnum.BASICCHANGE);
+        }
         boolean change = CollectionUtils.isNotEmpty(objChangeTypeEnums);
 
         // 2. 更新对象埋点信息
@@ -2203,8 +2206,8 @@ public class ObjectFacade implements InitializingBean {
         //
         List<ObjectTrackerEditParam> paramTrackers= param.getTrackers();
         List<ObjectTrackerInfoDTO> objectTrackers = objDetails.getTrackers();
-        Map<Long, ObjectTrackerEditParam> objectTrackerEditParamMap = paramTrackers.stream().collect(Collectors.toMap(ObjectTrackerEditParam::getTerminalId, Function.identity()));
-        Map<Long, ObjectTrackerInfoDTO> objectTrackerInfoDTOMap = objectTrackers.stream().collect(Collectors.toMap(dto -> dto.getTerminal().getId(), Function.identity()));
+        Map<Long, ObjectTrackerEditParam> objectTrackerEditParamMap = paramTrackers.stream().distinct().collect(Collectors.toMap(ObjectTrackerEditParam::getTerminalId, Function.identity()));
+        Map<Long, ObjectTrackerInfoDTO> objectTrackerInfoDTOMap = objectTrackers.stream().distinct().collect(Collectors.toMap(dto -> dto.getTerminal().getId(), Function.identity()));
 
         for(ObjectTrackerInfoDTO objectTrackerInfoDTO : objectTrackers) {
             TerminalSimpleDTO terminalSimpleDTO = objectTrackerInfoDTO.getTerminal();
