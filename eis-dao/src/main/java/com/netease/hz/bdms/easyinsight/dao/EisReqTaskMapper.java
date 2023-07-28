@@ -16,6 +16,8 @@ public interface EisReqTaskMapper extends Mapper<EisReqTask> {
 
     List<EisReqTask> selectByTerminalVersionId(@Param("terminalVersionIds") Set<Long> terminalVersionIds);
 
+    List<EisReqTask> selectByTerminalVersion(@Param("terminalVersion") String terminalVersion);
+
     List<EisReqTask> selectByUserAndStatus(@Param("ownerEmail") String ownerEmail, @Param("status") Integer status);
 
     List<EisReqTask> selectBatchByIds(@Param("ids") Set<Long> ids);
