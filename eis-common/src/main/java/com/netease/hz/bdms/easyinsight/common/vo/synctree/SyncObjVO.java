@@ -1,5 +1,6 @@
 package com.netease.hz.bdms.easyinsight.common.vo.synctree;
 
+import com.netease.hz.bdms.easyinsight.common.param.tag.ObjBasicTagDTO;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -57,4 +58,9 @@ public class SyncObjVO {
      * 对象参数列表
      */
     private List<String> objParams;
+
+    /**
+     * 对象基本标签
+     */
+    private ObjBasicTagDTO basicTag;
 }

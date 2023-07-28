@@ -161,6 +161,9 @@ public class ObjectFacade implements InitializingBean {
     @Autowired
     private EventPoolFacade eventPoolFacade;
 
+    @Autowired
+    private ReqObjChangeHistoryService reqObjChangeHistoryService;
+
     /**
      * 是否一定要传图片 key: appId
      */
@@ -296,6 +299,14 @@ public class ObjectFacade implements InitializingBean {
             requirementPoolHelper.updateSpmPool(
                     param.getReqPoolId(), Sets.newHashSet(trackerIds), OperationTypeEnum.CREATE, false);
             result.put(objectBasicInfo.getOid(), objId);
+            // 2.4 记录变更记录
+            ObjDetailsVO objDetailsByUpdate = getObjectByHistory(objId, objChangeHistoryId, param.getReqPoolId());
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(param.getReqPoolId());
+            objReqChangeHistory.setObjId(objId);
+            objReqChangeHistory.setNewTrackerInfo(JsonUtils.toJson(objDetailsByUpdate));
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.CREATEOBJ.getName())));
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
         }
         return result;
     }
@@ -330,6 +341,10 @@ public class ObjectFacade implements InitializingBean {
         objectBasic.setName(name);
         objectBasicService.update(objectBasic);
         return objectBasicService.getById(id);
+    }
+
+    public List<EisReqObjChangeHistory> queryReqObjChangeHistory(Long reqId, Long objId){
+        return reqObjChangeHistoryService.getByReqIdAndObjId(reqId, objId);
     }
 
     /**
@@ -627,6 +642,12 @@ public class ObjectFacade implements InitializingBean {
         //判断是否更新任务spm状态
         boolean update = !objectBasic.getName().equals(objectOriginBasic.getName()) || !objectBasic.getOid().equals(objectOriginBasic.getOid()) || !objectBasic.getType().equals(objectOriginBasic.getType());
         ObjDetailsVO objDetails = getObjectByHistory(objId, objHistoryId, reqPoolId);
+        //检查更新内容 血缘 or 参数 or 端类型 or 事件
+        Set<ObjChangeTypeEnum> objChangeTypeEnums = checkEditChange(param, objDetails);
+        if(update){
+            objChangeTypeEnums.add(ObjChangeTypeEnum.BASICCHANGE);
+        }
+        boolean change = CollectionUtils.isNotEmpty(objChangeTypeEnums);
 
         // 2. 更新对象埋点信息
         Set<Long> trackerIdsBeforeEdit = new HashSet<>();
@@ -639,10 +660,6 @@ public class ObjectFacade implements InitializingBean {
         }
         List<Long> newTrackerIds = objectHelper.editObjectTrackerInfo(
                 objId, objHistoryId, param.getReqPoolId(), param.getTrackers());
-
-        //todo 检查更新内容 血缘 or 参数 or 端类型 or 事件
-        Set<ObjChangeTypeEnum> objChangeTypeEnums = checkEditChange(param, objDetails);
-        boolean change = CollectionUtils.isNotEmpty(objChangeTypeEnums);
 
         // 3. 更新对象 spm需求关联池 信息
         List<UpdateSpmPoolParam> updateSpmPoolParams = new ArrayList<>();
@@ -662,26 +679,17 @@ public class ObjectFacade implements InitializingBean {
         });
         requirementPoolHelper.updateSpmPoolNew(reqPoolId, updateSpmPoolParams, update || change);
 
-        //todo 记录变更流水并发通知
-//        if(CollectionUtils.isNotEmpty(editTrackerDiffs)) {
-//            List<EisReqObjChangeHistory> eisReqObjChangeHistories = new ArrayList<>();
-//            for(TrackerTerminalDiffDTO diffDTO : editTrackerDiffs) {
-//                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
-//                objReqChangeHistory.setReqPoolId(reqPoolId);
-//                objReqChangeHistory.setObjId(objId);
-//                objReqChangeHistory.setExtInfo(JsonUtils.toJson(diffDTO));
-//                if(diffDTO.getChangeTypeEnums().contains(ObjChangeTypeEnum.TERMINALCHANGE)){
-//                    objReqChangeHistory.setChangeType(ObjChangeTypeEnum.TERMINALCHANGE.getChangeType());
-//                }else {
-//                    if(CollectionUtils.isNotEmpty(diffDTO.getChangeTypeEnums())) {
-//                        objReqChangeHistory.setChangeType(diffDTO.getChangeTypeEnums().get(0).getChangeType());
-//                    }
-//                }
-//                eisReqObjChangeHistories.add(objReqChangeHistory);
-//            }
-//            reqObjChangeHistoryService.insertBatch(eisReqObjChangeHistories);
-//        }
-
+        // 记录变更流水并发通知
+        if(CollectionUtils.isNotEmpty(objChangeTypeEnums)) {
+            ObjDetailsVO objDetailsByUpdate = getObjectByHistory(objId, objHistoryId, reqPoolId);
+            log.error("objDetailsByUpdate =:" + JsonUtils.toJson(objDetailsByUpdate));
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(reqPoolId);
+            objReqChangeHistory.setObjId(objId);
+            objReqChangeHistory.setNewTrackerInfo(JsonUtils.toJson(objDetailsByUpdate));
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(objChangeTypeEnums.stream().map(ObjChangeTypeEnum::getName).collect(Collectors.toList())));
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
+        }
 
 
         // 冲突情况下编辑后，冲突解决
@@ -2198,8 +2206,8 @@ public class ObjectFacade implements InitializingBean {
         //
         List<ObjectTrackerEditParam> paramTrackers= param.getTrackers();
         List<ObjectTrackerInfoDTO> objectTrackers = objDetails.getTrackers();
-        Map<Long, ObjectTrackerEditParam> objectTrackerEditParamMap = paramTrackers.stream().collect(Collectors.toMap(ObjectTrackerEditParam::getTerminalId, Function.identity()));
-        Map<Long, ObjectTrackerInfoDTO> objectTrackerInfoDTOMap = objectTrackers.stream().collect(Collectors.toMap(dto -> dto.getTerminal().getId(), Function.identity()));
+        Map<Long, ObjectTrackerEditParam> objectTrackerEditParamMap = paramTrackers.stream().distinct().collect(Collectors.toMap(ObjectTrackerEditParam::getTerminalId, Function.identity()));
+        Map<Long, ObjectTrackerInfoDTO> objectTrackerInfoDTOMap = objectTrackers.stream().distinct().collect(Collectors.toMap(dto -> dto.getTerminal().getId(), Function.identity()));
 
         for(ObjectTrackerInfoDTO objectTrackerInfoDTO : objectTrackers) {
             TerminalSimpleDTO terminalSimpleDTO = objectTrackerInfoDTO.getTerminal();
