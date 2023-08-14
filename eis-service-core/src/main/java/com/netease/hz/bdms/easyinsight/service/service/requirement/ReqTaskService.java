@@ -74,6 +74,10 @@ public class ReqTaskService {
         return reqTaskMapper.selectByTerminalVersionId(terminalVersionIds);
     }
 
+    public List<EisReqTask> listAllByTerminalVersion(String terminalVersion){
+        return reqTaskMapper.selectByTerminalVersion(terminalVersion);
+    }
+
     public List<EisReqTask> getByReqIds(Set<Long> reqIds){
         if(CollectionUtils.isNotEmpty(reqIds)){
             return reqTaskMapper.selectBatchByReqIds(reqIds);

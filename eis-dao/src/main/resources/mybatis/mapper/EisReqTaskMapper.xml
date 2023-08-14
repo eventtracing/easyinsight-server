@@ -76,6 +76,15 @@
     </where>
   </select>
 
+  <select id="selectByTerminalVersion" resultMap="BaseResultMap">
+    select
+    <include refid="BASE_COLUMN_LIST" />
+    from eis_req_task
+    <where>
+      terminal_version = #{terminalVersion}
+    </where>
+  </select>
+
   <select id="selectByUserAndStatus" resultMap="BaseResultMap">
     select
     <include refid="BASE_COLUMN_LIST" />
