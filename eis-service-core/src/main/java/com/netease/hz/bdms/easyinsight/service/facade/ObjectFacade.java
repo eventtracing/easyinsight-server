@@ -1039,7 +1039,7 @@ public class ObjectFacade implements InitializingBean {
      * @return
      */
     public ObjTreeVO getReleasedObjTree(
-            Long releasedId, Integer type, List<Long> tagIds, String search, String orderBy, String orderRule){
+            Long releasedId, Integer type, List<Long> tagIds, String priority, String search, String orderBy, String orderRule){
         Preconditions.checkArgument(null != releasedId, "发布版本ID不能为空！");
 
         ObjTreeVO result = new ObjTreeVO();
@@ -1057,10 +1057,15 @@ public class ObjectFacade implements InitializingBean {
         List<ObjectBasic> allList = objectBasicService.getByIds(objIds);
         List<ObjectBasic> objectBasicList = new ArrayList<>(allList);
 
-        // 根据对象类型搜索
+        // 根据对象类型和优先级搜索
         if(null != type){
             objectBasicList = objectBasicList.stream()
                     .filter(k -> type.equals(k.getType()))
+                    .collect(Collectors.toList());
+        }
+        if(null != priority){
+            objectBasicList = objectBasicList.stream()
+                    .filter(k -> priority.equals(k.getPriority()))
                     .collect(Collectors.toList());
         }
         // 根据标签搜索

@@ -378,11 +378,12 @@ public class ObjectController {
     public HttpResult getReleasedObjectList(@RequestParam("releasedId") Long releasedId,
                                             @RequestParam(value = "type", required = false)Integer type,
                                             @RequestParam(value = "tagIds", required = false)List<Long> tagIds,
+                                            @RequestParam(value = "priority", required = false)String priority,
                                             @RequestParam(value = "search", required = false)String search,
                                             @RequestParam(value = "orderBy", defaultValue = "createTime")String orderBy,
                                             @RequestParam(value = "orderRule",  defaultValue = "descend")String orderRule){
         ObjTreeVO objTreeVO = objectFacade.getReleasedObjTree(
-                releasedId, type, tagIds, search, orderBy, orderRule);
+                releasedId, type, tagIds, priority, search, orderBy, orderRule);
         return HttpResult.success(objTreeVO);
     }
 
