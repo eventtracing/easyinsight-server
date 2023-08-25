@@ -152,6 +152,9 @@ public class ObjectController {
             List<ObjectTrackerChangeParam> paramTrackers= new ArrayList<>();
             List<ObjectTrackerInfoDTO> objectTrackers = objDetails.getTrackers();
             for(ObjectTrackerInfoDTO objectTrackerInfoDTO : objectTrackers) {
+                if(objectTrackerInfoDTO.getTerminal().getId().equals(11L)){
+                    continue;
+                }
                 ObjectTrackerChangeParam objectTrackerChangeParam = new ObjectTrackerChangeParam();
                 objectTrackerChangeParam.setEventIds(objectTrackerInfoDTO.getEvents().stream().map(EventSimpleDTO::getId).collect(Collectors.toList()))
                         .setEventParamVersionIdMap(objectTrackerInfoDTO.getEventParamVersionIdMap())

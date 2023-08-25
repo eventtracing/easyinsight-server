@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.netease.hz.bdms</groupId>
       <artifactId>eis-web-core</artifactId>
-      <version>1.0.1.73</version>
+      <version>1.0.1.731</version>
     </dependency>
 
     <dependency>

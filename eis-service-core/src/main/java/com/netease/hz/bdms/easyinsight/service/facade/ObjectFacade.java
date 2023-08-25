@@ -355,27 +355,27 @@ public class ObjectFacade implements InitializingBean {
     @MethodLog
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void changeObject(ObjectChangeParam param, ObjDetailsVO objDetails){
-        // 参数检查
-        Long appId = EtContext.get(ContextConstant.APP_ID);
-        Preconditions.checkArgument(null != appId, "未指定产品信息！");
-        Preconditions.checkArgument(null != param, "对象变更信息不能为空！");
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(param.getTrackers()),
-                "对象埋点信息不能为空！");
-        for (ObjectTrackerChangeParam tracker : param.getTrackers()) {
-            if (tracker.getId() == null) {
-                throw new CommonException("变更操作不支持增加端，请先拉空变更，再在编辑时增加端");
-            }
-        }
-
-        // 检查能否进行变更
+//        // 参数检查
+//        Long appId = EtContext.get(ContextConstant.APP_ID);
+//        Preconditions.checkArgument(null != appId, "未指定产品信息！");
+//        Preconditions.checkArgument(null != param, "对象变更信息不能为空！");
+//        Preconditions.checkArgument(CollectionUtils.isNotEmpty(param.getTrackers()),
+//                "对象埋点信息不能为空！");
+//        for (ObjectTrackerChangeParam tracker : param.getTrackers()) {
+//            if (tracker.getId() == null) {
+//                throw new CommonException("变更操作不支持增加端，请先拉空变更，再在编辑时增加端");
+//            }
+//        }
+//
+//        // 检查能否进行变更
         Long objId = param.getId();
         Long reqPoolId = param.getReqPoolId();
-        if(objectHelper.isChanged(objId, reqPoolId)){
-            throw new ObjException(String.format("oid={%s}的对象在当前需求下已发生过变更！", param.getOid()));
-        }
-
-        // 检查父对象是否存在
-        param.getTrackers().forEach(trackerChangeParam -> objectHelper.checkParentExist(appId, trackerChangeParam.getParentObjs(), trackerChangeParam.getTerminalId(), param.getReqPoolId()));
+//        if(objectHelper.isChanged(objId, reqPoolId)){
+//            throw new ObjException(String.format("oid={%s}的对象在当前需求下已发生过变更！", param.getOid()));
+//        }
+//
+//        // 检查父对象是否存在
+//        param.getTrackers().forEach(trackerChangeParam -> objectHelper.checkParentExist(appId, trackerChangeParam.getParentObjs(), trackerChangeParam.getTerminalId(), param.getReqPoolId()));
 
         // 1. 处理对象基本信息
         // 1.1 对象元信息更新(变更操作只能修改部分不重要的元信息，像oid、name等字段不能改动)
