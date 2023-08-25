@@ -1063,7 +1063,7 @@ public class ObjectFacade implements InitializingBean {
                     .filter(k -> type.equals(k.getType()))
                     .collect(Collectors.toList());
         }
-        if(null != priority){
+        if(StringUtils.isNotBlank(priority)){
             objectBasicList = objectBasicList.stream()
                     .filter(k -> priority.equals(k.getPriority()))
                     .collect(Collectors.toList());
