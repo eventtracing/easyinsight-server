@@ -181,7 +181,7 @@ public class ReqPoolListPageFacade {
                     reqInfoVo.setCreateTime(relReqInfo.getCreateTime().getTime());
                     reqInfoVo.setCreatorName(relReqInfo.getCreateName());
                     reqInfoVo.setMergeConflict(hasMergeConflict);
-                    //用户录入埋点
+                    //用户录入埋点 todo 优先级排序
                     List<EisUserPointInfo> userPointInfos = userBuryPointService.searchWithReqId(relReqInfo.getId());
                     reqInfoVo.setUserPointInfos(userPointInfos.stream().map(info -> BeanConvertUtils.convert(info, UserPointInfoDTO.class)).filter(Objects::nonNull).collect(Collectors.toList()));
                     reqInfoVoList.add(reqInfoVo);
@@ -204,9 +204,13 @@ public class ReqPoolListPageFacade {
         }else {
             result = result.stream().sorted((a,b) -> a.getCreateTime().compareTo(b.getCreateTime())).collect(Collectors.toList());
         }
-
-
         return result;
+    }
+
+    //todo
+    private List<UserPointInfoDTO> userPointPriorityOrder(List<EisUserPointInfo> origin){
+        //给用户埋点贴上优先级标签
+        return new ArrayList<>();
     }
 
     public ReqPoolEditShowVO getReqPoolEditView(Long id){

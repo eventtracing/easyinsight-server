@@ -18,6 +18,7 @@ import com.netease.hz.bdms.easyinsight.common.exception.CommonException;
 import com.netease.hz.bdms.easyinsight.common.query.Search;
 import com.netease.hz.bdms.easyinsight.common.query.TaskPageQuery;
 import com.netease.hz.bdms.easyinsight.common.util.JsonUtils;
+import com.netease.hz.bdms.easyinsight.common.vo.obj.ObjDetailsVO;
 import com.netease.hz.bdms.easyinsight.common.vo.requirement.RequirementInfoVO;
 import com.netease.hz.bdms.easyinsight.common.vo.task.*;
 import com.netease.hz.bdms.easyinsight.dao.model.*;
@@ -33,6 +34,7 @@ import com.netease.hz.bdms.easyinsight.service.service.requirement.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,6 +114,9 @@ public class ReqTaskFacade {
 
     @Resource
     private MergeConflictHelper mergeConflictHelper;
+
+    @Autowired
+    private ReqObjChangeHistoryService reqObjChangeHistoryService;
 
     @MethodLog
     public PagingResultDTO<ReqTaskVO> queryPagingList(TaskPagingQueryVO queryVo){
@@ -402,6 +407,13 @@ public class ReqTaskFacade {
         List<EisTaskProcess> toUpdateProcesses = processes.stream().filter(p -> p.getStatus() < targetStatus).collect(Collectors.toList());
         for (EisTaskProcess process : toUpdateProcesses) {
             process.setStatus(targetStatus);
+            // 记录变更记录
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(process.getReqPoolId());
+            objReqChangeHistory.setObjId(process.getObjId());
+            objReqChangeHistory.setNewTrackerInfo(task.getTaskName() + process.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(targetStatus).getDesc());
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
         }
         taskProcessService.updateBatch(toUpdateProcesses);
         // 及时通知
@@ -439,6 +451,13 @@ public class ReqTaskFacade {
         taskUpdateQuery.setId(taskProcess.getTaskId());
         taskUpdateQuery.setStatus(taskStatus);
         reqTaskService.updateById(taskUpdateQuery);
+        // 记录变更记录
+        EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+        objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+        objReqChangeHistory.setObjId(taskProcess.getObjId());
+        objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(targetStatus).getDesc());
+        objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+        reqObjChangeHistoryService.insert(objReqChangeHistory);
         // 及时通知
         notifyHelper.notifyAfterUpdateSpmStatus(Collections.singleton(id));
         // 同步任务状态到三方
@@ -458,6 +477,14 @@ public class ReqTaskFacade {
                 }
                 taskProcess.setStatus(taskProcess.getStatus() + 1);
                 taskProcessService.updateBatch(processes);
+                // 记录变更记录
+                EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
+                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+                objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+                objReqChangeHistory.setObjId(taskProcess.getObjId());
+                objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
+                objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+                reqObjChangeHistoryService.insert(objReqChangeHistory);
                 // 及时通知
                 notifyHelper.notifyAfterUpdateSpmStatus(processIds);
             }
@@ -483,6 +510,14 @@ public class ReqTaskFacade {
         List<EisTaskProcess> processes = taskProcessService.search(query);
         for(EisTaskProcess process : processes){
             process.setStatus(status - 1);
+            // 记录变更记录
+            EisReqTask reqTask = reqTaskService.getById(process.getTaskId());
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(process.getReqPoolId());
+            objReqChangeHistory.setObjId(process.getObjId());
+            objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + process.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(process.getStatus() + 1).getDesc());
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
         }
         taskProcessService.updateBatch(processes);
         // 及时通知
@@ -508,6 +543,14 @@ public class ReqTaskFacade {
         taskUpdateQuery.setId(taskProcess.getTaskId());
         taskUpdateQuery.setStatus(taskStatus);
         reqTaskService.updateById(taskUpdateQuery);
+        // 记录变更记录
+        EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
+        EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+        objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+        objReqChangeHistory.setObjId(taskProcess.getObjId());
+        objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
+        objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+        reqObjChangeHistoryService.insert(objReqChangeHistory);
         // 及时通知
         notifyHelper.notifyAfterUpdateSpmStatus(Collections.singleton(id));
         // 同步任务状态到三方
@@ -545,6 +588,13 @@ public class ReqTaskFacade {
             reqTaskService.updateBatch(tasks);
             for (EisTaskProcess taskProcess : taskProcesses) {
                 taskProcess.setStatus(transStatusVo.getTargetStatus());
+                EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
+                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+                objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+                objReqChangeHistory.setObjId(taskProcess.getObjId());
+                objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
+                objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+                reqObjChangeHistoryService.insert(objReqChangeHistory);
             }
             taskProcessService.updateBatch(taskProcesses);
             // 及时通知

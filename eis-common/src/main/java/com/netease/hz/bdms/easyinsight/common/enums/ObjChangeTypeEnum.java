@@ -34,7 +34,11 @@ public enum ObjChangeTypeEnum {
   /**
    * 基础属性变更
    */
-  BASICCHANGE(6, "基础属性变更")
+  BASICCHANGE(6, "基础属性变更"),
+  /**
+   * 基础属性变更
+   */
+  TASKCHANGE(10, "任务状态变更")
   ;
   private Integer changeType;
   private String name;
