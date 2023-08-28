@@ -10,6 +10,7 @@ import com.netease.hz.bdms.easyinsight.common.dto.obj.ObjectTrackerInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.param.ParamValueSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamBindItemDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.param.parambind.ParamEmptyRateDTO;
+import com.netease.hz.bdms.easyinsight.common.dto.spm.SpmInfoDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.tag.TagSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.dto.terminal.TerminalSimpleDTO;
 import com.netease.hz.bdms.easyinsight.common.enums.TerminalCodeTypeEum;
@@ -36,6 +37,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -123,6 +127,11 @@ public class ObjectController {
         return HttpResult.success();
     }
 
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
     /**
      * 批量复用对象
      *
@@ -133,7 +142,7 @@ public class ObjectController {
     @PermissionAction(requiredPermission = PermissionEnum.OBJ_EDIT)
     public HttpResult batchChangeObject(@RequestBody ObjectBatchChangeParam objectBatchChangeParam){
 
-        List<ObjectBatchParam> objectBatchParams = objectBatchChangeParam.getObjectBatchParams();
+        List<ObjectBatchParam> objectBatchParams = objectBatchChangeParam.getObjectBatchParams().stream().filter(distinctByKey(ObjectBatchParam::getObjId)).collect(Collectors.toList());
 
         for(ObjectBatchParam objectBatchParam : objectBatchParams) {
             ObjDetailsVO objDetails = objectFacade.getObjectForChange(objectBatchParam.getObjId(), objectBatchParam.getHistoryId());
