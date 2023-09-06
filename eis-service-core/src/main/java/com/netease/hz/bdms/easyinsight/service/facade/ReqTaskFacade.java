@@ -407,6 +407,9 @@ public class ReqTaskFacade {
         List<EisTaskProcess> toUpdateProcesses = processes.stream().filter(p -> p.getStatus() < targetStatus).collect(Collectors.toList());
         for (EisTaskProcess process : toUpdateProcesses) {
             process.setStatus(targetStatus);
+            if(process.getReqPoolType().equals(ReqPoolTypeEnum.EVENT.getReqPoolType())){
+                continue;
+            }
             // 记录变更记录
             EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
             objReqChangeHistory.setReqPoolId(process.getReqPoolId());
@@ -452,12 +455,14 @@ public class ReqTaskFacade {
         taskUpdateQuery.setStatus(taskStatus);
         reqTaskService.updateById(taskUpdateQuery);
         // 记录变更记录
-        EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
-        objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
-        objReqChangeHistory.setObjId(taskProcess.getObjId());
-        objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(targetStatus).getDesc());
-        objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
-        reqObjChangeHistoryService.insert(objReqChangeHistory);
+        if(!taskProcess.getReqPoolType().equals(ReqPoolTypeEnum.EVENT.getReqPoolType())) {
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+            objReqChangeHistory.setObjId(taskProcess.getObjId());
+            objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(targetStatus).getDesc());
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
+        }
         // 及时通知
         notifyHelper.notifyAfterUpdateSpmStatus(Collections.singleton(id));
         // 同步任务状态到三方
@@ -478,13 +483,15 @@ public class ReqTaskFacade {
                 taskProcess.setStatus(taskProcess.getStatus() + 1);
                 taskProcessService.updateBatch(processes);
                 // 记录变更记录
-                EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
-                EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
-                objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
-                objReqChangeHistory.setObjId(taskProcess.getObjId());
-                objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
-                objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
-                reqObjChangeHistoryService.insert(objReqChangeHistory);
+                if(!taskProcess.getReqPoolType().equals(ReqPoolTypeEnum.EVENT.getReqPoolType())) {
+                    EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
+                    EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+                    objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+                    objReqChangeHistory.setObjId(taskProcess.getObjId());
+                    objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
+                    objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+                    reqObjChangeHistoryService.insert(objReqChangeHistory);
+                }
                 // 及时通知
                 notifyHelper.notifyAfterUpdateSpmStatus(processIds);
             }
@@ -511,6 +518,9 @@ public class ReqTaskFacade {
         for(EisTaskProcess process : processes){
             process.setStatus(status - 1);
             // 记录变更记录
+            if(process.getReqPoolType().equals(ReqPoolTypeEnum.EVENT.getReqPoolType())){
+                continue;
+            }
             EisReqTask reqTask = reqTaskService.getById(process.getTaskId());
             EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
             objReqChangeHistory.setReqPoolId(process.getReqPoolId());
@@ -544,13 +554,15 @@ public class ReqTaskFacade {
         taskUpdateQuery.setStatus(taskStatus);
         reqTaskService.updateById(taskUpdateQuery);
         // 记录变更记录
-        EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
-        EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
-        objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
-        objReqChangeHistory.setObjId(taskProcess.getObjId());
-        objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
-        objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
-        reqObjChangeHistoryService.insert(objReqChangeHistory);
+        if(!taskProcess.getReqPoolType().equals(ReqPoolTypeEnum.EVENT.getReqPoolType())) {
+            EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
+            EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
+            objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
+            objReqChangeHistory.setObjId(taskProcess.getObjId());
+            objReqChangeHistory.setNewTrackerInfo(reqTask.getTaskName() + taskProcess.getSpmByObjId() + "变更为" + ProcessStatusEnum.fromState(taskProcess.getStatus() + 1).getDesc());
+            objReqChangeHistory.setChangeType(JsonUtils.toJson(Collections.singletonList(ObjChangeTypeEnum.TASKCHANGE.getName())));
+            reqObjChangeHistoryService.insert(objReqChangeHistory);
+        }
         // 及时通知
         notifyHelper.notifyAfterUpdateSpmStatus(Collections.singleton(id));
         // 同步任务状态到三方
@@ -588,6 +600,9 @@ public class ReqTaskFacade {
             reqTaskService.updateBatch(tasks);
             for (EisTaskProcess taskProcess : taskProcesses) {
                 taskProcess.setStatus(transStatusVo.getTargetStatus());
+                if(taskProcess.getReqPoolType().equals(ReqPoolTypeEnum.EVENT.getReqPoolType())){
+                    continue;
+                }
                 EisReqTask reqTask = reqTaskService.getById(taskProcess.getTaskId());
                 EisReqObjChangeHistory objReqChangeHistory = new EisReqObjChangeHistory();
                 objReqChangeHistory.setReqPoolId(taskProcess.getReqPoolId());
