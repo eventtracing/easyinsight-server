@@ -349,10 +349,10 @@ public class ObjectHelper {
             // 2. 构建对象埋点信息
             EisObjTerminalTracker objTerminalTracker = new EisObjTerminalTracker();
             objTerminalTracker.setObjId(objId);
-            objTerminalTracker.setTerminalId(48L);
+            objTerminalTracker.setTerminalId(93L);
             objTerminalTracker.setReqPoolId(reqPoolId);
             objTerminalTracker.setObjHistoryId(objHistoryId);
-            objTerminalTracker.setTerminalReleaseId(1006L);
+            objTerminalTracker.setTerminalReleaseId(1940L);
             objTerminalTracker.setPreTrackerId(0L);
             objTerminalTracker.setPubParamPackageId(trackerChangeInfo.getPubParamPackageId());
             objTerminalTrackerService.insert(objTerminalTracker);
@@ -375,7 +375,7 @@ public class ObjectHelper {
                 reqObjRelation.setObjId(objId);
                 reqObjRelation.setReqPoolId(reqPoolId);
                 reqObjRelation.setParentObjId(parentObjId);
-                reqObjRelation.setTerminalId(48L);
+                reqObjRelation.setTerminalId(93L);
                 reqObjRelation.setAppId(appId);
                 // 加入列表
                 reqObjRelations.add(reqObjRelation);
